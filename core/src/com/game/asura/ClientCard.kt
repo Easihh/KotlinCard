@@ -1,0 +1,44 @@
+package com.game.asura
+
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import kotlin.random.Random
+
+
+class ClientCard(private val primaryId: Int,
+                 private val secondaryId: Int = Random.nextInt(),
+                 private var cardCost: Int,
+                 private val cardType: CardType) : DrawableCard {
+
+
+    private var cardImg: Image
+
+    init {
+        val texture = Texture("core/assets/card.png")
+        cardImg = Image(texture)
+    }
+
+    override fun getImage(): Image {
+        return cardImg
+    }
+
+    override fun getCost(): Int {
+        return cardCost
+    }
+
+    override fun getPrimaryId(): Int {
+        return primaryId
+    }
+
+    override fun getSecondayId(): Int {
+        return secondaryId
+    }
+
+    override fun getCardType(): CardType {
+        return cardType
+    }
+
+    override fun getEffect(): List<CardEffect> {
+        return ArrayList()
+    }
+}
