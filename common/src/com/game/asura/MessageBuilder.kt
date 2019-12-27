@@ -22,6 +22,9 @@ class MessageBuilder(private val buffer: ByteBuffer) {
                 buffer.put(strVal.length.toByte())
                 buffer.put(strVal.toByteArray())
             }
+            'C' -> {
+                buffer.putChar(value as Char)
+            }
             else -> {
                 println("Unable to add field:$field with value:$value to the message builder.")
             }
@@ -32,7 +35,7 @@ class MessageBuilder(private val buffer: ByteBuffer) {
         buffer.flip()
     }
 
-    fun clear(){
+    fun clear() {
         buffer.clear()
     }
 

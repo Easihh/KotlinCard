@@ -62,6 +62,9 @@ class Tokenizer(private val buffer: ByteBuffer) {
             'L' -> {
                 return buffer.long
             }
+            'C' -> {
+                return buffer.char
+            }
             'S' -> {
                 val length = buffer.get().toInt()
                 val byteArr = ByteArray(length)
@@ -101,6 +104,10 @@ class Tokenizer(private val buffer: ByteBuffer) {
                     fieldValue = nextValue() as Long
                     sb.append(fieldName).append("[$field$type] = $fieldValue , ")
                 }
+                'C' -> {
+                    fieldValue = nextValue() as Char
+                    sb.append(fieldName).append("[$field$type] = $fieldValue , ")
+                }
                 'S' -> {
                     fieldValue = nextValue() as String
                     sb.append(fieldName).append("[$field$type] = $fieldValue , ")
@@ -112,5 +119,13 @@ class Tokenizer(private val buffer: ByteBuffer) {
         }
         buffer.position(pos)
         return sb.toString()
+    }
+
+    fun compact() {
+        buffer.compact()
+    }
+
+    fun position(): Int {
+        return buffer.position()
     }
 }

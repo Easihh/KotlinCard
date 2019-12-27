@@ -9,6 +9,5 @@ class MatchInfoOut(channelWriter: ChannelMessageWriter,
     override fun build(messageBuilder: MessageBuilder) {
         messageBuilder.add(MessageField.MESSAGE_TYPE, MessageType.MATCH_INFO.value)
         messageBuilder.add(MessageField.MATCH_ID, matchId)
-        messageBuilder.flip()
     }
 }

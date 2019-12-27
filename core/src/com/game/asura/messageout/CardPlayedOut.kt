@@ -19,6 +19,7 @@ class CardPlayedOut(private val card: DrawableCard,
         if (cardTarget != null) {
             messageBuilder.add(MessageField.CARD_TARGET, cardTarget)
         }
+        messageBuilder.add(MessageField.END_MESSAGE, END_MESSAGE_DELIMITER)
 
         messageBuilder.flip()
     }

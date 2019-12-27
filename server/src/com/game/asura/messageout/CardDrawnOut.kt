@@ -14,6 +14,5 @@ class CardDrawnOut(channelWriter: ChannelMessageWriter,
         messageBuilder.add(MessageField.CARD_COST, card.getCost())
         messageBuilder.add(MessageField.CARD_TYPE, card.getCardType().value)
         messageBuilder.add(MessageField.DECK_SIZE, deckSize)
-        messageBuilder.flip()
     }
 }

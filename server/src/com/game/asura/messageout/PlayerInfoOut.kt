@@ -14,7 +14,5 @@ class PlayerInfoOut(channelWriter: ChannelMessageWriter,
         for (field in changedFields) {
             messageBuilder.add(field.field, field.value)
         }
-        messageBuilder.flip()
-
     }
 }

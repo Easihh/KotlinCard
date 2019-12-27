@@ -31,6 +31,10 @@ abstract class CoreMessageParser {
                     fieldValue = tokenizer.nextValue() as Long
                     sb.append(fieldName).append("[$field$type] = $fieldValue , ")
                 }
+                'C' -> {
+                    fieldValue = tokenizer.nextValue() as Char
+                    sb.append(fieldName).append("[$field$type] = $fieldValue , ")
+                }
                 'S' -> {
 
                     fieldValue = tokenizer.nextValue() as String
@@ -38,10 +42,15 @@ abstract class CoreMessageParser {
                 }
                 else -> {
                     println("Invalid Field Type of $type, ignoring field $fieldName.")
+                    println("Parsed msg:$sb")
                     return
                 }
             }
             coreMsg.addField(fieldName, type, fieldValue)
+            if (fieldName == MessageField.END_MESSAGE && fieldValue == END_MESSAGE_DELIMITER) {
+                println("Found end of message delimiter; won't parse further.")
+                break
+            }
         }
         println("MessageRecv:$sb")
     }

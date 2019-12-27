@@ -18,6 +18,5 @@ class CardPlayedOut(channelWriter: ChannelMessageWriter,
         if (target != null) {
             messageBuilder.add(MessageField.CARD_TARGET, target)
         }
-        messageBuilder.flip()
     }
 }

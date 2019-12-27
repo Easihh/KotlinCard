@@ -6,6 +6,14 @@ import com.game.asura.messagein.*
 class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
 
     fun decode(tokenizer: Tokenizer) {
+        //pos of 0 due to last compact wont copy anything and after flip nothing remains
+        while (tokenizer.hasRemaining() && tokenizer.position() > 0) {
+            doDecode(tokenizer)
+        }
+        tokenizer.clear()
+    }
+
+    private fun doDecode(tokenizer: Tokenizer) {
         tokenizer.flip()
         parseMessage(tokenizer)
         var decodedMessage: DecodedMessage? = null
@@ -46,5 +54,6 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
             return
         }
         queue.addMessage(decodedMessage)
+        tokenizer.compact()
     }
 }
