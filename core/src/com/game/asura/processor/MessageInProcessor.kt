@@ -34,6 +34,14 @@ class MessageInProcessor(private val playerAccount: PlayerAccount,
                 println("Removing card to player hand.")
                 playerAccount.player.removeFromHand(card)
                 uiManager.removeCardfromHand(card as DrawableCard)
+                //if it was a monster put it in play
+                if (card.getCardType() == CardType.MONSTER) {
+                    if (message.boardIndex == null) {
+                        println("Error, card is of type:${card.getCardType()} but no board index present.")
+                        return
+                    }
+                    playerAccount.player.boardManager.updatePlayerBoard(card, message.boardIndex)
+                }
             }
             else -> {
                 println("Unable to process message:$message missing logic.")

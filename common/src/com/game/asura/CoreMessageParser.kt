@@ -61,7 +61,7 @@ abstract class CoreMessageParser {
 
     fun getCardPlayedData(): CardPlayedData {
         return CardPlayedData(coreMsg.getCardPrimaryId(), coreMsg.getSecondaryCardId(),
-                coreMsg.getMatchId(), coreMsg.getCardTarget())
+                coreMsg.getMatchId(), coreMsg.getCardTarget(),coreMsg.getBoardPosition())
     }
 
     fun getGameRequestData(): GameRequestData {

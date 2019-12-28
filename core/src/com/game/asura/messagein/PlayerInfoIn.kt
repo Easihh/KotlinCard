@@ -20,7 +20,7 @@ class PlayerInfoIn(playerName: String,
         addField(MessageField.PLAYER_MAX_MANA, playerMaxMana)
     }
 
-    fun addField(field: MessageField, value: Any?) {
+    private fun addField(field: MessageField, value: Any?) {
         if (value == null) {
             println("Null Value on field:${field.name} disregarding it.")
             return

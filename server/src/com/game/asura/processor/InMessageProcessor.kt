@@ -71,7 +71,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     return
                 }
                 //validation is finish, can now play card so send back message to all player
-                val cardPlayed = CardPlayedOut(account.getChannelWriter(), accountName, cardInHand, message.cardTarget)
+                val cardPlayed = CardPlayedOut(account.getChannelWriter(), accountName, cardInHand, message.cardTarget,message.boardPosition)
                 messageQueue.addMessage(cardPlayed)
 
                 player.playCard(cardInHand)

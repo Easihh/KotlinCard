@@ -4,6 +4,7 @@ import com.game.asura.DecodedMessage
 
 data class CardPlayedIn(val accountKey: String,
                         val cardPrimaryId: Int,
-                        val cardSecondaryId:Int,
+                        val cardSecondaryId: Int,
                         val matchId: Int,
-                        val cardTarget:Int?) : DecodedMessage
+                        val cardTarget: Int?,
+                        val boardPosition: Int?) : DecodedMessage

@@ -26,7 +26,8 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val cardId = cardPlayedData.cardPrimaryId ?: return
                 val secCardId = cardPlayedData.cardSecondaryId ?: return
                 val matchId = cardPlayedData.matchId ?: return
-                decodedMessage = CardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId, matchId, cardPlayedData.cardTarget)
+                decodedMessage = CardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId, matchId,
+                        cardPlayedData.cardTarget, cardPlayedData.boardIndex)
             }
             else -> {
                 println("Message of type $msgType has no decode logic.")

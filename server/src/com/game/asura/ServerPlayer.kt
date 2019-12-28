@@ -5,6 +5,7 @@ import java.util.*
 class ServerPlayer(playerName: String) : Player(playerName) {
 
     private val deck: Stack<Card> = Stack()
+    val boardManager = BoardManager<Card>(create = { INVALID_SERVER_CARD })
 
     fun draw(): Card? {
         if (deck.isNotEmpty()) {
@@ -21,13 +22,13 @@ class ServerPlayer(playerName: String) : Player(playerName) {
 
     fun initializeDeck() {
         deck.clear()
-        deck.push(PlayableCard(AllCard.FIRST_MONSTER.id, cardCost = AllCard.FIRST_MONSTER.cost,
+        deck.push(ServerCard(AllCard.FIRST_MONSTER.id, cardCost = AllCard.FIRST_MONSTER.cost,
                 cardType = AllCard.FIRST_MONSTER.cardType))
-        deck.push(PlayableCard(AllCard.FIRST_MONSTER.id, cardCost = AllCard.FIRST_MONSTER.cost,
+        deck.push(ServerCard(AllCard.FIRST_MONSTER.id, cardCost = AllCard.FIRST_MONSTER.cost,
                 cardType = AllCard.FIRST_MONSTER.cardType))
-        //deck.push(PlayableCard(AllCard.FIRST_SPELL.id, cardCost = AllCard.FIRST_SPELL.cost,
+        //deck.push(ServerCard(AllCard.FIRST_SPELL.id, cardCost = AllCard.FIRST_SPELL.cost,
         //      cardType = AllCard.FIRST_SPELL.cardType))
-        deck.push(PlayableCard(AllCard.FIRST_TARGET_SPELL.id, cardCost = AllCard.FIRST_TARGET_SPELL.cost,
+        deck.push(ServerCard(AllCard.FIRST_TARGET_SPELL.id, cardCost = AllCard.FIRST_TARGET_SPELL.cost,
                 cardType = AllCard.FIRST_TARGET_SPELL.cardType))
     }
 

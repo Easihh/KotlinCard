@@ -4,22 +4,29 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import kotlin.random.Random
 
-
+val INVALID_CLIENT_CARD = ClientCard(-1, -1, 99, CardType.INVALID)
 class ClientCard(private val primaryId: Int,
                  private val secondaryId: Int = Random.nextInt(),
                  private var cardCost: Int,
                  private val cardType: CardType) : DrawableCard {
 
-
     private var cardImg: Image
+    private var texture: Texture
 
     init {
-        val texture = Texture("core/assets/card.png")
+        val picture = if (cardType == CardType.MONSTER) {
+            "monsterCard.png"
+        } else "card.png"
+        texture = Texture("core/assets/$picture")
         cardImg = Image(texture)
     }
 
     override fun getImage(): Image {
         return cardImg
+    }
+
+    override fun getTexture(): Texture {
+        return texture
     }
 
     override fun getCost(): Int {

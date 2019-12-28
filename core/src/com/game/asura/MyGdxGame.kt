@@ -160,16 +160,30 @@ class MyGdxGame : ApplicationAdapter() {
         camera.update()
         //batch.projectionMatrix = camera.combined
         shaper.projectionMatrix = camera.combined
-        uiManager.render(batch, font, shaper)
 
-        shaper.begin(ShapeRenderer.ShapeType.Line)
-
+        //Board border for all position
         var initialboardX = INITIAL_BOARD_X
-        shaper.color = (Color.DARK_GRAY)
+        shaper.begin(ShapeRenderer.ShapeType.Line)
+        shaper.color = (Color.RED)
         for (x in 0..6) {
             shaper.rect(initialboardX, 250f, 128f, 192f)
             initialboardX += 128f
         }
+        shaper.end()
+        //draw actual board
+        initialboardX = INITIAL_BOARD_X
+        batch.begin()
+        for (card in playerAccount.player.boardManager.getPlayerBoard()) {
+            if (card.getCardType() != CardType.INVALID) {
+                batch.draw(card.getTexture(), initialboardX, 250f, 128f, 192f)
+            }
+            initialboardX += 128f
+        }
+        batch.end()
+        uiManager.render(batch, font, shaper)
+
+        shaper.begin(ShapeRenderer.ShapeType.Line)
+
         shaper.color = (Color.RED)
         //Visible GameView
         shaper.rect(0f, 0f, stage.width, stage.height)

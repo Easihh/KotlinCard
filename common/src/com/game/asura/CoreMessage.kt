@@ -82,6 +82,11 @@ class CoreMessage {
         return CardType.getCardType(typeVal.value as Byte)
     }
 
+    fun getBoardPosition(): Int? {
+        val typeVal = fieldMap[MessageField.BOARD_POSITION] ?: return null
+        return typeVal.value as Int
+    }
+
     fun clear() {
         fieldMap.clear()
     }

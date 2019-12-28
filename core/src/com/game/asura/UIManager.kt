@@ -1,5 +1,6 @@
 package com.game.asura
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -56,33 +57,32 @@ class UIManager(private val stage: Stage,
         stage.addActor(heroPower)
     }
 
-    fun getClosestEmptyBoardPosition(mouseX: Float, mouseY: Float): BoardPosition? {
+    fun getClosestEmptyBoardIndex(mouseX: Float, mouseY: Float): Int? {
+        val boardManager = playerAccount.player.boardManager
         val player = playerAccount.player
-        if (player.boardIsEmpty()) {
-            val midPositionIndex = (MAX_BOARD_SIZE / 2)
-            return getBoardPosition(midPositionIndex)
+        if (boardManager.boardIsEmpty()) {
+            return (MAX_BOARD_SIZE / 2)
         }
         //determine whether the click was left or right of screen
         if (mouseX > WINDOW_WIDTH / 2) {
             //right of screen, move to the right-most spot of any non-occupied board if possible
-            val indx = player.getRightMostCardOnBoard() + 1
+            val indx = boardManager.getRightMostCardOnBoard() + 1
             if (indx >= MAX_BOARD_SIZE) {
                 println("Cannot place card,right board is full")
                 return null
             }
-            return getBoardPosition(indx)
+            return indx
         }
-        val indx = player.getLeftMostCardOnBoard() - 1
+        val indx = boardManager.getLeftMostCardOnBoard() - 1
         if (indx < 0) {
             println("Cannot place card,left board is full")
             return null
         }
-        return getBoardPosition(indx)
+        return indx
     }
 
-    private fun getBoardPosition(indx: Int): BoardPosition {
-        val pos = Position(INITIAL_BOARD_X + (CARD_WIDTH * indx), INITIAL_BOARD_Y)
-        return BoardPosition(pos, indx)
+    private fun getBoardPosition(boardIndex: Int): Position {
+        return Position(INITIAL_BOARD_X + (CARD_WIDTH * boardIndex), INITIAL_BOARD_Y)
     }
 
     fun addCardToHand(card: DrawableCard) {
@@ -99,13 +99,16 @@ class UIManager(private val stage: Stage,
                 cardImg.removeListener(this)
                 var cardPlayedOut: CardPlayedOut? = null
                 val cardType = card.getCardType()
+                println("Playing Card of type:$cardType")
                 if (cardType == CardType.MONSTER) {
-                    val pos = getClosestEmptyBoardPosition(event.stageX, event.stageY)
-                    if (pos != null) {
-                        playerAccount.player.updatePlayerBoard(card, pos)
-                        cardImg.setPosition(pos.position.xPosition, pos.position.yPosition)
+                    //rethink use of bord position here;useless
+                    val indx = getClosestEmptyBoardIndex(event.stageX, event.stageY)
+                    if (indx != null) {
+                        playerAccount.player.boardManager.updatePlayerBoard(card, indx)
+                        val pos = getBoardPosition(indx)
+                        cardImg.setPosition(pos.xPosition, pos.yPosition)
                         val currentMatch = playerAccount.getCurrentMatch() ?: return
-                        cardPlayedOut = CardPlayedOut(card, pos, currentMatch.matchId)
+                        cardPlayedOut = CardPlayedOut(card, indx, currentMatch.matchId)
                     }
                 }
                 if (cardType == CardType.SPELL) {
@@ -149,6 +152,7 @@ class UIManager(private val stage: Stage,
 
         font.draw(batch, "PLAY", 200f, 510f)
         font.draw(batch, "CONNECT", 385f, 535f)
+        font.draw(batch, "FPS: ${Gdx.graphics.framesPerSecond}", 50f, 750f)
         font.draw(batch, "Player: ${playerAccount.player.getPlayerName()}", 50f, 725f)
         font.draw(batch, "HP: ${playerAccount.player.getCurrentPlayerLife()}/${playerAccount.player.getPlayerMaxLife()}", 50f, 700f)
         font.draw(batch, "Mana: ${playerAccount.player.getPlayerMana()}/${playerAccount.player.getPlayerMaxMana()}", 50f, 675f)
@@ -158,7 +162,7 @@ class UIManager(private val stage: Stage,
 
         if (playerAccount.player.heroPower.isActive()) {
             batch.begin()
-            batch.draw(targetCircle, mouseX-32f, mouseY-32f)
+            batch.draw(targetCircle, mouseX - 32f, mouseY - 32f)
             batch.end()
             shaper.begin(ShapeRenderer.ShapeType.Line)
             shaper.color = Color.RED

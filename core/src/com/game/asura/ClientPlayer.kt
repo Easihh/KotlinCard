@@ -3,6 +3,7 @@ package com.game.asura
 class ClientPlayer(playerName: String, val heroPower: HeroPower) : Player(playerName) {
 
     private val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
+    val boardManager = BoardManager<DrawableCard>(create = { INVALID_CLIENT_CARD })
 
     //Server dont need below
     init {

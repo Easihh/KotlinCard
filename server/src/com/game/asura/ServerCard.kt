@@ -2,10 +2,12 @@ package com.game.asura
 
 import kotlin.random.Random
 
-class PlayableCard(private val primaryId: Int,
-                   private val secondaryId: Int = Random.nextInt(),
-                   private var cardCost: Int,
-                   private val cardType: CardType) : Card {
+val INVALID_SERVER_CARD = ServerCard(-1, -1, 99, CardType.INVALID)
+
+class ServerCard(private val primaryId: Int,
+                 private val secondaryId: Int = Random.nextInt(),
+                 private var cardCost: Int,
+                 private val cardType: CardType) : Card {
     private val effects: MutableList<CardEffect> = ArrayList()
 
     init {
