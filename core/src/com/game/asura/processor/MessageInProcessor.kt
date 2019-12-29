@@ -33,14 +33,20 @@ class MessageInProcessor(private val playerAccount: PlayerAccount,
                 val card = playerAccount.player.getCardFromHand(message.secondaryId) ?: return
                 println("Removing card to player hand.")
                 playerAccount.player.removeFromHand(card)
-                uiManager.removeCardfromHand(card as DrawableCard)
                 //if it was a monster put it in play
-                if (card.getCardType() == CardType.MONSTER) {
-                    if (message.boardIndex == null) {
-                        println("Error, card is of type:${card.getCardType()} but no board index present.")
-                        return
+                when (card.getCardType()) {
+                    CardType.MONSTER -> {
+                        if (message.boardIndex == null) {
+                            println("Error, card is of type:${card.getCardType()} but no board index present.")
+                            return
+                        }
+                        val myCard = card as DrawableCard
+                        playerAccount.player.boardManager.updatePlayerBoard(myCard, message.boardIndex)
+                        uiManager.moveCardToBoard(myCard, message.boardIndex)
                     }
-                    playerAccount.player.boardManager.updatePlayerBoard(card, message.boardIndex)
+                    else -> {
+                        uiManager.removeCardfromHand(card as DrawableCard)
+                    }
                 }
             }
             else -> {

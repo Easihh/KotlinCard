@@ -1,5 +1,5 @@
 ## Java
-core/out/*
+**/core/out/**
 out/*
 */out/*
 *.class

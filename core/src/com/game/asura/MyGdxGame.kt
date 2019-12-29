@@ -58,9 +58,10 @@ class MyGdxGame : ApplicationAdapter() {
         stage.addListener(object : InputListener() {
             /** Called when a key goes down. When true is returned, the event is [handled][Event.handle].  */
             override fun keyDown(event: InputEvent, keycode: Int): Boolean {
-                println("Exiting the appliation.")
+                println("Exiting the application.")
                 if (keycode == Input.Keys.ESCAPE) {
                     Gdx.app.exit()
+                    return false
                 }
                 return false
             }
@@ -158,40 +159,21 @@ class MyGdxGame : ApplicationAdapter() {
             messageProcessor.onMessage(message)
         }
         camera.update()
-        //batch.projectionMatrix = camera.combined
         shaper.projectionMatrix = camera.combined
 
-        //Board border for all position
-        var initialboardX = INITIAL_BOARD_X
+        //background
         shaper.begin(ShapeRenderer.ShapeType.Line)
-        shaper.color = (Color.RED)
-        for (x in 0..6) {
-            shaper.rect(initialboardX, 250f, 128f, 192f)
-            initialboardX += 128f
-        }
-        shaper.end()
-        //draw actual board
-        initialboardX = INITIAL_BOARD_X
-        batch.begin()
-        for (card in playerAccount.player.boardManager.getPlayerBoard()) {
-            if (card.getCardType() != CardType.INVALID) {
-                batch.draw(card.getTexture(), initialboardX, 250f, 128f, 192f)
-            }
-            initialboardX += 128f
-        }
-        batch.end()
-        uiManager.render(batch, font, shaper)
-
-        shaper.begin(ShapeRenderer.ShapeType.Line)
-
         shaper.color = (Color.RED)
         //Visible GameView
         shaper.rect(0f, 0f, stage.width, stage.height)
-
         shaper.end()
 
         stage.act()
         stage.draw()
+
+        //foreground
+        uiManager.render(batch, font, shaper)
+
     }
 
     override fun resize(width: Int, height: Int) {
