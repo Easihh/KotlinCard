@@ -2,6 +2,7 @@ package com.game.asura
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Graphics
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
@@ -15,11 +16,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.game.asura.messageout.PlayGameRequestOut
 import com.game.asura.processor.MessageInProcessor
 import com.game.asura.processor.MessageOutProcessor
 import com.game.asura.processor.MessageProcessor
+import java.util.stream.Collectors
 
 
 class MyGdxGame : ApplicationAdapter() {
@@ -27,6 +31,8 @@ class MyGdxGame : ApplicationAdapter() {
     private lateinit var shaper: ShapeRenderer
     private lateinit var stage: Stage
     private lateinit var camera: OrthographicCamera
+    private lateinit var nativeDisplay: Graphics.DisplayMode
+    private lateinit var viewport: FitViewport
     private lateinit var font: BitmapFont
 
     private val messageQueue = MessageQueue()
@@ -41,6 +47,8 @@ class MyGdxGame : ApplicationAdapter() {
         batch = SpriteBatch()
         shaper = ShapeRenderer()
         setupStage()
+        setupGraphicOptions()
+        setupDisplayMode()
         setupFont()
         setupPlayer()
         uiManager = UIManager(stage, playerAccount, messageQueue)
@@ -52,9 +60,11 @@ class MyGdxGame : ApplicationAdapter() {
     }
 
     private fun setupStage() {
-        camera = OrthographicCamera(WINDOW_WIDTH, WINDOW_HEIGHT)
-        val viewport = ScreenViewport(camera)
+        nativeDisplay = Gdx.graphics.displayMode
+        camera = OrthographicCamera()
+        viewport = FitViewport(1024f, 768f, camera)
         stage = Stage(viewport)
+        println("Current DisplayMode:${Gdx.graphics.displayMode}")
         stage.addListener(object : InputListener() {
             /** Called when a key goes down. When true is returned, the event is [handled][Event.handle].  */
             override fun keyDown(event: InputEvent, keycode: Int): Boolean {
@@ -79,10 +89,41 @@ class MyGdxGame : ApplicationAdapter() {
         messageProcessor = MessageProcessor(messageInProcessor, messageOutProcessor)
     }
 
+    private fun setupDisplayMode() {
+        if (Gdx.graphics.isFullscreen) {
+            println("Setting FullScreenMode to:$nativeDisplay")
+            Gdx.graphics.setFullscreenMode(nativeDisplay)
+        }
+    }
+
+    private fun setupGraphicOptions() {
+        val skin = Skin(Gdx.files.internal("core/assets/uiskin.json"))
+        val graphicOptions: SelectBox<Graphics.DisplayMode> = SelectBox(skin)
+        graphicOptions.setPosition(550f, 500f)
+        graphicOptions.setSize(200f, 25f)
+        val changeListener = object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                val displayMode = graphicOptions.selected
+                resize(displayMode.width, displayMode.height)
+            }
+
+        }
+        graphicOptions.addListener(changeListener)
+        var displayModeStr: MutableList<Graphics.DisplayMode> = ArrayList()
+        Gdx.graphics.displayModes.forEach { displayModeStr.add(it) }
+        displayModeStr = displayModeStr.stream().filter { it.height >= 768 && it.width >= 1024 }.collect(Collectors.toList())
+        val array: Array<Graphics.DisplayMode> = Array()
+        displayModeStr.forEach { array.add(it) }
+        graphicOptions.items = array
+        stage.addActor(graphicOptions)
+
+    }
+
     private fun setupPlayButton() {
         val playButton = Texture("core/assets/playBtn.png")
         val playBtn = Image(playButton)
         playBtn.setPosition(100f, 450f)
+        playBtn.setScale(1.0f, 1.0f)
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 println("Requesting PlayGame.")
@@ -158,12 +199,14 @@ class MyGdxGame : ApplicationAdapter() {
             val message = messageQueue.nextMessage()
             messageProcessor.onMessage(message)
         }
+
         camera.update()
+
         shaper.projectionMatrix = camera.combined
 
         //background
         shaper.begin(ShapeRenderer.ShapeType.Line)
-        shaper.color = (Color.RED)
+        shaper.color = (Color.BLUE)
         //Visible GameView
         shaper.rect(0f, 0f, stage.width, stage.height)
         shaper.end()
@@ -177,21 +220,21 @@ class MyGdxGame : ApplicationAdapter() {
     }
 
     override fun resize(width: Int, height: Int) {
-        println("Resizing:Height=$height width=$width")
+        println("Resizing:Height=$height width=$width graphicW:${nativeDisplay.width} graphicH:${nativeDisplay.height}")
+        val scaled = viewport.scaling.apply(1024f, 768f, width.toFloat(), height.toFloat())
+        val viewportWidth = Math.round(scaled.x)
+        val viewportHeight = Math.round(scaled.y)
 
-        //camera = OrthographicCamera(width.toFloat(), height.toFloat())
-        //camera.setToOrtho(false)
-        //stage.viewport.camera = camera
-        //stage.viewport.setWorldSize(width.toFloat(), height.toFloat())
-
-        //so that thing are drawn at center of drawable area (not within black border)
-        val xDif = width - WINDOW_WIDTH.toInt()
-        //camera.translate(-1 * xDif.toFloat() / 2, 0f)
+        val cropX = (width - viewportWidth) / 2f
+        val cropY = (height - viewportHeight) / 2f
+        println("CropX:$cropX cropY:$cropY")
+        viewport.setScreenBounds(cropX.toInt(), cropY.toInt(),
+                nativeDisplay.width - cropX.toInt(), nativeDisplay.height)
+        viewport.apply(true)
     }
 
     override fun dispose() {
         batch.dispose()
-        //img.dispose()
     }
 
 }

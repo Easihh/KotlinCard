@@ -10,9 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.*
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener
 import com.game.asura.messageout.CardPlayedOut
 
@@ -53,12 +51,19 @@ class UIManager(private val stage: Stage,
     }
 
     private fun setupClickListener() {
+        val heroPower = playerAccount.player.heroPower.getImage()
         stage.addListener(object : InputListener() {
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                if (event == null){
+                    return false
+                }
                 if (button == Input.Buttons.LEFT) {
                     if (playerAccount.player.heroPower.isActive()) {
+                        val actor = stage.hit(event.stageX, event.stageY, true)
+                        if (actor is CardActor) {
+                            println("Do action on :${actor.secondaryId}")
+                        }
                         //check if valid target before doing action
-                        println("Do Action on target here.")
                         return false
                     }
                 }
@@ -66,8 +71,9 @@ class UIManager(private val stage: Stage,
                     if (playerAccount.player.heroPower.isActive()) {
                         playerAccount.player.heroPower.deactivate()
                         //reset to normal cursor here
-                        //arrowImg.remove()
                         Gdx.graphics.setSystemCursor(systemCursor)
+                        //allow hero power to trigger listener again
+                        heroPower.touchable = Touchable.enabled
                         return false
                     }
                 }
@@ -92,11 +98,11 @@ class UIManager(private val stage: Stage,
                 playerAccount.player.heroPower.activate()
 
                 println("initialHeroPower clickX:$initialClickX,clickY:$initialClickY")
-                //add arrow img if hero power is targetabl
 
-                //maybe??
-                //arrowImg.touchable = Touchable.disabled
-                //stage.addActor(arrowImg)
+                //should only apply to targetable hero power..
+
+                //so that another click on hero power won't be triggered by stage hit until target action is canceled
+                heroPower.touchable = Touchable.disabled
                 return false
             }
         }
@@ -134,15 +140,15 @@ class UIManager(private val stage: Stage,
 
     fun moveCardToBoard(card: DrawableCard, boardIndex: Int) {
         //we don't want to keep the drag listener from hand to board
-        card.getImage().clearListeners()
+        card.getActor().clearListeners()
         val pos = getBoardPosition(boardIndex)
-        card.getImage().setPosition(pos.xPosition, pos.yPosition)
+        card.getActor().setPosition(pos.xPosition, pos.yPosition)
 
     }
 
     fun addCardToHand(card: DrawableCard) {
-        val cardImg = card.getImage()
-        cardImg.setScale(0.75f)
+        val cardImg = card.getActor()
+        cardImg.setScale(1.0f)
         val dragLisnr = object : DragListener() {
             override fun drag(event: InputEvent, x: Float, y: Float, pointer: Int) {
                 if (card.getCardType() != CardType.TARGET_SPELL) {
@@ -189,7 +195,7 @@ class UIManager(private val stage: Stage,
     }
 
     fun removeCardfromHand(card: DrawableCard) {
-        card.getImage().remove()
+        card.getActor().remove()
         updateCardPositionInHand()
     }
 
@@ -197,7 +203,7 @@ class UIManager(private val stage: Stage,
         var initialX = INITIAL_HAND_X
         for (card in playerAccount.player.getCardsInHand()) {
             val myCard = card as DrawableCard
-            myCard.getImage().setPosition(initialX, INITIAL_HAND_Y)
+            myCard.getActor().setPosition(initialX, INITIAL_HAND_Y)
             initialX += CARD_WIDTH
         }
     }
@@ -215,7 +221,7 @@ class UIManager(private val stage: Stage,
         font.draw(batch, "MouseY:$mouseY", 50f, 625f)
         batch.end()
 
-        renderBoard(batch, shaper)
+        renderDebugBoard(shaper)
         if (playerAccount.player.heroPower.isActive()) {
             val angle = 180.0 / Math.PI * Math.atan2(initialClickX.toDouble() - mouseX, mouseY.toDouble() - initialClickY)
             arrowImg.rotation = angle.toFloat()
@@ -235,7 +241,7 @@ class UIManager(private val stage: Stage,
         }
     }
 
-    private fun renderBoard(batch: SpriteBatch, shaper: ShapeRenderer) {
+    private fun renderDebugBoard(shaper: ShapeRenderer) {
         //Board border for all position
         var initialboardX = INITIAL_BOARD_X
         shaper.begin(ShapeRenderer.ShapeType.Line)
