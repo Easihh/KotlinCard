@@ -117,7 +117,7 @@ class UIManager(private val stage: Stage,
             return (MAX_BOARD_SIZE / 2)
         }
         //determine whether the click was left or right of screen
-        if (mouseX > WINDOW_WIDTH / 2) {
+        if (mouseX > VIRTUAL_WINDOW_WIDTH / 2f) {
             //right of screen, move to the right-most spot of any non-occupied board if possible
             val indx = boardManager.getRightMostCardOnBoard() + 1
             if (indx >= MAX_BOARD_SIZE) {

@@ -3,6 +3,7 @@ package com.game.asura
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Graphics
+import com.badlogic.gdx.Graphics.DisplayMode
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
@@ -31,7 +32,6 @@ class MyGdxGame : ApplicationAdapter() {
     private lateinit var shaper: ShapeRenderer
     private lateinit var stage: Stage
     private lateinit var camera: OrthographicCamera
-    private lateinit var nativeDisplay: Graphics.DisplayMode
     private lateinit var viewport: FitViewport
     private lateinit var font: BitmapFont
 
@@ -60,9 +60,8 @@ class MyGdxGame : ApplicationAdapter() {
     }
 
     private fun setupStage() {
-        nativeDisplay = Gdx.graphics.displayMode
         camera = OrthographicCamera()
-        viewport = FitViewport(1024f, 768f, camera)
+        viewport = FitViewport(VIRTUAL_WINDOW_WIDTH.toFloat(), VIRTUAL_WINDOW_HEIGHT.toFloat(), camera)
         stage = Stage(viewport)
         println("Current DisplayMode:${Gdx.graphics.displayMode}")
         stage.addListener(object : InputListener() {
@@ -91,16 +90,24 @@ class MyGdxGame : ApplicationAdapter() {
 
     private fun setupDisplayMode() {
         if (Gdx.graphics.isFullscreen) {
-            println("Setting FullScreenMode to:$nativeDisplay")
-            Gdx.graphics.setFullscreenMode(nativeDisplay)
+            println("Setting FullScreenMode to:${Gdx.graphics.displayMode}")
+            Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+        } else {
+            Gdx.graphics.setWindowedMode(VIRTUAL_WINDOW_WIDTH, VIRTUAL_WINDOW_HEIGHT)
         }
     }
 
     private fun setupGraphicOptions() {
         val skin = Skin(Gdx.files.internal("core/assets/uiskin.json"))
-        val graphicOptions: SelectBox<Graphics.DisplayMode> = SelectBox(skin)
+        val graphicOptions: SelectBox<DisplayMode> = SelectBox(skin)
         graphicOptions.setPosition(550f, 500f)
         graphicOptions.setSize(200f, 25f)
+        var displayModeStr: MutableList<DisplayMode> = ArrayList()
+        Gdx.graphics.displayModes.forEach { displayModeStr.add(it) }
+        displayModeStr = displayModeStr.stream().filter { it.height >= VIRTUAL_WINDOW_HEIGHT && it.width >= VIRTUAL_WINDOW_WIDTH }.collect(Collectors.toList())
+        val array: Array<DisplayMode> = Array()
+        displayModeStr.forEach { array.add(it) }
+        graphicOptions.items = array
         val changeListener = object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 val displayMode = graphicOptions.selected
@@ -109,12 +116,6 @@ class MyGdxGame : ApplicationAdapter() {
 
         }
         graphicOptions.addListener(changeListener)
-        var displayModeStr: MutableList<Graphics.DisplayMode> = ArrayList()
-        Gdx.graphics.displayModes.forEach { displayModeStr.add(it) }
-        displayModeStr = displayModeStr.stream().filter { it.height >= 768 && it.width >= 1024 }.collect(Collectors.toList())
-        val array: Array<Graphics.DisplayMode> = Array()
-        displayModeStr.forEach { array.add(it) }
-        graphicOptions.items = array
         stage.addActor(graphicOptions)
 
     }
@@ -142,7 +143,6 @@ class MyGdxGame : ApplicationAdapter() {
         connectBtn.setPosition(325f, 475f)
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                printDisplayInfo()
                 //val atlas = TextureAtlas("core/assets/uiskin.atlas")
                 val skin = Skin(Gdx.files.internal("core/assets/uiskin.json"))
                 //skin.addRegions( TextureAtlas(Gdx.files.internal("core/assets/uiskin.atlas")))
@@ -161,7 +161,7 @@ class MyGdxGame : ApplicationAdapter() {
                 connFailed.buttonTable.defaults().width(96f)
                 okBtn.addListener(lsnr)
                 connFailed.button(okBtn)
-                connFailed.setSize(WINDOW_WIDTH, 256f)
+                //connFailed.setSize(VIRTUAL_WINDOW_WIDTH.to, 256f)
                 connFailed.isMovable = false
                 connFailed.isModal = true
                 if (!server.connect()) {
@@ -181,15 +181,6 @@ class MyGdxGame : ApplicationAdapter() {
         font = generator.generateFont(parameter)
         generator.dispose()
     }
-
-
-    private fun printDisplayInfo() {
-        println("Width:" + Gdx.app.graphics.width)
-        println("Height:" + Gdx.app.graphics.height)
-        val currentDisplay = Gdx.graphics.displayMode
-        println("current DisplayMode:$currentDisplay")
-    }
-
 
     override fun render() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f)
@@ -220,8 +211,8 @@ class MyGdxGame : ApplicationAdapter() {
     }
 
     override fun resize(width: Int, height: Int) {
-        println("Resizing:Height=$height width=$width graphicW:${nativeDisplay.width} graphicH:${nativeDisplay.height}")
-        val scaled = viewport.scaling.apply(1024f, 768f, width.toFloat(), height.toFloat())
+        println("Resizing:Height=$height width=$width graphicW:${Gdx.graphics.width} graphicH:${Gdx.graphics.height}")
+        val scaled = viewport.scaling.apply(VIRTUAL_WINDOW_WIDTH.toFloat(), VIRTUAL_WINDOW_HEIGHT.toFloat(), width.toFloat(), height.toFloat())
         val viewportWidth = Math.round(scaled.x)
         val viewportHeight = Math.round(scaled.y)
 
@@ -229,7 +220,7 @@ class MyGdxGame : ApplicationAdapter() {
         val cropY = (height - viewportHeight) / 2f
         println("CropX:$cropX cropY:$cropY")
         viewport.setScreenBounds(cropX.toInt(), cropY.toInt(),
-                nativeDisplay.width - cropX.toInt(), nativeDisplay.height)
+                Gdx.graphics.width - cropX.toInt(), Gdx.graphics.height)
         viewport.apply(true)
     }
 

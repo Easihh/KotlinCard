@@ -6,8 +6,8 @@ const val MAX_BOARD_SIZE: Int = 7
 const val INITIAL_BOARD_X: Float = 100f
 const val INITIAL_BOARD_Y: Float = 250f
 //Playable Area
-const val WINDOW_WIDTH: Float = 800f
-const val WINDOW_HEIGHT: Float = 600f
+const val VIRTUAL_WINDOW_WIDTH: Int = 1024
+const val VIRTUAL_WINDOW_HEIGHT: Int = 768
 const val CARD_WIDTH = 128f
 const val CARD_HEIGHT = 256f
 //Player Hand Area
