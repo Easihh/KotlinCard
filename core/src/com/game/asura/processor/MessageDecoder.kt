@@ -45,6 +45,10 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val secondary = data.cardSecondaryId ?: return
                 decodedMessage = CardPlayedIn(primaryId, secondary, data.boardIndex)
             }
+            MessageType.HERO_POWER -> {
+                val data = getHeroPowerData()
+                decodedMessage = HeroPowerIn()
+            }
             else -> {
                 println("Message of type $msgType has no decode logic.")
             }

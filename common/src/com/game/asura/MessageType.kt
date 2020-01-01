@@ -10,7 +10,8 @@ enum class MessageType(val value: Byte) {
     CARD_DRAWN('d'.toByte()),
     MATCH_INFO('m'.toByte()),
     START_TURN('s'.toByte()),
-    END_TURN('e'.toByte());
+    END_TURN('e'.toByte()),
+    HERO_POWER('h'.toByte());
 
 
     companion object {

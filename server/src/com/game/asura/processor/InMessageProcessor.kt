@@ -5,11 +5,9 @@ import com.game.asura.account.CachedAccount
 import com.game.asura.account.PlayerAccount
 import com.game.asura.messagein.CardPlayedIn
 import com.game.asura.messagein.GameRequestIn
+import com.game.asura.messagein.HeroPowerIn
 import com.game.asura.messagein.LoginRequestIn
-import com.game.asura.messageout.CardDrawnOut
-import com.game.asura.messageout.CardPlayedOut
-import com.game.asura.messageout.MatchInfoOut
-import com.game.asura.messageout.PlayerInfoOut
+import com.game.asura.messageout.*
 
 class InMessageProcessor(private val messageQueue: InsertableQueue,
                          private val accountCache: CachedAccount,
@@ -71,7 +69,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     return
                 }
                 //validation is finish, can now play card so send back message to all player
-                val cardPlayed = CardPlayedOut(account.getChannelWriter(), accountName, cardInHand, message.cardTarget,message.boardPosition)
+                val cardPlayed = CardPlayedOut(account.getChannelWriter(), accountName, cardInHand, message.cardTarget, message.boardPosition)
                 messageQueue.addMessage(cardPlayed)
 
                 player.playCard(cardInHand)
@@ -104,6 +102,25 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     }
                 }
                 println("Handle card played on server here.")
+            }
+            is HeroPowerIn -> {
+                val match = matchFinder.findMatch(message.matchId)
+                if (match == null) {
+                    println("Unable to find match with id:${message.matchId}.")
+                    return
+                }
+                val account = accountCache.getAccount(message.accountKey)
+                val accountName = account?.getAccountName()
+                if (accountName == null) {
+                    println("Unable to find accountName in cache with key:${message.accountKey}.")
+                    return
+                }
+                println("Handle Hero Power played on server here.")
+
+                //send back to concerned players
+                val heroPowerOut = HeroPowerOut(channelWriter = account.getChannelWriter(), accountName = accountName, target = message.target)
+                messageQueue.addMessage(heroPowerOut)
+                //should also send update for mana usage for example
             }
         }
     }

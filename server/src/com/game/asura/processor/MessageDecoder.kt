@@ -4,6 +4,7 @@ import com.game.asura.*
 import com.game.asura.account.Account
 import com.game.asura.messagein.CardPlayedIn
 import com.game.asura.messagein.GameRequestIn
+import com.game.asura.messagein.HeroPowerIn
 import com.game.asura.messagein.LoginRequestIn
 
 class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
@@ -28,6 +29,12 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val matchId = cardPlayedData.matchId ?: return
                 decodedMessage = CardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId, matchId,
                         cardPlayedData.cardTarget, cardPlayedData.boardIndex)
+            }
+            MessageType.HERO_POWER -> {
+                val heroPowerdata = getHeroPowerData()
+                val matchId = heroPowerdata.matchId ?: return
+                decodedMessage = HeroPowerIn(playerAccount.getAccountKey(), matchId, heroPowerdata.target)
+
             }
             else -> {
                 println("Message of type $msgType has no decode logic.")

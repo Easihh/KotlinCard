@@ -47,7 +47,12 @@ class BoardManager<T : Card>(create: () -> T) {
         playerBoard[boardIndex] = card
     }
 
-    fun getPlayerBoard(): MutableList<T> {
-        return playerBoard
+    fun getBoardIndexBySecondaryId(secondaryCardId: Int): Int? {
+        for (i in 0..6) {
+            if (playerBoard[i].getSecondayId() == secondaryCardId) {
+                return i
+            }
+        }
+        return null
     }
 }

@@ -37,8 +37,7 @@ class MyGdxGame : ApplicationAdapter() {
 
     private val messageQueue = MessageQueue()
     private val server = ServerBosom(messageQueue)
-
-    private lateinit var playerAccount: PlayerAccount
+    private lateinit var player: ClientPlayer
     private lateinit var messageProcessor: MessageProcessor
     private lateinit var uiManager: UIManager
 
@@ -50,8 +49,8 @@ class MyGdxGame : ApplicationAdapter() {
         setupGraphicOptions()
         setupDisplayMode()
         setupFont()
-        setupPlayer()
-        uiManager = UIManager(stage, playerAccount, messageQueue)
+        player = ClientPlayer("test", MagePower())
+        uiManager = UIManager(stage, messageQueue, player)
         setupMessageProcessors()
         setupConnectButton()
         setupPlayButton()
@@ -77,13 +76,8 @@ class MyGdxGame : ApplicationAdapter() {
         })
     }
 
-    private fun setupPlayer() {
-        val player = ClientPlayer("test", MagePower())
-        playerAccount = PlayerAccount(player)
-    }
-
     private fun setupMessageProcessors() {
-        val messageInProcessor = MessageInProcessor(playerAccount, uiManager)
+        val messageInProcessor = MessageInProcessor(player, uiManager)
         val messageOutProcessor = MessageOutProcessor(server::sendMessage)
         messageProcessor = MessageProcessor(messageInProcessor, messageOutProcessor)
     }

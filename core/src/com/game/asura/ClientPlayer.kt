@@ -4,8 +4,19 @@ class ClientPlayer(playerName: String, val heroPower: HeroPower) : Player(player
 
     private val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
     val boardManager = BoardManager<DrawableCard>(create = { INVALID_CLIENT_CARD })
+    private var currentMatch: Match<ClientPlayer>? = null
 
-    //Server dont need below
+    fun setMatch(match: Match<ClientPlayer>) {
+        currentMatch = match
+    }
+
+    fun getCurrentMatchId(): Int? {
+        currentMatch?.let {
+            return it.matchId
+        }
+        return null
+    }
+
     init {
         updateFncMap[MessageField.PLAYER_CURRENT_HEALTH] = { playerLife = it.value as Int }
         updateFncMap[MessageField.PLAYER_MAX_HEALTH] = { maxPlayerLife = it.value as Int }
