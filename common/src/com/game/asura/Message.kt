@@ -1,4 +1,3 @@
 package com.game.asura
 
-interface Message {
-}
+interface Message

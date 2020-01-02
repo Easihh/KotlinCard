@@ -51,10 +51,4 @@ abstract class Player(private val playerName: String) {
     fun removeFromHand(card: Card) {
         cardsInHand.remove(card)
     }
-
-
-
-
-
-
 }

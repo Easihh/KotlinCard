@@ -1,10 +1,7 @@
 package com.game.asura.processor
 
 import com.game.asura.*
-import com.game.asura.messagein.CardDrawnIn
-import com.game.asura.messagein.CardPlayedIn
-import com.game.asura.messagein.MatchInfoIn
-import com.game.asura.messagein.PlayerInfoIn
+import com.game.asura.messagein.*
 
 class MessageInProcessor(private val player: ClientPlayer,
                          private val uiManager: UIManager) {
@@ -47,6 +44,13 @@ class MessageInProcessor(private val player: ClientPlayer,
                     else -> {
                         uiManager.removeCardfromHand(card as DrawableCard)
                     }
+                }
+            }
+            is HeroPowerIn -> {
+                val target = player.boardManager.getCardByBoardIndex(message.target)
+                if (target.getCardType() == CardType.INVALID) {
+                    println("Board contains no target with index:${message.target}")
+                    return
                 }
             }
             else -> {

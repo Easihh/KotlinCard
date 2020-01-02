@@ -47,7 +47,8 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
             }
             MessageType.HERO_POWER -> {
                 val data = getHeroPowerData()
-                decodedMessage = HeroPowerIn()
+                val target = data.target ?: return
+                decodedMessage = HeroPowerIn(target)
             }
             else -> {
                 println("Message of type $msgType has no decode logic.")

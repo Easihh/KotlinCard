@@ -1,8 +1,5 @@
 package com.game.asura
 
-//to instantiate the generic array
-//inline fun <reified T> BoardManager() = BoardManager(arrayOfNulls(MAX_BOARD_SIZE))
-//@PublishedApi internal constructor(private val playerBoard: Array<T?>)
 class BoardManager<T : Card>(create: () -> T) {
 
     private val playerBoard: MutableList<T> = ArrayList()
@@ -54,5 +51,9 @@ class BoardManager<T : Card>(create: () -> T) {
             }
         }
         return null
+    }
+
+    fun getCardByBoardIndex(boardIndex: Int): T {
+        return playerBoard[boardIndex]
     }
 }
