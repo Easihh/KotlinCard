@@ -22,14 +22,14 @@ class MessageInProcessor(private val player: ClientPlayer,
                 val card = ClientCard(primaryId = message.primaryId, secondaryId = message.secondaryId,
                         cardCost = message.cardCost, cardType = message.cardType)
                 println("Adding card to player hand.")
-                player.addToPlayerHand(card)
+                player.handManager.addToPlayerHand(card)
                 uiManager.addCardToHand(card)
             }
             is CardPlayedIn -> {
                 //only assume 1 player for now
-                val card = player.getCardFromHand(message.secondaryId) ?: return
+                val card = player.handManager.getCardFromHand(message.secondaryId) ?: return
                 println("Removing card to player hand.")
-                player.removeFromHand(card)
+                player.handManager.removeFromHand(card)
                 //if it was a monster put it in play
                 when (card.getCardType()) {
                     CardType.MONSTER -> {

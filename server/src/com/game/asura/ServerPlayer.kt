@@ -10,7 +10,7 @@ class ServerPlayer(playerName: String) : Player(playerName) {
     fun draw(): Card? {
         if (deck.isNotEmpty()) {
             val card = deck.pop()
-            addToPlayerHand(card)
+            handManager.addToPlayerHand(card)
             return card
         }
         return null
@@ -42,7 +42,7 @@ class ServerPlayer(playerName: String) : Player(playerName) {
     }
 
     fun playCard(card: Card) {
-        removeFromHand(card)
+        handManager.removeFromHand(card)
         currentPlayerMana -= card.getCost()
     }
 }

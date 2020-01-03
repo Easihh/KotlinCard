@@ -63,7 +63,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     println("Unable to find player in match:${match.matchId} with key:$accountName.")
                     return
                 }
-                val cardInHand = player.getCardFromHand(message.cardSecondaryId)
+                val cardInHand = player.handManager.getCardFromHand(message.cardSecondaryId)
                 if (cardInHand == null) {
                     println("Unable to find card with secondaryId:${message.cardSecondaryId} in player:$accountName hand.")
                     return

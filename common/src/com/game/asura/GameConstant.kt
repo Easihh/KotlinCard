@@ -13,3 +13,4 @@ const val CARD_HEIGHT = 192f
 //Player Hand Area
 const val INITIAL_HAND_X: Float = 100f
 const val INITIAL_HAND_Y: Float = -96f
+const val INVALID_INDEX_: Int = -1

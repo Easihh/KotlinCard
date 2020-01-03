@@ -26,6 +26,7 @@ class UIManager(private val stage: Stage,
     private var initialClickX: Float = 0f
     private var initialClickY: Float = 0f
     private val cardTargeted = Texture("core/assets/cardTargeted.png")
+    private val cardSelected = Texture("core/assets/cardSelected.png")
     private val arrowPointer = Texture("core/assets/arrow.png")
     private val arrowImg = Sprite(arrowPointer)
     private val targetCircle = Sprite(Texture("core/assets/target.png"))
@@ -33,7 +34,8 @@ class UIManager(private val stage: Stage,
     private val invisibleCursor = Pixmap(Gdx.files.internal("core/assets/invisibleCursor.png"))
     private val cursor = Gdx.graphics.newCursor(invisibleCursor, 0, 0)
     private val healthHeroImg = Texture("core/assets/health.png")
-    private var sourceTargetCard: DrawableCard? = null
+    private var selectedCard: DrawableCard? = null
+    private var cardIsSelected: Boolean = false
 
     init {
         cursor.dispose()
@@ -47,8 +49,13 @@ class UIManager(private val stage: Stage,
                 mouseX = event.stageX
                 mouseY = event.stageY
 
+                selectedCard?.let {
+                    if (it.getCardType() != CardType.TARGET_SPELL) {
+                        it.getActor().setPosition(mouseX - (CARD_WIDTH / 2), mouseY - (CARD_HEIGHT / 2))
+                    }
+                }
                 arrowImg.setPosition(mouseX + 16f, mouseY - 16f)
-                return false
+                return true
             }
         }
         stage.addListener(mouseMovedLstr)
@@ -63,40 +70,39 @@ class UIManager(private val stage: Stage,
 
     private fun setupClickListener() {
         stage.addListener(object : InputListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                if (event == null) {
-                    return false
-                }
+            override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 val matchId = player.getCurrentMatchId()
                 if (matchId == null) {
                     println("Error, current match is null.")
-                    return false
+                    return true
                 }
                 if (button == Input.Buttons.LEFT) {
-                    sourceTargetCard?.let {
-                        playTargetSpell(it, Position(event.stageX, event.stageY), matchId)
+                    selectedCard?.let {
+                        playedCard(it, Position(event.stageX, event.stageY))
                     }
-                    return false
+                    return true
                 }
                 if (button == Input.Buttons.RIGHT) {
                     println("Right Clicked.")
-                    if (sourceTargetCard != null) {
-                        println("clearing target action for card:$sourceTargetCard")
+                    selectedCard?.let {
+                        println("clearing target action for card:$selectedCard")
                         clearTargetingAction()
-                        return false
                     }
+                    //move card back to hand
+                    updateCardPositionInHand()
+                    return true
                 }
-                return false
+                return true
             }
         })
     }
 
     private fun clearTargetingAction() {
-        //allow hero power/card to trigger listener again
-        sourceTargetCard?.let {
+        //allow hero power/card to trigger listener again via stage.hit
+        selectedCard?.let {
             it.getActor().touchable = Touchable.enabled
         }
-        sourceTargetCard = null
+        selectedCard = null
         //reset to normal cursor here
         Gdx.graphics.setSystemCursor(systemCursor)
     }
@@ -115,7 +121,7 @@ class UIManager(private val stage: Stage,
 
                 initialClickX = event.stageX
                 initialClickY = event.stageY
-                sourceTargetCard = player.heroPower
+                selectedCard = player.heroPower
 
                 //so that another click on hero power won't be triggered by stage hit until target action is canceled
                 heroPower.touchable = Touchable.disabled
@@ -164,9 +170,9 @@ class UIManager(private val stage: Stage,
         val cardImg = card.getActor()
         cardImg.setScale(0.75f)
         val lsnr = if (card.getCardType() == CardType.TARGET_SPELL) {
-            NonDraggableCardListener(card, initTargetSpellFnc = ::initTargetSpell)
+            TargetableCardListener(card, initTargetSpellFnc = ::initTargetSpell)
         } else {
-            DraggableCardListener(card, playCardFnc = ::playedCard)
+            DraggableCardListener(card, initSelectCardFnc = ::initCardSelect, playCardFnc = ::playedCard)
         }
         updateCardPositionInHand()
         cardImg.addListener(lsnr)
@@ -185,25 +191,23 @@ class UIManager(private val stage: Stage,
         return cardPlayedOut
     }
 
-    private fun playTargetSpell(card: DrawableCard, position: Position, matchId: Int) {
+    private fun playTargetSpell(card: DrawableCard, position: Position, matchId: Int): Message? {
+        var cardPlayedOut: Message? = null
         //the target; don't want to trigger on non card actor.
         val actor = stage.hit(position.xPosition, position.yPosition, true)
         if (actor is CardActor) {
             when (card) {
                 is HeroPower -> {
-                    val heroPowerOut = HeroPowerOut(matchId, actor.secondaryId)
-                    queue.addMessage(heroPowerOut)
-                    //allow hero power to trigger listener again
-                    player.heroPower.getActor().touchable = Touchable.enabled
+                    cardPlayedOut = HeroPowerOut(matchId, actor.secondaryId)
 
                 }
                 is ClientCard -> {
-                    val cardPlayed = CardPlayedOut(card = card, cardTarget = actor.secondaryId, matchId = matchId)
-                    queue.addMessage(cardPlayed)
+                    cardPlayedOut = CardPlayedOut(card = card, cardTarget = actor.secondaryId, matchId = matchId)
                 }
             }
             clearTargetingAction()
         }
+        return cardPlayedOut
     }
 
     private fun playNonTargetSpell(card: DrawableCard, matchId: Int): CardPlayedOut {
@@ -213,15 +217,26 @@ class UIManager(private val stage: Stage,
     private fun initTargetSpell(card: DrawableCard, position: Position) {
         initialClickX = position.xPosition
         initialClickY = position.yPosition
-        sourceTargetCard = card
+        selectedCard = card
         println("initialClickX:$initialClickY ,initialClickY:$initialClickY")
+    }
+
+    private fun initCardSelect(card: DrawableCard) {
+        selectedCard = card
+        cardIsSelected = true
     }
 
     private fun playedCard(card: DrawableCard, position: Position) {
         var cardPlayedOut: Message? = null
         val cardType = card.getCardType()
         val matchId = player.getCurrentMatchId() ?: return
-        println("Playing Card of type:$cardType")
+        if (position.yPosition < 100) {
+            println("Trying to trigger card play at position:${position.xPosition},${position.yPosition} " +
+                    "which is near playerHand, assuming player want to put back card in hand.")
+            selectedCard = null
+            updateCardPositionInHand()
+            return
+        }
         when (cardType) {
             CardType.MONSTER -> {
                 cardPlayedOut = playMonsterCard(card, position, matchId)
@@ -229,15 +244,22 @@ class UIManager(private val stage: Stage,
             CardType.SPELL -> {
                 cardPlayedOut = playNonTargetSpell(card, matchId)
             }
+            CardType.TARGET_SPELL -> {
+                cardPlayedOut = playTargetSpell(card, position, matchId)
+            }
             else -> {
                 println("Trying to play card of invalid type:$cardType")
             }
         }
         if (cardPlayedOut == null) {
-            println("Error cannot create message for cardType of $cardType")
+            //target of action/click is invalid
             return
         }
+        println("Playing Card of type:$cardType")
 
+        //remove card input listener as it was played
+        card.getActor().clearListeners()
+        selectedCard = null
         queue.addMessage(cardPlayedOut)
     }
 
@@ -248,7 +270,7 @@ class UIManager(private val stage: Stage,
 
     private fun updateCardPositionInHand() {
         var initialX = INITIAL_HAND_X
-        for (card in player.getCardsInHand()) {
+        for (card in player.handManager.getCardsInHand()) {
             val myCard = card as DrawableCard
             myCard.getActor().setPosition(initialX, INITIAL_HAND_Y)
             initialX += CARD_WIDTH
@@ -271,19 +293,25 @@ class UIManager(private val stage: Stage,
         batch.end()
 
         renderDebugBoard(shaper)
-        if (sourceTargetCard != null) {
-            val angle = 180.0 / Math.PI * Math.atan2(initialClickX.toDouble() - mouseX, mouseY.toDouble() - initialClickY)
-            arrowImg.rotation = angle.toFloat()
-            batch.begin()
-            arrowImg.draw(batch)
-            val actor = stage.hit(mouseX, mouseY, true)
-            if (actor != null) {
-                batch.draw(targetCircle, mouseX, mouseY)
-                //only highlight targeted card
-                if (actor is CardActor) {
-                    batch.draw(cardTargeted, actor.x, actor.y)
+        selectedCard?.let {
+            if (it.getCardType() == CardType.TARGET_SPELL) {
+                val angle = 180.0 / Math.PI * Math.atan2(initialClickX.toDouble() - mouseX, mouseY.toDouble() - initialClickY)
+                arrowImg.rotation = angle.toFloat()
+                batch.begin()
+                arrowImg.draw(batch)
+                val actor = stage.hit(mouseX, mouseY, true)
+                if (actor != null) {
+                    batch.draw(targetCircle, mouseX, mouseY)
+                    //only highlight targeted card
+                    if (actor is CardActor) {
+                        batch.draw(cardTargeted, actor.x, actor.y)
+                    }
                 }
+                batch.end()
             }
+            batch.begin()
+            //highlight selected card
+            batch.draw(cardSelected, it.getActor().x, it.getActor().y)
             batch.end()
         }
     }

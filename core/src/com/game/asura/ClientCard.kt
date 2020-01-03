@@ -45,4 +45,8 @@ class ClientCard(private val primaryId: Int,
     override fun getEffect(): List<CardEffect> {
         return ArrayList()
     }
+
+    override fun toString(): String {
+        return "cardType=$cardType"
+    }
 }

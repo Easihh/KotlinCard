@@ -2,7 +2,7 @@ package com.game.asura
 
 abstract class Player(private val playerName: String) {
 
-    private val cardsInHand: MutableList<Card> = ArrayList()
+    val handManager = HandManager()
     protected var playerLife: Int = 30
     protected var maxPlayerLife: Int = 30
     protected var currentPlayerArmor: Int = 0
@@ -31,24 +31,5 @@ abstract class Player(private val playerName: String) {
         return maxPlayerLife
     }
 
-    fun getCardsInHand(): List<Card> {
-        return cardsInHand
-    }
 
-
-    fun addToPlayerHand(card: Card) {
-        cardsInHand.add(card)
-    }
-
-    fun getCardFromHand(cardSecondaryId: Int): Card? {
-        val optional = cardsInHand.stream().filter { it.getSecondayId() == cardSecondaryId }.findFirst()
-        if (optional.isPresent) {
-            return optional.get()
-        }
-        return null
-    }
-
-    fun removeFromHand(card: Card) {
-        cardsInHand.remove(card)
-    }
 }
