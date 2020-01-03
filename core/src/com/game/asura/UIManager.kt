@@ -35,7 +35,6 @@ class UIManager(private val stage: Stage,
     private val cursor = Gdx.graphics.newCursor(invisibleCursor, 0, 0)
     private val healthHeroImg = Texture("core/assets/health.png")
     private var selectedCard: DrawableCard? = null
-    private var cardIsSelected: Boolean = false
 
     init {
         cursor.dispose()
@@ -76,12 +75,12 @@ class UIManager(private val stage: Stage,
                     println("Error, current match is null.")
                     return true
                 }
-                if (button == Input.Buttons.LEFT) {
+                /*if (button == Input.Buttons.LEFT) {
                     selectedCard?.let {
                         playedCard(it, Position(event.stageX, event.stageY))
                     }
                     return true
-                }
+                }*/
                 if (button == Input.Buttons.RIGHT) {
                     println("Right Clicked.")
                     selectedCard?.let {
@@ -172,7 +171,7 @@ class UIManager(private val stage: Stage,
         val lsnr = if (card.getCardType() == CardType.TARGET_SPELL) {
             TargetableCardListener(card, initTargetSpellFnc = ::initTargetSpell)
         } else {
-            DraggableCardListener(card, initSelectCardFnc = ::initCardSelect, playCardFnc = ::playedCard)
+            DraggableCardListener(card, initSelectCardFnc = ::initCardSelect, hasCardSelectFnc = ::hasCardSelected)
         }
         updateCardPositionInHand()
         cardImg.addListener(lsnr)
@@ -214,26 +213,39 @@ class UIManager(private val stage: Stage,
         return CardPlayedOut(card = card, matchId = matchId)
     }
 
-    private fun initTargetSpell(card: DrawableCard, position: Position) {
-        initialClickX = position.xPosition
-        initialClickY = position.yPosition
-        selectedCard = card
-        println("initialClickX:$initialClickY ,initialClickY:$initialClickY")
+    private fun hasCardSelected(): Boolean {
+        return selectedCard != null
     }
 
-    private fun initCardSelect(card: DrawableCard) {
-        selectedCard = card
-        cardIsSelected = true
+    private fun initTargetSpell(card: DrawableCard, position: Position) {
+        if (!hasCardSelected()) {
+            initialClickX = position.xPosition
+            initialClickY = position.yPosition
+            selectedCard = card
+            Gdx.graphics.setCursor(cursor)
+            return
+        }
+        //we already have selectedCard try play card with a target at our clicked pos
+        playedCard(card, position)
+    }
+
+    private fun initCardSelect(card: DrawableCard, position: Position) {
+        if (!hasCardSelected()) {
+            selectedCard = card
+            return
+        }
+        //we already have selectedCard try play card
+        playedCard(card, position)
     }
 
     private fun playedCard(card: DrawableCard, position: Position) {
         var cardPlayedOut: Message? = null
         val cardType = card.getCardType()
         val matchId = player.getCurrentMatchId() ?: return
-        if (position.yPosition < 100) {
+        if (position.yPosition < 200) {
             println("Trying to trigger card play at position:${position.xPosition},${position.yPosition} " +
                     "which is near playerHand, assuming player want to put back card in hand.")
-            selectedCard = null
+            clearTargetingAction()
             updateCardPositionInHand()
             return
         }

@@ -22,8 +22,8 @@ class ServerPlayer(playerName: String) : Player(playerName) {
 
     fun initializeDeck() {
         deck.clear()
-        deck.push(ServerCard(AllCard.FIRST_MONSTER.id, cardCost = AllCard.FIRST_MONSTER.cost,
-                cardType = AllCard.FIRST_MONSTER.cardType))
+        deck.push(ServerCard(AllCard.MONSTER_A.id, cardCost = AllCard.MONSTER_A.cost,
+                cardType = AllCard.MONSTER_A.cardType))
         deck.push(ServerCard(AllCard.FIRST_MONSTER.id, cardCost = AllCard.FIRST_MONSTER.cost,
                 cardType = AllCard.FIRST_MONSTER.cardType))
         //deck.push(ServerCard(AllCard.FIRST_SPELL.id, cardCost = AllCard.FIRST_SPELL.cost,

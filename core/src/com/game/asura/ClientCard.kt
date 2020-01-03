@@ -2,7 +2,6 @@ package com.game.asura
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import kotlin.random.Random
 
 val INVALID_CLIENT_CARD = ClientCard(-1, -1, 99, CardType.INVALID)
@@ -47,6 +46,6 @@ class ClientCard(private val primaryId: Int,
     }
 
     override fun toString(): String {
-        return "cardType=$cardType"
+        return "cardType=$cardType,cardPrimaryId=$primaryId"
     }
 }
