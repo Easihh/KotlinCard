@@ -8,6 +8,8 @@ class ServerCard(private val primaryId: Int,
                  private val secondaryId: Int = Random.nextInt(),
                  private var cardCost: Int,
                  private val cardType: CardType) : Card {
+
+
     private val effects: MutableList<CardEffect> = ArrayList()
 
     init {
@@ -32,5 +34,13 @@ class ServerCard(private val primaryId: Int,
 
     override fun getCardType(): CardType {
         return cardType
+    }
+
+    override fun getAttack(): Int? {
+        return 1
+    }
+
+    override fun getHealth(): Int? {
+        return 3
     }
 }

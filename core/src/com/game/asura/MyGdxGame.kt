@@ -115,7 +115,7 @@ class MyGdxGame : ApplicationAdapter() {
     }
 
     private fun setupPlayButton() {
-        val playButton = Texture("core/assets/playBtn.png")
+        val playButton = Texture(Asset.MENU_BUTTON.path)
         val playBtn = Image(playButton)
         playBtn.setPosition(100f, 450f)
         playBtn.setScale(1.0f, 1.0f)
@@ -132,15 +132,12 @@ class MyGdxGame : ApplicationAdapter() {
     }
 
     private fun setupConnectButton() {
-        val img = Texture("core/assets/playBtn.png")
+        val img = Texture(Asset.MENU_BUTTON.path)
         val connectBtn = Image(img)
         connectBtn.setPosition(325f, 475f)
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                //val atlas = TextureAtlas("core/assets/uiskin.atlas")
                 val skin = Skin(Gdx.files.internal("core/assets/uiskin.json"))
-                //skin.addRegions( TextureAtlas(Gdx.files.internal("core/assets/uiskin.atlas")))
-                //skin.add("default-font", font)
                 val connFailed = Dialog("Error", skin)
                 connFailed.setPosition(Gdx.graphics.displayMode.width / 2f, Gdx.graphics.displayMode.height / 2f)
                 val lbl = Label.LabelStyle(font, Color.WHITE)

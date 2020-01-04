@@ -12,4 +12,7 @@ interface Card {
 
     fun getEffect(): List<CardEffect>
 
+    fun getAttack(): Int?
+
+    fun getHealth(): Int?
 }

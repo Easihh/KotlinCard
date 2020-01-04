@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 
 class MagePower : HeroPower {
 
-
     private var img: Image
 
     init {
@@ -18,6 +17,10 @@ class MagePower : HeroPower {
 
     override fun getActor(): Actor {
         return img
+    }
+
+    override fun transformActor(texture: Texture) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun isActive(): Boolean {
@@ -50,5 +53,13 @@ class MagePower : HeroPower {
 
     override fun getEffect(): List<CardEffect> {
         return emptyList()
+    }
+
+    override fun getAttack(): Int? {
+        return null
+    }
+
+    override fun getHealth(): Int? {
+        return null
     }
 }

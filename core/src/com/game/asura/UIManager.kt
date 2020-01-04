@@ -21,20 +21,17 @@ class UIManager(private val stage: Stage,
                 private val queue: InsertableQueue,
                 private val player: ClientPlayer) {
 
+    private val assetStore = AssetStore()
     private var mouseX: Float = 0f
     private var mouseY: Float = 0f
     private var initialClickX: Float = 0f
     private var initialClickY: Float = 0f
-    private val cardTargeted = Texture("core/assets/cardTargeted.png")
-    private val cardSelected = Texture("core/assets/cardSelected.png")
-    private val arrowPointer = Texture("core/assets/arrow.png")
-    private val arrowImg = Sprite(arrowPointer)
-    private val targetCircle = Sprite(Texture("core/assets/target.png"))
+    private val arrowImg = Sprite(assetStore.getTexture(Asset.ARROW_POINTER))
     private val systemCursor = Cursor.SystemCursor.Hand
     private val invisibleCursor = Pixmap(Gdx.files.internal("core/assets/invisibleCursor.png"))
     private val cursor = Gdx.graphics.newCursor(invisibleCursor, 0, 0)
-    private val healthHeroImg = Texture("core/assets/health.png")
     private var selectedCard: DrawableCard? = null
+
 
     init {
         cursor.dispose()
@@ -50,7 +47,7 @@ class UIManager(private val stage: Stage,
 
                 selectedCard?.let {
                     if (it.getCardType() != CardType.TARGET_SPELL) {
-                        it.getActor().setPosition(mouseX - (CARD_WIDTH / 2), mouseY - (CARD_HEIGHT / 2))
+                        it.getActor().setPosition(mouseX - (BOARD_CARD_WIDTH / 2), mouseY - (BOARD_CARD_HEIGHT / 2))
                     }
                 }
                 arrowImg.setPosition(mouseX + 16f, mouseY - 16f)
@@ -75,12 +72,6 @@ class UIManager(private val stage: Stage,
                     println("Error, current match is null.")
                     return true
                 }
-                /*if (button == Input.Buttons.LEFT) {
-                    selectedCard?.let {
-                        playedCard(it, Position(event.stageX, event.stageY))
-                    }
-                    return true
-                }*/
                 if (button == Input.Buttons.RIGHT) {
                     println("Right Clicked.")
                     selectedCard?.let {
@@ -155,12 +146,15 @@ class UIManager(private val stage: Stage,
     }
 
     private fun getBoardPosition(boardIndex: Int): Position {
-        return Position(INITIAL_BOARD_X + (CARD_WIDTH * boardIndex), INITIAL_BOARD_Y)
+        return Position(INITIAL_BOARD_X + (BOARD_CARD_WIDTH * boardIndex), INITIAL_BOARD_Y)
     }
 
     fun moveCardToBoard(card: DrawableCard, boardIndex: Int) {
         //we don't want to keep the drag listener from hand to board
         card.getActor().clearListeners()
+
+        //need change texture of actor as its now on board
+        card.transformActor(assetStore.getTexture(Asset.BOARD_CARD))
         val pos = getBoardPosition(boardIndex)
         card.getActor().setPosition(pos.xPosition, pos.yPosition)
     }
@@ -285,7 +279,7 @@ class UIManager(private val stage: Stage,
         for (card in player.handManager.getCardsInHand()) {
             val myCard = card as DrawableCard
             myCard.getActor().setPosition(initialX, INITIAL_HAND_Y)
-            initialX += CARD_WIDTH
+            initialX += BOARD_CARD_WIDTH
         }
     }
 
@@ -300,7 +294,7 @@ class UIManager(private val stage: Stage,
         font.draw(batch, "Mana: ${player.getPlayerMana()}/${player.getPlayerMaxMana()}", 50f, 675f)
         font.draw(batch, "MouseX:$mouseX", 50f, 650f)
         font.draw(batch, "MouseY:$mouseY", 50f, 625f)
-        batch.draw(healthHeroImg, 625f, 50f)
+        batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 625f, 50f)
         font.draw(batch, player.getCurrentPlayerLife().toString(), 637.5f, 80f)
         batch.end()
 
@@ -313,19 +307,20 @@ class UIManager(private val stage: Stage,
                 arrowImg.draw(batch)
                 val actor = stage.hit(mouseX, mouseY, true)
                 if (actor != null) {
-                    batch.draw(targetCircle, mouseX, mouseY)
+                    batch.draw(assetStore.getTexture(Asset.TARGET_CIRCLE), mouseX, mouseY)
                     //only highlight targeted card
                     if (actor is CardActor) {
-                        batch.draw(cardTargeted, actor.x, actor.y)
+                        batch.draw(assetStore.getTexture(Asset.CARD_TARGETED), actor.x, actor.y)
                     }
                 }
                 batch.end()
             }
             batch.begin()
             //highlight selected card
-            batch.draw(cardSelected, it.getActor().x, it.getActor().y)
+            batch.draw(assetStore.getTexture(Asset.CARD_SELECTED), it.getActor().x, it.getActor().y)
             batch.end()
         }
+        renderBoardCardStats(batch, font)
     }
 
     private fun renderDebugBoard(shaper: ShapeRenderer) {
@@ -334,10 +329,27 @@ class UIManager(private val stage: Stage,
         shaper.begin(ShapeRenderer.ShapeType.Line)
         shaper.color = (Color.RED)
         for (x in 0..6) {
-            shaper.rect(initialboardX, 250f, CARD_WIDTH, CARD_HEIGHT)
-            initialboardX += CARD_WIDTH
+            shaper.rect(initialboardX, 250f, BOARD_CARD_WIDTH, BOARD_CARD_HEIGHT)
+            initialboardX += BOARD_CARD_WIDTH
         }
         shaper.end()
     }
 
+    private fun renderBoardCardStats(batch: SpriteBatch, font: BitmapFont) {
+        batch.begin()
+        for (x in 0..6) {
+            val card = player.boardManager.getCardByBoardIndex(x)
+            if (card.getCardType() != CardType.INVALID) {
+                if (card.getAttack() != null) {
+                    batch.draw(assetStore.getTexture(Asset.ATTACK_ICON_SMALL), card.getActor().x + 6f, card.getActor().y + 6f)
+                    font.draw(batch, card.getAttack().toString(), card.getActor().x + 12f, card.getActor().y + 24f)
+                }
+                if (card.getHealth() != null) {
+                    batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_SMALL), card.getActor().x + BOARD_CARD_WIDTH - 32, card.getActor().y + 6f)
+                    font.draw(batch, card.getHealth().toString(), card.getActor().x + BOARD_CARD_WIDTH - 24f, card.getActor().y + 24f)
+                }
+            }
+        }
+        batch.end()
+    }
 }
