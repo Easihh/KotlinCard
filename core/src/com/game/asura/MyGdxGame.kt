@@ -77,7 +77,7 @@ class MyGdxGame : ApplicationAdapter() {
     }
 
     private fun setupMessageProcessors() {
-        val messageInProcessor = MessageInProcessor(player, uiManager)
+        val messageInProcessor = MessageInProcessor(player, uiManager, CardStore())
         val messageOutProcessor = MessageOutProcessor(server::sendMessage)
         messageProcessor = MessageProcessor(messageInProcessor, messageOutProcessor)
     }

@@ -47,7 +47,7 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
             }
             MessageType.HERO_POWER -> {
                 val data = getHeroPowerData()
-                val target = data.target ?: return
+                val target = data.cardTarget ?: return
                 decodedMessage = HeroPowerIn(target)
             }
             else -> {

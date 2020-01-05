@@ -8,5 +8,4 @@ interface DrawableCard : Card {
     fun getActor(): Actor
 
     fun transformActor(texture: Texture)
-
 }

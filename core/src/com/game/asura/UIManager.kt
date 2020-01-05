@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Cursor
 import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -102,10 +101,7 @@ class UIManager(private val stage: Stage,
         val heroPower = player.heroPower.getActor()
         heroPower.setPosition(675f, 50f)
         val intputlstr = object : InputListener() {
-            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                if (event == null) {
-                    return false
-                }
+            override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 println("Hero Power click triggered.")
                 Gdx.graphics.setCursor(cursor)
 
@@ -115,7 +111,7 @@ class UIManager(private val stage: Stage,
 
                 //so that another click on hero power won't be triggered by stage hit until target action is canceled
                 heroPower.touchable = Touchable.disabled
-                return false
+                return true
             }
         }
         heroPower.addListener(intputlstr)
@@ -157,6 +153,29 @@ class UIManager(private val stage: Stage,
         card.transformActor(assetStore.getTexture(Asset.BOARD_CARD))
         val pos = getBoardPosition(boardIndex)
         card.getActor().setPosition(pos.xPosition, pos.yPosition)
+
+        val targetListener = object : InputListener() {
+            override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                println("board card is touched.SourceTarget:$selectedCard")
+                if (selectedCard == null) {
+                    initCardSelect(card, Position(event.stageX, event.stageY))
+                    //disable actor as we don't want to trigger more mouse click on itself
+                    // until our targeting is done
+                    card.getActor().touchable = Touchable.disabled
+                    return true
+                }
+                //card is being target by something ie target spell/hero power etc
+                selectedCard?.let {
+                    playedCard(it, Position(event.stageX, event.stageY))
+                }
+
+                return true
+            }
+
+        }
+        card.getActor().addListener(targetListener)
+
+        updateCardPositionInHand()
     }
 
     fun addCardToHand(card: DrawableCard) {
@@ -307,17 +326,19 @@ class UIManager(private val stage: Stage,
                 arrowImg.draw(batch)
                 val actor = stage.hit(mouseX, mouseY, true)
                 if (actor != null) {
-                    batch.draw(assetStore.getTexture(Asset.TARGET_CIRCLE), mouseX, mouseY)
-                    //only highlight targeted card
-                    if (actor is CardActor) {
+                    if (actor is CardActor && actor.targetable()) {
+                        batch.draw(assetStore.getTexture(Asset.TARGET_CIRCLE), mouseX, mouseY)
+                        //only highlight targeted card
                         batch.draw(assetStore.getTexture(Asset.CARD_TARGETED), actor.x, actor.y)
                     }
                 }
                 batch.end()
             }
             batch.begin()
-            //highlight selected card
-            batch.draw(assetStore.getTexture(Asset.CARD_SELECTED), it.getActor().x, it.getActor().y)
+            //highlight selected card, but not if using hero power
+            if (it !is HeroPower) {
+                batch.draw(assetStore.getTexture(Asset.CARD_SELECTED), it.getActor().x, it.getActor().y)
+            }
             batch.end()
         }
         renderBoardCardStats(batch, font)

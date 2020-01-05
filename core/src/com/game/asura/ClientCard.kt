@@ -17,13 +17,14 @@ class ClientCard(private val primaryId: Int,
 
 
     private var cardActor: CardActor
+    private var isTargetable = false
 
     init {
         val picture = if (cardType == CardType.MONSTER) {
             "monsterCard.png"
         } else "card.png"
         val texture = Texture("core/assets/$picture")
-        cardActor = CardActor(texture, secondaryId)
+        cardActor = CardActor(texture, secondaryId, ::CardIsTargetable)
     }
 
     override fun getActor(): Actor {
@@ -36,6 +37,12 @@ class ClientCard(private val primaryId: Int,
         cardActor.setScaling(Scaling.stretch)
         cardActor.setAlign(Align.center)
         cardActor.setScale(1.0f)
+
+        isTargetable = true
+    }
+
+    private fun CardIsTargetable(): Boolean {
+        return isTargetable
     }
 
     override fun getCost(): Int {
