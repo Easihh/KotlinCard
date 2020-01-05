@@ -38,6 +38,9 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 //send MatchId to concerned players
                 val matchInfo = MatchInfoOut(account.getChannelWriter(), matchId = match.matchId)
                 messageQueue.addMessage(matchInfo)
+                //send start turn to a player
+                val startTurn = StartTurnOut(account.getChannelWriter(), matchId = match.matchId)
+                messageQueue.addMessage(startTurn)
                 //send initial draws
                 for (x in 0..3) {
                     val cardDrawn = player.draw() ?: return

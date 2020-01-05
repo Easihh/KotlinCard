@@ -14,3 +14,5 @@ const val BOARD_CARD_HEIGHT = 128f
 const val INITIAL_HAND_X: Float = 100f
 const val INITIAL_HAND_Y: Float = -96f
 const val INVALID_INDEX_: Int = -1
+const val SECOND_PER_TURN: Int = 90
+const val ONE_NANO_SECOND: Long = 1_000_000_000L

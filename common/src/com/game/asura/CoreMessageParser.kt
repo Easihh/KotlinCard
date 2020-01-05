@@ -86,4 +86,8 @@ abstract class CoreMessageParser {
         return HeroPowerData(coreMsg.getMatchId(), coreMsg.getCardTarget())
     }
 
+    fun getStartTurnData(): StartTurnData {
+        return StartTurnData(coreMsg.getMatchId())
+    }
+
 }

@@ -51,6 +51,9 @@ class MessageInProcessor(private val player: ClientPlayer,
                 val target = cardStore.getCard(message.cardTarget) ?: return
                 println("Handle effect of card:$target being the target of hero power.")
             }
+            is StartTurnIn -> {
+                uiManager.startTurnTimer()
+            }
             else -> {
                 println("Unable to process message:$message missing logic.")
             }

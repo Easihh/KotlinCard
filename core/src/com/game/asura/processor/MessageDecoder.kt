@@ -50,6 +50,11 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val target = data.cardTarget ?: return
                 decodedMessage = HeroPowerIn(target)
             }
+            MessageType.START_TURN -> {
+                val data = getStartTurnData()
+                val matchId = data.matchId ?: return
+                decodedMessage = StartTurnIn(matchId)
+            }
             else -> {
                 println("Message of type $msgType has no decode logic.")
             }

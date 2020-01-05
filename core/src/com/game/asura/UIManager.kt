@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Cursor
 import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -13,8 +14,11 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.game.asura.messageout.CardPlayedOut
 import com.game.asura.messageout.HeroPowerOut
+import com.game.asura.messageout.PlayGameRequestOut
+import java.time.Instant
 
 class UIManager(private val stage: Stage,
                 private val queue: InsertableQueue,
@@ -33,12 +37,13 @@ class UIManager(private val stage: Stage,
     private var selectedCard: DrawableCard? = null
     //to keep track of whether board card should tilt 1 index left or right due to pending card placement.
     private var boardTilt = BoardManager.BoardPositionTilt.NONE
-
+    private var endTurnTime: Long = System.currentTimeMillis()
 
     init {
         cursor.dispose()
         setupHeroPower()
         addHeroToBoard()
+        addEndTurnBtn()
         val mouseMovedLstr = object : InputListener() {
             override fun mouseMoved(event: InputEvent?, x: Float, y: Float): Boolean {
                 if (event == null) {
@@ -102,6 +107,22 @@ class UIManager(private val stage: Stage,
         val actor = player.getActor()
         actor.setPosition(500f, 50f)
         stage.addActor(actor)
+    }
+
+    private fun addEndTurnBtn() {
+        val endTurnButton = Texture(Asset.MENU_BUTTON_SMALL.path)
+        val endTurn = Image(endTurnButton)
+        endTurn.setPosition(VIRTUAL_WINDOW_WIDTH - 200f, 450f)
+        val listener = object : InputListener() {
+            override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                println("Requesting End Turn.")
+                //val playRequest = PlayGameRequestOut()
+                //messageQueue.addMessage(playRequest)
+                return true
+            }
+        }
+        endTurn.addListener(listener)
+        stage.addActor(endTurn)
     }
 
     private fun setupClickListener() {
@@ -359,7 +380,7 @@ class UIManager(private val stage: Stage,
 
     fun render(batch: SpriteBatch, font: BitmapFont, shaper: ShapeRenderer) {
         batch.begin()
-
+        font.draw(batch, "END TURN", 835f, 495f)
         font.draw(batch, "PLAY", 200f, 510f)
         font.draw(batch, "CONNECT", 385f, 535f)
         font.draw(batch, "FPS: ${Gdx.graphics.framesPerSecond}", 50f, 750f)
@@ -368,6 +389,7 @@ class UIManager(private val stage: Stage,
         font.draw(batch, "Mana: ${player.getPlayerMana()}/${player.getPlayerMaxMana()}", 50f, 675f)
         font.draw(batch, "MouseX:$mouseX", 50f, 650f)
         font.draw(batch, "MouseY:$mouseY", 50f, 625f)
+        font.draw(batch, "Time:${(endTurnTime - System.nanoTime()) / ONE_NANO_SECOND}", 50f, 600f)
         batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 625f, 50f)
         font.draw(batch, player.getCurrentPlayerLife().toString(), 637.5f, 80f)
         batch.end()
@@ -427,5 +449,9 @@ class UIManager(private val stage: Stage,
             }
         }
         batch.end()
+    }
+
+    fun startTurnTimer() {
+        endTurnTime = System.nanoTime() + (SECOND_PER_TURN * ONE_NANO_SECOND)
     }
 }
