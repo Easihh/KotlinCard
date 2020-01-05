@@ -20,6 +20,7 @@ class UIManager(private val stage: Stage,
                 private val queue: InsertableQueue,
                 private val player: ClientPlayer) {
 
+
     private val assetStore = AssetStore()
     private var mouseX: Float = 0f
     private var mouseY: Float = 0f
@@ -30,6 +31,8 @@ class UIManager(private val stage: Stage,
     private val invisibleCursor = Pixmap(Gdx.files.internal("core/assets/invisibleCursor.png"))
     private val cursor = Gdx.graphics.newCursor(invisibleCursor, 0, 0)
     private var selectedCard: DrawableCard? = null
+    //to keep track of whether board card should tilt 1 index left or right due to pending card placement.
+    private var boardTilt = BoardManager.BoardPositionTilt.NONE
 
 
     init {
@@ -48,6 +51,20 @@ class UIManager(private val stage: Stage,
                     if (it.getCardType() != CardType.TARGET_SPELL) {
                         it.getActor().setPosition(mouseX - (BOARD_CARD_WIDTH / 2), mouseY - (BOARD_CARD_HEIGHT / 2))
                     }
+                    if (it.getCardType() == CardType.MONSTER && !player.boardManager.boardIsEmpty()) {
+                        val halfScreen = VIRTUAL_WINDOW_WIDTH / 2f
+                        val currentTilt = if (event.stageX >= halfScreen) {
+                            BoardManager.BoardPositionTilt.LEFT
+                        } else {
+                            BoardManager.BoardPositionTilt.RIGHT
+                        }
+                        if (currentTilt != boardTilt) {
+                            boardTilt = currentTilt
+                            moveCardByTilt()
+                            updateBoardPosition()
+
+                        }
+                    }
                 }
                 arrowImg.setPosition(mouseX + 16f, mouseY - 16f)
                 return true
@@ -55,6 +72,30 @@ class UIManager(private val stage: Stage,
         }
         stage.addListener(mouseMovedLstr)
         setupClickListener()
+    }
+
+    private fun moveCardByTilt() {
+        when (boardTilt) {
+            BoardManager.BoardPositionTilt.LEFT -> {
+                player.boardManager.moveCardLeft()
+            }
+            BoardManager.BoardPositionTilt.RIGHT -> {
+                player.boardManager.moveCardRight()
+            }
+            else -> {
+                //don't need to reposition board
+                return
+            }
+        }
+    }
+
+    private fun updateBoardPosition() {
+        var initialX = INITIAL_BOARD_X
+        for (i in 0 until MAX_BOARD_SIZE) {
+            val card = player.boardManager.getCardByBoardIndex(i)
+            card.getActor().setPosition(initialX, INITIAL_BOARD_Y)
+            initialX += BOARD_CARD_WIDTH
+        }
     }
 
     private fun addHeroToBoard() {
@@ -72,7 +113,6 @@ class UIManager(private val stage: Stage,
                     return true
                 }
                 if (button == Input.Buttons.RIGHT) {
-                    println("Right Clicked.")
                     selectedCard?.let {
                         println("clearing target action for card:$selectedCard")
                         clearTargetingAction()
@@ -94,6 +134,21 @@ class UIManager(private val stage: Stage,
         selectedCard = null
         //reset to normal cursor here
         Gdx.graphics.setSystemCursor(systemCursor)
+        //move back card to previous value
+        when (boardTilt) {
+            BoardManager.BoardPositionTilt.LEFT -> {
+                player.boardManager.moveCardRight()
+            }
+            BoardManager.BoardPositionTilt.RIGHT -> {
+                player.boardManager.moveCardLeft()
+            }
+            else -> {
+                //do nothing
+            }
+        }
+        updateBoardPosition()
+        boardTilt = BoardManager.BoardPositionTilt.NONE
+
     }
 
 

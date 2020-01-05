@@ -33,7 +33,7 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
             MessageType.HERO_POWER -> {
                 val heroPowerdata = getHeroPowerData()
                 val matchId = heroPowerdata.matchId ?: return
-                decodedMessage = HeroPowerIn(playerAccount.getAccountKey(), matchId, heroPowerdata.target)
+                decodedMessage = HeroPowerIn(playerAccount.getAccountKey(), matchId, heroPowerdata.cardTarget)
 
             }
             else -> {

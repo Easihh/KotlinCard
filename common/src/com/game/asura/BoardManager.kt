@@ -2,6 +2,12 @@ package com.game.asura
 
 class BoardManager<T : Card>(create: () -> T) {
 
+    enum class BoardPositionTilt {
+        LEFT,
+        RIGHT,
+        NONE
+    }
+
     private val playerBoard: MutableList<T> = ArrayList()
 
     init {
@@ -47,4 +53,29 @@ class BoardManager<T : Card>(create: () -> T) {
     fun getCardByBoardIndex(boardIndex: Int): T {
         return playerBoard[boardIndex]
     }
+
+    fun moveCardRight() {
+        val indx = getRightMostCardOnBoard()
+        if (indx >= MAX_BOARD_SIZE - 1) {
+            println("Cannot move cards right since indx is :$indx")
+            return
+        }
+        //no 0 case as this would mean the board was already full
+        for (i in MAX_BOARD_SIZE - 2 downTo 0) {
+            playerBoard[i + 1] = playerBoard[i]
+        }
+    }
+
+    fun moveCardLeft() {
+        val indx = getLeftMostCardOnBoard()
+        if (indx <= 0) {
+            println("Cannot move cards left since indx is :$indx")
+            return
+        }
+        //no 0 case as this would mean the board was already full
+        for (i in 1 until MAX_BOARD_SIZE - 2) {
+            playerBoard[i] = playerBoard[i + 1]
+        }
+    }
+
 }
