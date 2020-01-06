@@ -1,4 +1,4 @@
-package com.game.asura
+package com.game.asura.message.data
 
 class PlayerInfoData(val playerName: String?,
                      val playerHealth: Int?,

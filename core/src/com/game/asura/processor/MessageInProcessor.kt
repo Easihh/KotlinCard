@@ -1,7 +1,9 @@
 package com.game.asura.processor
 
 import com.game.asura.*
+import com.game.asura.card.CardType
 import com.game.asura.messagein.*
+import com.game.asura.parsing.DecodedMessage
 
 class MessageInProcessor(private val player: ClientPlayer,
                          private val uiManager: UIManager,
@@ -53,6 +55,10 @@ class MessageInProcessor(private val player: ClientPlayer,
             }
             is StartTurnIn -> {
                 uiManager.startTurnTimer()
+            }
+            is EndTurnIn -> {
+                println("End Turn Received from server.")
+                //cancel all pending action etc here
             }
             else -> {
                 println("Unable to process message:$message missing logic.")

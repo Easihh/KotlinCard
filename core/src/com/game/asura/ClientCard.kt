@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Scaling
+import com.game.asura.card.CardEffect
+import com.game.asura.card.CardType
 import kotlin.random.Random
 
 val INVALID_CLIENT_CARD = ClientCard(-1, -1, 99, CardType.INVALID)

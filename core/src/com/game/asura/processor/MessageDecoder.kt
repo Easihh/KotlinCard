@@ -2,6 +2,10 @@ package com.game.asura.processor
 
 import com.game.asura.*
 import com.game.asura.messagein.*
+import com.game.asura.messaging.MessageType
+import com.game.asura.parsing.CoreMessageParser
+import com.game.asura.parsing.DecodedMessage
+import com.game.asura.parsing.Tokenizer
 
 class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
 
@@ -54,6 +58,11 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val data = getStartTurnData()
                 val matchId = data.matchId ?: return
                 decodedMessage = StartTurnIn(matchId)
+            }
+            MessageType.END_TURN -> {
+                val data = getEndTurnData()
+                val matchId = data.matchId ?: return
+                decodedMessage = EndTurnIn(matchId)
             }
             else -> {
                 println("Message of type $msgType has no decode logic.")

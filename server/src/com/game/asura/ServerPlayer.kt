@@ -1,5 +1,7 @@
 package com.game.asura
 
+import com.game.asura.card.AllCard
+import com.game.asura.card.Card
 import java.util.*
 
 class ServerPlayer(playerName: String) : Player(playerName) {

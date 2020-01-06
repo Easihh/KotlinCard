@@ -1,9 +1,9 @@
 package com.game.asura.messageout
 
 import com.game.asura.END_MESSAGE_DELIMITER
-import com.game.asura.MessageBuilder
-import com.game.asura.MessageField
-import com.game.asura.MessageType
+import com.game.asura.messaging.MessageBuilder
+import com.game.asura.messaging.MessageField
+import com.game.asura.messaging.MessageType
 
 class HeroPowerOut(private val matchId: Int,
                    private val target: Int) : OutMessage {

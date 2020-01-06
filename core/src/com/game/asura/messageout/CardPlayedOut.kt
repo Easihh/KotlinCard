@@ -1,6 +1,9 @@
 package com.game.asura.messageout
 
 import com.game.asura.*
+import com.game.asura.messaging.MessageBuilder
+import com.game.asura.messaging.MessageField
+import com.game.asura.messaging.MessageType
 
 class CardPlayedOut(private val card: DrawableCard,
                     private val boardIndex: Int? = null,

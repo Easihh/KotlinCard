@@ -15,10 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.game.asura.card.CardType
 import com.game.asura.messageout.CardPlayedOut
+import com.game.asura.messageout.EndTurnOut
 import com.game.asura.messageout.HeroPowerOut
-import com.game.asura.messageout.PlayGameRequestOut
-import java.time.Instant
+import com.game.asura.messaging.Message
 
 class UIManager(private val stage: Stage,
                 private val queue: InsertableQueue,
@@ -116,8 +117,9 @@ class UIManager(private val stage: Stage,
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 println("Requesting End Turn.")
-                //val playRequest = PlayGameRequestOut()
-                //messageQueue.addMessage(playRequest)
+                val matchId = player.getCurrentMatchId() ?: return true
+                val endTurnRequest = EndTurnOut(matchId)
+                queue.addMessage(endTurnRequest)
                 return true
             }
         }

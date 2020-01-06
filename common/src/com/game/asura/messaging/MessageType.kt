@@ -1,4 +1,4 @@
-package com.game.asura
+package com.game.asura.messaging
 
 enum class MessageType(val value: Byte) {
     UNKNOWN('u'.toByte()),

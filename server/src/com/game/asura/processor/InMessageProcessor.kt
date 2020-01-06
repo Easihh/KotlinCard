@@ -3,11 +3,12 @@ package com.game.asura.processor
 import com.game.asura.*
 import com.game.asura.account.CachedAccount
 import com.game.asura.account.PlayerAccount
-import com.game.asura.messagein.CardPlayedIn
-import com.game.asura.messagein.GameRequestIn
-import com.game.asura.messagein.HeroPowerIn
-import com.game.asura.messagein.LoginRequestIn
+import com.game.asura.card.AllCard
+import com.game.asura.card.CardEffect
+import com.game.asura.messagein.*
 import com.game.asura.messageout.*
+import com.game.asura.messaging.MessageField
+import com.game.asura.parsing.DecodedMessage
 
 class InMessageProcessor(private val messageQueue: InsertableQueue,
                          private val accountCache: CachedAccount,
@@ -41,6 +42,9 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 //send start turn to a player
                 val startTurn = StartTurnOut(account.getChannelWriter(), matchId = match.matchId)
                 messageQueue.addMessage(startTurn)
+                //schedule end turn X seconds from now or until we receive such info player client.
+                val endTurn = EndTurnIn(account.getAccountKey(), matchId = match.matchId, matchTurn = match.getMatchTurn())
+                messageQueue.addMessage(endTurn, SECOND_PER_TURN * ONE_SECOND_MILLIS)
                 //send initial draws
                 for (x in 0..3) {
                     val cardDrawn = player.draw() ?: return
@@ -124,6 +128,30 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 val heroPowerOut = HeroPowerOut(channelWriter = account.getChannelWriter(), accountName = accountName, target = message.target)
                 messageQueue.addMessage(heroPowerOut)
                 //should also send update for mana usage for example
+            }
+
+            is EndTurnIn -> {
+                if (message.matchTurn != null) {
+                    //server is end the turn due to time being over limit
+
+                    //look if player already had ended turn
+                    val match = matchFinder.findMatch(message.matchId) ?: return
+                    if (message.matchTurn < match.getMatchTurn()) {
+                        //player has already send end turn before timer up, disregard this internal end turn msg.
+                        println("Disregarding end turn timeout scheduled since player sent end turn already for match:${message.matchId} turn:${message.matchTurn}")
+                        return
+                    }
+                    //force time out as we did not receive an end turn message in time
+                    match.increaseMatchTurn()
+                    val account = accountCache.getAccount(message.accountKey)
+                    val accountName = account?.getAccountName()
+                    if (accountName == null) {
+                        println("Unable to find accountName in cache with key:${message.accountKey}.")
+                        return
+                    }
+                    val endTurnOut = EndTurnOut(account.getChannelWriter(),message.matchId)
+                    messageQueue.addMessage(endTurnOut)
+                }
             }
         }
     }

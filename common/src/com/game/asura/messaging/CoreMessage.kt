@@ -1,4 +1,7 @@
-package com.game.asura
+package com.game.asura.messaging
+
+import com.game.asura.card.CardType
+import com.game.asura.GameType
 
 class CoreMessage {
 
@@ -84,6 +87,11 @@ class CoreMessage {
 
     fun getBoardPosition(): Int? {
         val typeVal = fieldMap[MessageField.BOARD_POSITION] ?: return null
+        return typeVal.value as Int
+    }
+
+    fun getMatchTurn(): Int? {
+        val typeVal = fieldMap[MessageField.MATCH_TURN] ?: return null
         return typeVal.value as Int
     }
 

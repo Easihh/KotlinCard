@@ -1,5 +1,7 @@
-package com.game.asura
+package com.game.asura.parsing
 
+import com.game.asura.EnumMapper
+import com.game.asura.messaging.MessageField
 import java.lang.StringBuilder
 import java.nio.ByteBuffer
 

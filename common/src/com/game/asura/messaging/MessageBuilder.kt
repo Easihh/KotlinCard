@@ -1,5 +1,6 @@
-package com.game.asura
+package com.game.asura.messaging
 
+import com.game.asura.parsing.Tokenizer
 import java.nio.ByteBuffer
 
 class MessageBuilder(private val buffer: ByteBuffer) {

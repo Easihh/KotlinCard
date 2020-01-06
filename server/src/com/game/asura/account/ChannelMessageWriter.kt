@@ -1,8 +1,8 @@
 package com.game.asura.account
 
 import com.game.asura.END_MESSAGE_DELIMITER
-import com.game.asura.MessageBuilder
-import com.game.asura.MessageField
+import com.game.asura.messaging.MessageBuilder
+import com.game.asura.messaging.MessageField
 import java.nio.ByteBuffer
 import java.nio.channels.SocketChannel
 

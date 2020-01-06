@@ -1,5 +1,10 @@
 package com.game.asura
 
+import com.game.asura.card.AllCard
+import com.game.asura.card.CardType
+import com.game.asura.messaging.MessageField
+import com.game.asura.messaging.MessageType
+
 class EnumMapper {
 
     private val enumMap: MutableMap<MessageField, (Byte) -> String> = HashMap()

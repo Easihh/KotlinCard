@@ -1,4 +1,4 @@
-package com.game.asura
+package com.game.asura.card
 
 enum class CardType(val value: Byte) {
     UNKNOWN('0'.toByte()),

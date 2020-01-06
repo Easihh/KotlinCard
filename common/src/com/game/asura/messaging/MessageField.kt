@@ -1,4 +1,4 @@
-package com.game.asura
+package com.game.asura.messaging
 
 enum class MessageField(val fieldNumber: Int,
                         val type: Byte) {
@@ -21,7 +21,8 @@ enum class MessageField(val fieldNumber: Int,
     SECONDARY_CARD_ID(16, 'I'.toByte()),
     DECK_SIZE(17, 'I'.toByte()),
     CARD_TARGET(18, 'I'.toByte()),
-    END_MESSAGE(19, 'C'.toByte())
+    END_MESSAGE(19, 'C'.toByte()),
+    MATCH_TURN(20, 'I'.toByte())
     ;
 
     companion object {

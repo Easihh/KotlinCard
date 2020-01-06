@@ -1,7 +1,7 @@
 package com.game.asura.messageout
 
-import com.game.asura.Message
-import com.game.asura.MessageBuilder
+import com.game.asura.messaging.Message
+import com.game.asura.messaging.MessageBuilder
 
 interface OutMessage : Message {
 

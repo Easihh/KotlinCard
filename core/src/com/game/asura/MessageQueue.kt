@@ -1,5 +1,6 @@
 package com.game.asura
 
+import com.game.asura.messaging.Message
 import java.util.concurrent.ConcurrentLinkedDeque
 
 class MessageQueue : InsertableQueue {
@@ -19,5 +20,8 @@ class MessageQueue : InsertableQueue {
         messageQueue.add(msg)
     }
 
+    override fun addMessage(msg: Message, delayMs: Long) {
+
+    }
 
 }

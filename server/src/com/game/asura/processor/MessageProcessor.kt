@@ -1,7 +1,8 @@
 package com.game.asura.processor
 
-import com.game.asura.*
 import com.game.asura.messageout.ServerOutMessage
+import com.game.asura.messaging.Message
+import com.game.asura.parsing.DecodedMessage
 
 class MessageProcessor(private val inProcessor: InMessageProcessor,
                        private val outProcessor: OutMessageProcessor) {

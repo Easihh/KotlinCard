@@ -1,5 +1,8 @@
 package com.game.asura
 
+import com.game.asura.card.Card
+import com.game.asura.card.CardType
+
 class BoardManager<T : Card>(create: () -> T) {
 
     enum class BoardPositionTilt {

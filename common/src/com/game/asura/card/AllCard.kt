@@ -1,4 +1,4 @@
-package com.game.asura
+package com.game.asura.card
 
 enum class AllCard(val id: Int,
                    val cardType: CardType,

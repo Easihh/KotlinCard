@@ -1,6 +1,6 @@
 package com.game.asura.account
 
-import com.game.asura.Tokenizer
+import com.game.asura.parsing.Tokenizer
 
 class PlayerAccount(val clientConn: ClientChannelInfo,
                     private val clientWriter: ChannelMessageWriter,

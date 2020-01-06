@@ -1,4 +1,4 @@
-package com.game.asura
+package com.game.asura.card
 
 enum class CardEffect(private val id: Int) {
     UNKNOWN(0),

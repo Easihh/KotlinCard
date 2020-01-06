@@ -1,4 +1,10 @@
-package com.game.asura
+package com.game.asura.parsing
+
+import com.game.asura.*
+import com.game.asura.message.data.*
+import com.game.asura.messaging.CoreMessage
+import com.game.asura.messaging.MessageField
+import com.game.asura.messaging.MessageType
 
 abstract class CoreMessageParser {
 
@@ -88,6 +94,10 @@ abstract class CoreMessageParser {
 
     fun getStartTurnData(): StartTurnData {
         return StartTurnData(coreMsg.getMatchId())
+    }
+
+    fun getEndTurnData(): EndTurnData {
+        return EndTurnData(coreMsg.getMatchId())
     }
 
 }

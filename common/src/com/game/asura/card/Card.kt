@@ -1,4 +1,4 @@
-package com.game.asura
+package com.game.asura.card
 
 interface Card {
 

@@ -1,8 +1,8 @@
 package com.game.asura.messagein
 
 import com.game.asura.ChangedField
-import com.game.asura.DecodedMessage
-import com.game.asura.MessageField
+import com.game.asura.parsing.DecodedMessage
+import com.game.asura.messaging.MessageField
 
 class PlayerInfoIn(playerName: String,
                    playerHealth: Int?,
