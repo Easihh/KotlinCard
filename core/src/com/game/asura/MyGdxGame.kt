@@ -46,11 +46,12 @@ class MyGdxGame : ApplicationAdapter() {
         batch = SpriteBatch()
         shaper = ShapeRenderer()
         setupStage()
-        setupGraphicOptions()
+        //setupGraphicOptions()
         setupDisplayMode()
         setupFont()
         player = ClientPlayer("test", MagePower())
-        uiManager = UIManager(stage, messageQueue, player)
+        val otherPlayer = ClientPlayer("enemy", MagePower())
+        uiManager = UIManager(stage, messageQueue, player, otherPlayer)
         setupMessageProcessors()
         setupConnectButton()
         setupPlayButton()
@@ -115,9 +116,9 @@ class MyGdxGame : ApplicationAdapter() {
     }
 
     private fun setupPlayButton() {
-        val playButton = Texture(Asset.MENU_BUTTON.path)
+        val playButton = Texture(Asset.MENU_BUTTON_SMALL.path)
         val playBtn = Image(playButton)
-        playBtn.setPosition(100f, 450f)
+        playBtn.setPosition(715f, 675f)
         playBtn.setScale(1.0f, 1.0f)
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
@@ -132,9 +133,9 @@ class MyGdxGame : ApplicationAdapter() {
     }
 
     private fun setupConnectButton() {
-        val img = Texture(Asset.MENU_BUTTON.path)
+        val img = Texture(Asset.MENU_BUTTON_SMALL.path)
         val connectBtn = Image(img)
-        connectBtn.setPosition(325f, 475f)
+        connectBtn.setPosition(850f, 675f)
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 val skin = Skin(Gdx.files.internal("core/assets/uiskin.json"))

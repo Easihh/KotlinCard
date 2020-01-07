@@ -23,7 +23,8 @@ import com.game.asura.messaging.Message
 
 class UIManager(private val stage: Stage,
                 private val queue: InsertableQueue,
-                private val player: ClientPlayer) {
+                private val player: ClientPlayer,
+                private val otherPlayer: ClientPlayer) {
 
 
     private val assetStore = AssetStore()
@@ -42,8 +43,8 @@ class UIManager(private val stage: Stage,
 
     init {
         cursor.dispose()
-        setupHeroPower()
-        addHeroToBoard()
+        setupHeroesPower()
+        addHeroesToBoard()
         addEndTurnBtn()
         val mouseMovedLstr = object : InputListener() {
             override fun mouseMoved(event: InputEvent?, x: Float, y: Float): Boolean {
@@ -104,16 +105,20 @@ class UIManager(private val stage: Stage,
         }
     }
 
-    private fun addHeroToBoard() {
+    private fun addHeroesToBoard() {
         val actor = player.getActor()
-        actor.setPosition(500f, 50f)
+        actor.setPosition(450f, 50f)
         stage.addActor(actor)
+
+        val otherActor = otherPlayer.getActor()
+        otherActor.setPosition(450f, 600f)
+        stage.addActor(otherActor)
     }
 
     private fun addEndTurnBtn() {
         val endTurnButton = Texture(Asset.MENU_BUTTON_SMALL.path)
         val endTurn = Image(endTurnButton)
-        endTurn.setPosition(VIRTUAL_WINDOW_WIDTH - 200f, 450f)
+        endTurn.setPosition(VIRTUAL_WINDOW_WIDTH - 200f, 150f)
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 println("Requesting End Turn.")
@@ -175,9 +180,9 @@ class UIManager(private val stage: Stage,
     }
 
 
-    private fun setupHeroPower() {
+    private fun setupHeroesPower() {
         val heroPower = player.heroPower.getActor()
-        heroPower.setPosition(675f, 50f)
+        heroPower.setPosition(625f, 50f)
         val intputlstr = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 println("Hero Power click triggered.")
@@ -194,6 +199,10 @@ class UIManager(private val stage: Stage,
         }
         heroPower.addListener(intputlstr)
         stage.addActor(heroPower)
+
+        val enemyPower = otherPlayer.heroPower.getActor()
+        enemyPower.setPosition(625f, 600f)
+        stage.addActor(enemyPower)
     }
 
     private fun getClosestEmptyBoardIndex(mouseX: Float, mouseY: Float): Int? {
@@ -382,18 +391,20 @@ class UIManager(private val stage: Stage,
 
     fun render(batch: SpriteBatch, font: BitmapFont, shaper: ShapeRenderer) {
         batch.begin()
-        font.draw(batch, "END TURN", 835f, 495f)
-        font.draw(batch, "PLAY", 200f, 510f)
-        font.draw(batch, "CONNECT", 385f, 535f)
+        font.draw(batch, "END TURN", 835f, 195f)
+        font.draw(batch, "PLAY", 745f, 720f)
+        font.draw(batch, "CONNECT", 870f, 720f)
         font.draw(batch, "FPS: ${Gdx.graphics.framesPerSecond}", 50f, 750f)
-        font.draw(batch, "Player: ${player.getPlayerName()}", 50f, 725f)
-        font.draw(batch, "HP: ${player.getCurrentPlayerLife()}/${player.getPlayerMaxLife()}", 50f, 700f)
-        font.draw(batch, "Mana: ${player.getPlayerMana()}/${player.getPlayerMaxMana()}", 50f, 675f)
-        font.draw(batch, "MouseX:$mouseX", 50f, 650f)
-        font.draw(batch, "MouseY:$mouseY", 50f, 625f)
+        font.draw(batch, "Player: ${player.getPlayerName()}", 50f, 200f)
+        font.draw(batch, "Player: ${otherPlayer.getPlayerName()}", 50f, 725f)
+        font.draw(batch, "Mana: ${player.getPlayerMana()}/${player.getPlayerMaxMana()}", 50f, 175f)
+        font.draw(batch, "EnemyMana: ${otherPlayer.getPlayerMana()}/${otherPlayer.getPlayerMaxMana()}", 50f, 650f)
+        font.draw(batch, "Mouse:$mouseX,$mouseY", 50f, 625f)
         font.draw(batch, "Time:${(endTurnTime - System.nanoTime()) / ONE_NANO_SECOND}", 50f, 600f)
-        batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 625f, 50f)
-        font.draw(batch, player.getCurrentPlayerLife().toString(), 637.5f, 80f)
+        batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 50f)
+        batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 600f)
+        font.draw(batch, player.getCurrentPlayerLife().toString(), 587.5f, 80f)
+        font.draw(batch, otherPlayer.getCurrentPlayerLife().toString(), 587.5f, 625f)
         batch.end()
 
         renderDebugBoard(shaper)
@@ -424,9 +435,17 @@ class UIManager(private val stage: Stage,
     }
 
     private fun renderDebugBoard(shaper: ShapeRenderer) {
-        //Board border for all position
-        var initialboardX = INITIAL_BOARD_X
         shaper.begin(ShapeRenderer.ShapeType.Line)
+        //draw enemy board
+        var initialboardX = INITIAL_BOARD_X
+        shaper.color = (Color.RED)
+        for (x in 0..6) {
+            shaper.rect(initialboardX, 400f, BOARD_CARD_WIDTH, BOARD_CARD_HEIGHT)
+            initialboardX += BOARD_CARD_WIDTH
+        }
+
+        //draw our own board
+        initialboardX = INITIAL_BOARD_X
         shaper.color = (Color.RED)
         for (x in 0..6) {
             shaper.rect(initialboardX, 250f, BOARD_CARD_WIDTH, BOARD_CARD_HEIGHT)

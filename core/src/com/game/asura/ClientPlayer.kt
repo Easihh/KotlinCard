@@ -10,7 +10,6 @@ class ClientPlayer(playerName: String, val heroPower: HeroPower) : Player(player
     private val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
     val boardManager = BoardManager<DrawableCard>(create = { INVALID_CLIENT_CARD })
     private var currentMatch: Match<ClientPlayer>? = null
-    val cardMap: MutableMap<Int, DrawableCard> = HashMap()
 
     private val playerActor: Image
 
