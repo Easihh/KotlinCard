@@ -14,4 +14,8 @@ class ClientChannelInfo(private val client: SocketChannel,
         tokenizer.flip()
         return bytesRead
     }
+
+    fun close() {
+        client.close()
+    }
 }

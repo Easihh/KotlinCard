@@ -117,9 +117,16 @@ class ServerMain {
     }
 
     private fun readMessage(account: Account, clientChannelInfo: ClientChannelInfo) {
-        val byteRead = clientChannelInfo.readIntoBuffer()
-        if (byteRead == 0) {
-            println("ERROR:Read 0 bytes")
+        try {
+            val byteRead = clientChannelInfo.readIntoBuffer()
+            if (byteRead == 0) {
+                println("ERROR:Read 0 bytes")
+                return
+            }
+
+        } catch (exception: Exception) {
+            println("Exception:$exception player:${account.getAccountName()} has disconnected from server.")
+            clientChannelInfo.close()
             return
         }
         messageDecoder.decode(account)
