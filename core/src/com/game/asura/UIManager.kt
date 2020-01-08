@@ -164,7 +164,7 @@ class UIManager(private val stage: Stage,
         selectedCard = null
         //reset to normal cursor here
         Gdx.graphics.setSystemCursor(systemCursor)
-        //move back card to previous value
+        //move back card to previous value if we havent played the game
         when (boardTilt) {
             BoardManager.BoardPositionTilt.LEFT -> {
                 player.boardManager.moveCardRight()
@@ -376,6 +376,7 @@ class UIManager(private val stage: Stage,
         //remove card input listener as it was played
         card.getActor().clearListeners()
         selectedCard = null
+        boardTilt = BoardManager.BoardPositionTilt.NONE
         queue.addMessage(cardPlayedOut)
     }
 
