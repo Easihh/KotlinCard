@@ -81,4 +81,7 @@ class BoardManager<T : Card>(create: () -> T) {
         }
     }
 
+    fun cardIsPresentOnBoard(secondaryId: Int): Boolean {
+        return playerBoard.stream().filter { c -> c.getSecondayId() == secondaryId }.count() > 0
+    }
 }

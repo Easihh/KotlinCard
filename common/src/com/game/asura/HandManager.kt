@@ -26,13 +26,7 @@ class HandManager {
         cardsInHand.remove(card)
     }
 
-    fun getCardHandIndex(secondayId: Int): Int {
-        for (i in 0 until cardsInHand.size) {
-            if (cardsInHand[i].getSecondayId() == secondayId) {
-                return i
-            }
-        }
-        //should never happen
-        return INVALID_INDEX_
+    fun cardIsInHand(secondayId: Int): Boolean {
+        return cardsInHand.stream().anyMatch { c->c.getSecondayId()==secondayId}
     }
 }

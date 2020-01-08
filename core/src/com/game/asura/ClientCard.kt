@@ -18,7 +18,7 @@ class ClientCard(private val primaryId: Int,
                  private val cardType: CardType) : DrawableCard {
 
 
-    private var cardActor: CardActor
+    private var cardActor: HandCard
     private var isTargetable = false
 
     init {
@@ -26,7 +26,7 @@ class ClientCard(private val primaryId: Int,
             "monsterCard.png"
         } else "card.png"
         val texture = Texture("core/assets/$picture")
-        cardActor = CardActor(texture, secondaryId, ::CardIsTargetable)
+        cardActor = HandCard(texture, secondaryId, ::CardIsTargetable)
     }
 
     override fun getActor(): Actor {

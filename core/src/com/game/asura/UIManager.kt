@@ -55,21 +55,23 @@ class UIManager(private val stage: Stage,
                 mouseY = event.stageY
 
                 selectedCard?.let {
-                    if (it.getCardType() != CardType.TARGET_SPELL) {
-                        it.getActor().setPosition(mouseX - (BOARD_CARD_WIDTH / 2), mouseY - (BOARD_CARD_HEIGHT / 2))
-                    }
-                    if (it.getCardType() == CardType.MONSTER && !player.boardManager.boardIsEmpty()) {
-                        val halfScreen = VIRTUAL_WINDOW_WIDTH / 2f
-                        val currentTilt = if (event.stageX >= halfScreen) {
-                            BoardManager.BoardPositionTilt.LEFT
-                        } else {
-                            BoardManager.BoardPositionTilt.RIGHT
+                    if (player.handManager.cardIsInHand(it.getSecondayId())) {
+                        if (it.getCardType() != CardType.TARGET_SPELL) {
+                            it.getActor().setPosition(mouseX - (BOARD_CARD_WIDTH / 2), mouseY - (BOARD_CARD_HEIGHT / 2))
                         }
-                        if (currentTilt != boardTilt) {
-                            boardTilt = currentTilt
-                            moveCardByTilt()
-                            updateBoardPosition()
+                        if (it.getCardType() == CardType.MONSTER && !player.boardManager.boardIsEmpty()) {
+                            val halfScreen = VIRTUAL_WINDOW_WIDTH / 2f
+                            val currentTilt = if (event.stageX >= halfScreen) {
+                                BoardManager.BoardPositionTilt.LEFT
+                            } else {
+                                BoardManager.BoardPositionTilt.RIGHT
+                            }
+                            if (currentTilt != boardTilt) {
+                                boardTilt = currentTilt
+                                moveCardByTilt()
+                                updateBoardPosition()
 
+                            }
                         }
                     }
                 }
@@ -243,17 +245,19 @@ class UIManager(private val stage: Stage,
 
         val targetListener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                println("board card is touched.SourceTarget:$selectedCard")
-                if (selectedCard == null) {
-                    initCardSelect(card, Position(event.stageX, event.stageY))
-                    //disable actor as we don't want to trigger more mouse click on itself
-                    // until our targeting is done
-                    card.getActor().touchable = Touchable.disabled
-                    return true
-                }
-                //card is being target by something ie target spell/hero power etc
-                selectedCard?.let {
-                    playedCard(it, Position(event.stageX, event.stageY))
+                if (button == Input.Buttons.LEFT) {
+                    println("board card is touched.SourceTarget:$selectedCard")
+                    if (selectedCard == null) {
+                        initTargetSpell(card, Position(event.stageX, event.stageY))
+                        //disable actor as we don't want to trigger more mouse click on itself
+                        // until our targeting is done
+                        card.getActor().touchable = Touchable.disabled
+                        return true
+                    }
+                    //card is being target by something ie target spell/hero power etc
+                    selectedCard?.let {
+                        playedCard(it, Position(event.stageX, event.stageY))
+                    }
                 }
 
                 return true
@@ -294,7 +298,7 @@ class UIManager(private val stage: Stage,
         var cardPlayedOut: Message? = null
         //the target; don't want to trigger on non card actor.
         val actor = stage.hit(position.xPosition, position.yPosition, true)
-        if (actor is CardActor) {
+        if (actor is HandCard) {
             when (card) {
                 is HeroPower -> {
                     cardPlayedOut = HeroPowerOut(matchId, actor.secondaryId)
@@ -416,7 +420,22 @@ class UIManager(private val stage: Stage,
                 arrowImg.draw(batch)
                 val actor = stage.hit(mouseX, mouseY, true)
                 if (actor != null) {
-                    if (actor is CardActor && actor.targetable()) {
+                    if (actor is HandCard && actor.targetable()) {
+                        batch.draw(assetStore.getTexture(Asset.TARGET_CIRCLE), mouseX, mouseY)
+                        //only highlight targeted card
+                        batch.draw(assetStore.getTexture(Asset.CARD_TARGETED), actor.x, actor.y)
+                    }
+                }
+                batch.end()
+            }
+            if (it.getCardType() == CardType.MONSTER && player.boardManager.cardIsPresentOnBoard(it.getSecondayId())) {
+                val angle = 180.0 / Math.PI * Math.atan2(initialClickX.toDouble() - mouseX, mouseY.toDouble() - initialClickY)
+                arrowImg.rotation = angle.toFloat()
+                batch.begin()
+                arrowImg.draw(batch)
+                val actor = stage.hit(mouseX, mouseY, true)
+                if (actor != null) {
+                    if (actor is HandCard && actor.targetable()) {
                         batch.draw(assetStore.getTexture(Asset.TARGET_CIRCLE), mouseX, mouseY)
                         //only highlight targeted card
                         batch.draw(assetStore.getTexture(Asset.CARD_TARGETED), actor.x, actor.y)
