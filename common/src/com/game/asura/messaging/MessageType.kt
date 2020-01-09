@@ -11,7 +11,8 @@ enum class MessageType(val value: Byte) {
     MATCH_INFO('m'.toByte()),
     START_TURN('s'.toByte()),
     END_TURN('e'.toByte()),
-    HERO_POWER('h'.toByte());
+    HERO_POWER('h'.toByte()),
+    MONSTER_ATTACK('a'.toByte());
 
 
     companion object {

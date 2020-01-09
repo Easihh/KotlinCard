@@ -33,7 +33,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 }
                 val player = ServerPlayer(accountName)
                 player.initializeDeck()
-                val match = Match<ServerPlayer>(gameType = message.gameType)
+                val match = Match<ServerPlayer>()
                 match.addPlayer(accountName, player)
                 matchFinder.addMatch(match)
                 //send MatchId to concerned players
@@ -49,7 +49,9 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 for (x in 0..3) {
                     val cardDrawn = player.draw() ?: return
                     val cardDrawnOut = CardDrawnOut(account.getChannelWriter(), cardDrawn, player.cardRemaining())
+                    match.addCardToCache(cardDrawn)
                     messageQueue.addMessage(cardDrawnOut)
+
                 }
             }
 
@@ -149,9 +151,24 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                         println("Unable to find accountName in cache with key:${message.accountKey}.")
                         return
                     }
-                    val endTurnOut = EndTurnOut(account.getChannelWriter(),message.matchId)
+
+                    val endTurnOut = EndTurnOut(account.getChannelWriter(), message.matchId)
                     messageQueue.addMessage(endTurnOut)
                 }
+            }
+
+            is MonsterAttackIn -> {
+                val account = accountCache.getAccount(message.accountKey)
+                val accountName = account?.getAccountName()
+                if (accountName == null) {
+                    println("Unable to find accountName in cache with key:${message.accountKey}.")
+                    return
+                }
+                val match = matchFinder.findMatch(message.matchId) ?: return
+                match.monsterAttack(message.secondaryId, message.target)
+            }
+            else -> {
+                println("Error unable to processIn message:$message")
             }
         }
     }

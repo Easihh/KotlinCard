@@ -100,4 +100,8 @@ abstract class CoreMessageParser {
         return EndTurnData(coreMsg.getMatchId())
     }
 
+    fun getMonsterAttackData(): MonsterAttackData {
+        return MonsterAttackData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getCardTarget(), coreMsg.getMatchId())
+    }
+
 }

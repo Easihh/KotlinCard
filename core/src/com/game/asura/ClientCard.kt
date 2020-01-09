@@ -18,33 +18,24 @@ class ClientCard(private val primaryId: Int,
                  private val cardType: CardType) : DrawableCard {
 
 
-    private var cardActor: HandCard
-    private var isTargetable = false
+    private var currentActor: Actor
 
     init {
         val picture = if (cardType == CardType.MONSTER) {
             "monsterCard.png"
         } else "card.png"
         val texture = Texture("core/assets/$picture")
-        cardActor = HandCard(texture, secondaryId, ::CardIsTargetable)
+        currentActor = HandCard(texture, secondaryId)
     }
 
     override fun getActor(): Actor {
-        return cardActor
+        return currentActor
     }
 
     override fun transformActor(texture: Texture) {
-        cardActor.drawable = TextureRegionDrawable(TextureRegion(texture))
-        cardActor.setSize(cardActor.prefWidth, cardActor.prefHeight)
-        cardActor.setScaling(Scaling.stretch)
-        cardActor.setAlign(Align.center)
-        cardActor.setScale(1.0f)
-
-        isTargetable = true
-    }
-
-    private fun CardIsTargetable(): Boolean {
-        return isTargetable
+        ///destroy current actor
+        currentActor.remove()
+        currentActor = BoardCard(texture, secondaryId)
     }
 
     override fun getCost(): Int {

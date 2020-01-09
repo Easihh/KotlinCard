@@ -15,10 +15,12 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.game.asura.card.Card
 import com.game.asura.card.CardType
 import com.game.asura.messageout.CardPlayedOut
 import com.game.asura.messageout.EndTurnOut
 import com.game.asura.messageout.HeroPowerOut
+import com.game.asura.messageout.MonsterAttackOut
 import com.game.asura.messaging.Message
 
 class UIManager(private val stage: Stage,
@@ -235,11 +237,11 @@ class UIManager(private val stage: Stage,
     }
 
     fun moveCardToBoard(card: DrawableCard, boardIndex: Int) {
-        //we don't want to keep the drag listener from hand to board
-        card.getActor().clearListeners()
 
         //need change texture of actor as its now on board
         card.transformActor(assetStore.getTexture(Asset.BOARD_CARD))
+        //add new actor to stage as it was destroyed
+        stage.addActor(card.getActor())
         val pos = getBoardPosition(boardIndex)
         card.getActor().setPosition(pos.xPosition, pos.yPosition)
 
@@ -256,7 +258,11 @@ class UIManager(private val stage: Stage,
                     }
                     //card is being target by something ie target spell/hero power etc
                     selectedCard?.let {
-                        playedCard(it, Position(event.stageX, event.stageY))
+                        if (player.boardManager.cardIsPresentOnBoard(it.getSecondayId())) {
+                            attackCard(Position(event.stageX, event.stageY))
+                        } else if (player.handManager.cardIsInHand(it.getSecondayId())) {
+                            playedCard(it, Position(event.stageX, event.stageY))
+                        }
                     }
                 }
 
@@ -267,6 +273,18 @@ class UIManager(private val stage: Stage,
         card.getActor().addListener(targetListener)
 
         updateCardPositionInHand()
+    }
+
+    private fun attackCard(position: Position) {
+        val matchId = player.getCurrentMatchId() ?: return
+        val attacker = selectedCard ?: return
+        val target = stage.hit(position.xPosition, position.yPosition, true)
+        if (target is BoardCard) {
+            println("Attacking, attacker:$selectedCard, target:$target")
+            val attackMsg = MonsterAttackOut(matchId, attacker, target.secondaryId)
+            queue.addMessage(attackMsg)
+            clearTargetingAction()
+        }
     }
 
     fun addCardToHand(card: DrawableCard) {
@@ -421,7 +439,7 @@ class UIManager(private val stage: Stage,
                 arrowImg.draw(batch)
                 val actor = stage.hit(mouseX, mouseY, true)
                 if (actor != null) {
-                    if (actor is HandCard && actor.targetable()) {
+                    if (actor is BoardCard) {
                         batch.draw(assetStore.getTexture(Asset.TARGET_CIRCLE), mouseX, mouseY)
                         //only highlight targeted card
                         batch.draw(assetStore.getTexture(Asset.CARD_TARGETED), actor.x, actor.y)
@@ -436,7 +454,7 @@ class UIManager(private val stage: Stage,
                 arrowImg.draw(batch)
                 val actor = stage.hit(mouseX, mouseY, true)
                 if (actor != null) {
-                    if (actor is HandCard && actor.targetable()) {
+                    if (actor is BoardCard) {
                         batch.draw(assetStore.getTexture(Asset.TARGET_CIRCLE), mouseX, mouseY)
                         //only highlight targeted card
                         batch.draw(assetStore.getTexture(Asset.CARD_TARGETED), actor.x, actor.y)

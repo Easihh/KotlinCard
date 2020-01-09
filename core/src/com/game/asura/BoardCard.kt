@@ -4,5 +4,5 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 
 //need keep track of secondary id for actor to determine which card it is e.g when targeting
-data class HandCard(private val texture: Texture?,
-                    val secondaryId: Int) : Image(texture)
+data class BoardCard(private val texture: Texture?,
+                     val secondaryId: Int) : Image(texture)

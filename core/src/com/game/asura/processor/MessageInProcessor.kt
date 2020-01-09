@@ -16,8 +16,7 @@ class MessageInProcessor(private val player: ClientPlayer,
             }
             is MatchInfoIn -> {
                 val matchId = message.matchId ?: return
-                val gameType = message.gameType
-                val match = Match<ClientPlayer>(matchId, gameType)
+                val match = Match<ClientPlayer>(matchId)
                 player.setMatch(match)
             }
             is CardDrawnIn -> {
