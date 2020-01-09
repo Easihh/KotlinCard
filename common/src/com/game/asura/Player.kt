@@ -2,7 +2,7 @@ package com.game.asura
 
 abstract class Player(private val playerName: String) {
 
-    val handManager = HandManager()
+
     protected var playerLife: Int = 30
     protected var maxPlayerLife: Int = 30
     protected var currentPlayerArmor: Int = 0

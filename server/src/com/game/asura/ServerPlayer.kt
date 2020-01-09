@@ -4,9 +4,11 @@ import com.game.asura.card.AllCard
 import com.game.asura.card.Card
 import java.util.*
 
-class ServerPlayer(playerName: String) : Player(playerName) {
+class ServerPlayer(val playerName: String) {
 
     private val deck: Stack<Card> = Stack()
+    val heroPlayer = ServerHero(AllCard.MAGE_HERO.id)
+    val handManager = HandManager()
     val boardManager = BoardManager<Card>(create = { INVALID_SERVER_CARD })
 
     fun draw(): Card? {
@@ -34,17 +36,8 @@ class ServerPlayer(playerName: String) : Player(playerName) {
                 cardType = AllCard.FIRST_TARGET_SPELL.cardType))
     }
 
-
-    fun takeDmg(dmg: Int) {
-        playerLife -= dmg
-    }
-
-    fun updateMana(cost: Int) {
-        currentPlayerMana -= cost
-    }
-
     fun playCard(card: Card) {
         handManager.removeFromHand(card)
-        currentPlayerMana -= card.getCost()
+        heroPlayer.updateMana(card.getCost())
     }
 }

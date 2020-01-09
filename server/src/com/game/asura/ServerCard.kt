@@ -39,12 +39,4 @@ class ServerCard(private val primaryId: Int,
     override fun getCardType(): CardType {
         return cardType
     }
-
-    override fun getAttack(): Int? {
-        return 1
-    }
-
-    override fun getHealth(): Int? {
-        return 3
-    }
 }

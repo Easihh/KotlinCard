@@ -3,20 +3,20 @@ package com.game.asura
 import com.game.asura.card.Card
 import kotlin.random.Random
 
-class Match<P : Player>(val matchId: Int = Random.nextInt()) {
+class Match(val matchId: Int = Random.nextInt()) {
 
 
     private var matchTurn = 1
     private var currentPlayerTurn = ""
     //keep track of card drawn/hero for whole match to be able to search by card secondary id instantly
     private val cardCache: MutableMap<Int, Card> = HashMap()
-    private val playerMap: MutableMap<String, P> = HashMap()
+    private val playerMap: MutableMap<String, ServerPlayer> = HashMap()
 
-    fun getPlayer(key: String): P? {
+    fun getPlayer(key: String): ServerPlayer? {
         return playerMap[key]
     }
 
-    fun addPlayer(key: String, value: P) {
+    fun addPlayer(key: String, value: ServerPlayer) {
         playerMap.putIfAbsent(key, value)
     }
 

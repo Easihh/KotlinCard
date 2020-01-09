@@ -2,14 +2,14 @@ package com.game.asura
 
 class MatchFinder {
 
-    private val allMatch: MutableMap<Int, Match<ServerPlayer>> = HashMap()
+    private val allMatch: MutableMap<Int, Match> = HashMap()
 
 
-    fun findMatch(matchId: Int): Match<ServerPlayer>? {
+    fun findMatch(matchId: Int): Match? {
         return allMatch[matchId]
     }
 
-    fun addMatch(match: Match<ServerPlayer>) {
+    fun addMatch(match: Match) {
         allMatch[match.matchId] = match
     }
 

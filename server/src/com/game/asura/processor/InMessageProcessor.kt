@@ -33,7 +33,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 }
                 val player = ServerPlayer(accountName)
                 player.initializeDeck()
-                val match = Match<ServerPlayer>()
+                val match = Match()
                 match.addPlayer(accountName, player)
                 matchFinder.addMatch(match)
                 //send MatchId to concerned players
@@ -84,7 +84,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 player.playCard(cardInHand)
                 val changedFields: MutableList<ChangedField> = ArrayList()
                 if (cardInHand.getCost() > 0) {
-                    val manaField = ChangedField(MessageField.PLAYER_CURRENT_MANA, player.getPlayerMana())
+                    val manaField = ChangedField(MessageField.PLAYER_CURRENT_MANA, player.heroPlayer.getCurrentMana())
                     changedFields.add(manaField)
                 }
                 val effects = cardInHand.getEffect()
@@ -97,8 +97,8 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                         }
                         //targeting  own minion [0-6] or yourself (7)
                         if (message.cardTarget == 7) {
-                            player.takeDmg(3)
-                            val healthField = ChangedField(MessageField.PLAYER_CURRENT_HEALTH, player.getCurrentPlayerLife())
+                            player.heroPlayer.takeDmg(3)
+                            val healthField = ChangedField(MessageField.PLAYER_CURRENT_HEALTH, player.heroPlayer.getHealth())
                             changedFields.add(healthField)
                             val playerInfoOut = PlayerInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, changedFields = changedFields)
                             messageQueue.addMessage(playerInfoOut)

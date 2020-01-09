@@ -9,6 +9,7 @@ enum class AllCard(val id: Int,
     FIRST_TARGET_SPELL(2, CardType.TARGET_SPELL, 2, CardEffect.DEAL_DMG),
     FIRST_SPELL(3, CardType.SPELL, 3, CardEffect.CARD_DRAW),
     MONSTER_A(4, CardType.MONSTER, 4, CardEffect.NONE),
+    MAGE_HERO(4, CardType.HERO, 4, CardEffect.NONE),
     ;
 
     companion object {

@@ -414,20 +414,22 @@ class UIManager(private val stage: Stage,
 
     fun render(batch: SpriteBatch, font: BitmapFont, shaper: ShapeRenderer) {
         batch.begin()
+        val hero = player.heroPlayer
+        val eHero = otherPlayer.heroPlayer
         font.draw(batch, "END TURN", 835f, 195f)
         font.draw(batch, "PLAY", 745f, 720f)
         font.draw(batch, "CONNECT", 870f, 720f)
         font.draw(batch, "FPS: ${Gdx.graphics.framesPerSecond}", 50f, 750f)
-        font.draw(batch, "Player: ${player.getPlayerName()}", 50f, 200f)
-        font.draw(batch, "Player: ${otherPlayer.getPlayerName()}", 50f, 725f)
-        font.draw(batch, "Mana: ${player.getPlayerMana()}/${player.getPlayerMaxMana()}", 50f, 175f)
-        font.draw(batch, "EnemyMana: ${otherPlayer.getPlayerMana()}/${otherPlayer.getPlayerMaxMana()}", 50f, 650f)
+        font.draw(batch, "Player: ${player.playerName}", 50f, 200f)
+        font.draw(batch, "Player: ${otherPlayer.playerName}", 50f, 725f)
+        font.draw(batch, "Mana: ${hero.getCurrentMana()}/${hero.getPlayerMaxMana()}", 50f, 175f)
+        font.draw(batch, "EnemyMana: ${eHero.getCurrentMana()}/${eHero.getPlayerMaxMana()}", 50f, 650f)
         font.draw(batch, "Mouse:$mouseX,$mouseY", 50f, 625f)
         font.draw(batch, "Time:${(endTurnTime - System.nanoTime()) / ONE_NANO_SECOND}", 50f, 600f)
         batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 50f)
         batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 600f)
-        font.draw(batch, player.getCurrentPlayerLife().toString(), 587.5f, 80f)
-        font.draw(batch, otherPlayer.getCurrentPlayerLife().toString(), 587.5f, 625f)
+        font.draw(batch, hero.getHealth().toString(), 587.5f, 80f)
+        font.draw(batch, eHero.getHealth().toString(), 587.5f, 625f)
         batch.end()
 
         renderDebugBoard(shaper)

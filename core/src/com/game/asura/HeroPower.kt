@@ -1,6 +1,6 @@
 package com.game.asura
 
-interface HeroPower:DrawableCard {
+interface HeroPower : DrawableCard {
 
     fun isActive(): Boolean
 

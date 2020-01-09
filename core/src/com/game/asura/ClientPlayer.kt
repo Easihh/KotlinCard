@@ -3,13 +3,15 @@ package com.game.asura
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.game.asura.messaging.MessageField
+import com.game.asura.card.AllCard
 
-class ClientPlayer(playerName: String, val heroPower: HeroPower) : Player(playerName) {
+class ClientPlayer(val playerName: String, val heroPower: HeroPower) {
 
-    private val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
+
     val boardManager = BoardManager<DrawableCard>(create = { INVALID_CLIENT_CARD })
-    private var currentMatch: Match<ClientPlayer>? = null
+    val handManager = HandManager()
+    val heroPlayer = ClientHero(AllCard.MAGE_HERO.id)
+    private var currentMatchId: Int? = null
 
     private val playerActor: Image
 
@@ -18,27 +20,18 @@ class ClientPlayer(playerName: String, val heroPower: HeroPower) : Player(player
         playerActor = Image(texture)
     }
 
-    fun setMatch(match: Match<ClientPlayer>) {
-        currentMatch = match
+    fun setMatchId(matchId: Int) {
+        currentMatchId = matchId
     }
 
     fun getCurrentMatchId(): Int? {
-        currentMatch?.let {
-            return it.matchId
-        }
-        return null
+        return currentMatchId
     }
 
-    init {
-        updateFncMap[MessageField.PLAYER_CURRENT_HEALTH] = { playerLife = it.value as Int }
-        updateFncMap[MessageField.PLAYER_MAX_HEALTH] = { maxPlayerLife = it.value as Int }
-        updateFncMap[MessageField.PLAYER_CURRENT_MANA] = { currentPlayerMana = it.value as Int }
-        updateFncMap[MessageField.PLAYER_MAX_MANA] = { maxPlayerMana = it.value as Int }
-    }
 
     fun update(changes: List<ChangedField>) {
         for (change in changes) {
-            updateFncMap[change.field]?.invoke(change)
+            heroPlayer.updateField(change)
         }
     }
 
