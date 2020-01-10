@@ -14,18 +14,24 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.asura.messageout.PlayGameRequestOut
+import com.game.asura.processor.PreMatchMessageInProcessor
+import com.game.asura.processor.PreMatchMessageOutProcessor
+import com.game.asura.processor.PreMatchMessageProcessor
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.graphics.use
 
 class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
-                     private val messageQueue: InsertableQueue,
+                     private val messageQueue: MessageQueue,
                      private val server: ServerBosom) : KtxScreen {
 
     private val camera: OrthographicCamera = OrthographicCamera()
     private val viewport: FitViewport = FitViewport(VIRTUAL_WINDOW_WIDTH.toFloat(), VIRTUAL_WINDOW_HEIGHT.toFloat(), camera)
     private val stage: Stage = Stage(viewport)
     private val batch = SpriteBatch()
+    private val outProcessor = PreMatchMessageOutProcessor(server::sendMessage)
+    private val inProcessor = PreMatchMessageInProcessor()
+    private val preMatchProcessor = PreMatchMessageProcessor(inProcessor, outProcessor)
     private lateinit var font: BitmapFont
 
     init {
@@ -33,7 +39,6 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
         setupFont()
         setupConnectButton()
         setupPlayButton()
-        Gdx.input.inputProcessor = stage
     }
 
     private fun setupStage() {
@@ -49,6 +54,10 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
                 return false
             }
         })
+    }
+
+    override fun show() {
+        Gdx.input.inputProcessor = stage
     }
 
     private fun setupFont() {
@@ -114,6 +123,12 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
     }
 
     override fun render(delta: Float) {
+
+        while (messageQueue.queueIsNotEmpty()) {
+            val message = messageQueue.nextMessage()
+            preMatchProcessor.onMessage(message)
+        }
+
         batch.use {
             font.draw(it, "PLAY", 745f, 720f)
             font.draw(it, "CONNECT", 870f, 720f)
