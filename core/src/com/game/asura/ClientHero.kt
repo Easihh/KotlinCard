@@ -4,7 +4,8 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.game.asura.messaging.MessageField
 
-class ClientHero(primaryId: Int) : BaseHero(primaryId) {
+class ClientHero(val primary: Int,
+                 val secondary: Int) : BaseHero() {
 
     private val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
     private val playerActor: BoardCard
@@ -18,6 +19,14 @@ class ClientHero(primaryId: Int) : BaseHero(primaryId) {
         updateFncMap[MessageField.PLAYER_MAX_HEALTH] = { maxPlayerLife = it.value as Int }
         updateFncMap[MessageField.PLAYER_CURRENT_MANA] = { currentPlayerMana = it.value as Int }
         updateFncMap[MessageField.PLAYER_MAX_MANA] = { maxPlayerMana = it.value as Int }
+    }
+
+    override fun getPrimaryId(): Int {
+        return primary
+    }
+
+    override fun getSecondayId(): Int {
+        return secondary
     }
 
     fun updateField(changedField: ChangedField) {

@@ -37,7 +37,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 match.addPlayer(accountName, player)
                 matchFinder.addMatch(match)
                 //send MatchId to concerned players
-                val matchInfo = MatchInfoOut(account.getChannelWriter(), matchId = match.matchId)
+                val matchInfo = MatchInfoOut(account.getChannelWriter(), accountName, player.heroPlayer, matchId = match.matchId)
                 messageQueue.addMessage(matchInfo)
                 //send start turn to a player
                 val startTurn = StartTurnOut(account.getChannelWriter(), matchId = match.matchId)

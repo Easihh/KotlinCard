@@ -18,6 +18,8 @@ class Match(val matchId: Int = Random.nextInt()) {
 
     fun addPlayer(key: String, value: ServerPlayer) {
         playerMap.putIfAbsent(key, value)
+        //add "Hero" player as its also a card to be retrieved on attack/defense
+        addCardToCache(value.heroPlayer)
     }
 
     fun getMatchTurn(): Int {

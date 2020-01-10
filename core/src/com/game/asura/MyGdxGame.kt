@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.utils.viewport.ScreenViewport
+import com.game.asura.card.AllCard
 import com.game.asura.messageout.PlayGameRequestOut
 import com.game.asura.processor.MessageInProcessor
 import com.game.asura.processor.MessageOutProcessor
@@ -49,8 +50,8 @@ class MyGdxGame : ApplicationAdapter() {
         //setupGraphicOptions()
         setupDisplayMode()
         setupFont()
-        player = ClientPlayer("test", MagePower())
-        val otherPlayer = ClientPlayer("enemy", MagePower())
+        player = ClientPlayer("test", MagePower(),AllCard.MAGE_HERO.id,99999)
+        val otherPlayer = ClientPlayer("enemy", MagePower(),AllCard.MAGE_HERO.id,7777)
         uiManager = UIManager(stage, messageQueue, player, otherPlayer)
         setupMessageProcessors()
         setupConnectButton()

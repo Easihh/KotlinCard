@@ -1,13 +1,14 @@
 package com.game.asura
 
-import com.game.asura.card.AllCard
-
-class ClientPlayer(val playerName: String, val heroPower: HeroPower) {
+class ClientPlayer(val playerName: String,
+                   val heroPower: HeroPower,
+                    primary: Int,
+                    secondary: Int) {
 
 
     val boardManager = BoardManager<DrawableCard>(create = { INVALID_CLIENT_CARD })
     val handManager = HandManager()
-    val heroPlayer = ClientHero(AllCard.MAGE_HERO.id)
+    val heroPlayer = ClientHero(primary, secondary)
     private var currentMatchId: Int? = null
 
 

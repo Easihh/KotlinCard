@@ -3,10 +3,8 @@ package com.game.asura
 import com.game.asura.card.CardEffect
 import com.game.asura.card.CardType
 import com.game.asura.card.HeroCard
-import kotlin.random.Random
 
-abstract class BaseHero(val primary: Int,
-                        val secondary: Int = Random.nextInt()) : HeroCard {
+abstract class BaseHero : HeroCard {
 
     protected var playerLife: Int = 30
     protected var maxPlayerLife: Int = 30
@@ -15,13 +13,7 @@ abstract class BaseHero(val primary: Int,
     protected var maxPlayerMana: Int = 10
     protected var attackPower: Int? = null
 
-    override fun getPrimaryId(): Int {
-        return primary
-    }
 
-    override fun getSecondayId(): Int {
-        return secondary
-    }
 
     override fun getCost(): Int {
         return 0
