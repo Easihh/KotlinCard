@@ -439,8 +439,7 @@ class UIManager(private val stage: Stage,
         val hero = player.heroPlayer
         val eHero = otherPlayer.heroPlayer
         font.draw(batch, "END TURN", 835f, 195f)
-        font.draw(batch, "PLAY", 745f, 720f)
-        font.draw(batch, "CONNECT", 870f, 720f)
+
         font.draw(batch, "FPS: ${Gdx.graphics.framesPerSecond}", 50f, 750f)
         font.draw(batch, "Player: ${player.playerName}", 50f, 200f)
         font.draw(batch, "Player: ${otherPlayer.playerName}", 50f, 725f)

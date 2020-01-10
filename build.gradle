@@ -1,6 +1,6 @@
 buildscript {
     ext.kotlinVersion = '1.3.30'
-
+    ext.ktxVersion = '1.9.10-b3'
     repositories {
         mavenLocal()
         mavenCentral()
@@ -67,6 +67,9 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        compile "io.github.libktx:ktx-app:$ktxVersion"
+        compile "io.github.libktx:ktx-graphics:$ktxVersion"
+        
     }
 }
 project(":server") {
