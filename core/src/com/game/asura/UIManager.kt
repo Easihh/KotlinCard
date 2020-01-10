@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.game.asura.card.Card
 import com.game.asura.card.CardType
 import com.game.asura.messageout.CardPlayedOut
 import com.game.asura.messageout.EndTurnOut
@@ -110,13 +109,35 @@ class UIManager(private val stage: Stage,
     }
 
     private fun addHeroesToBoard() {
-        val actor = player.getActor()
+        val actor = player.heroPlayer.getActor()
+
+        actor.addListener(createHeroInputListener())
         actor.setPosition(450f, 50f)
         stage.addActor(actor)
 
-        val otherActor = otherPlayer.getActor()
+        val otherActor = otherPlayer.heroPlayer.getActor()
+        otherActor.addListener(createHeroInputListener())
         otherActor.setPosition(450f, 600f)
         stage.addActor(otherActor)
+    }
+
+    private fun createHeroInputListener():InputListener{
+        return object : InputListener() {
+            override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                if (button == Input.Buttons.LEFT) {
+                    selectedCard?.let {
+                        //being target of card/monster
+                        if (it.getCardType() == CardType.MONSTER) {
+                            attackCard(Position(event.stageX, event.stageY))
+                        }
+                        if(it.getCardType()==CardType.TARGET_SPELL){
+                            playedCard(it,Position(event.stageX,event.stageY))
+                        }
+                    }
+                }
+                return true
+            }
+        }
     }
 
     private fun addEndTurnBtn() {
@@ -279,6 +300,7 @@ class UIManager(private val stage: Stage,
         val matchId = player.getCurrentMatchId() ?: return
         val attacker = selectedCard ?: return
         val target = stage.hit(position.xPosition, position.yPosition, true)
+        println("Attacking, attacker:$selectedCard, target:$target")
         if (target is BoardCard) {
             println("Attacking, attacker:$selectedCard, target:$target")
             val attackMsg = MonsterAttackOut(matchId, attacker, target.secondaryId)
