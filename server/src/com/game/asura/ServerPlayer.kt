@@ -3,11 +3,14 @@ package com.game.asura
 import com.game.asura.card.AllCard
 import com.game.asura.card.Card
 import java.util.*
+import kotlin.random.Random
 
-class ServerPlayer(val playerName: String) {
+class ServerPlayer(val playerName: String,
+                   primary: Int,
+                   secondary: Int = Random.nextInt()) {
 
     private val deck: Stack<Card> = Stack()
-    val heroPlayer = ServerHero(AllCard.MAGE_HERO.id)
+    val heroPlayer = ServerHero(primary, secondary)
     val handManager = HandManager()
     val boardManager = BoardManager<Card>(create = { INVALID_SERVER_CARD })
 

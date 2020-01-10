@@ -31,7 +31,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     println("Unable to find accountName in cache with key:${message.accountKey}")
                     return
                 }
-                val player = ServerPlayer(accountName)
+                val player = ServerPlayer(accountName,AllCard.MAGE_HERO.id)
                 player.initializeDeck()
                 val match = Match()
                 match.addPlayer(accountName, player)
