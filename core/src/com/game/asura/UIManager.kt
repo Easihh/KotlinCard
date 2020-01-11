@@ -121,7 +121,7 @@ class UIManager(private val stage: Stage,
         stage.addActor(otherActor)
     }
 
-    private fun createHeroInputListener():InputListener{
+    private fun createHeroInputListener(): InputListener {
         return object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 if (button == Input.Buttons.LEFT) {
@@ -130,8 +130,8 @@ class UIManager(private val stage: Stage,
                         if (it.getCardType() == CardType.MONSTER) {
                             attackCard(Position(event.stageX, event.stageY))
                         }
-                        if(it.getCardType()==CardType.TARGET_SPELL){
-                            playedCard(it,Position(event.stageX,event.stageY))
+                        if (it.getCardType() == CardType.TARGET_SPELL) {
+                            playedCard(it, Position(event.stageX, event.stageY))
                         }
                     }
                 }
@@ -330,7 +330,7 @@ class UIManager(private val stage: Stage,
         var cardPlayedOut: Message? = null
         //the target; don't want to trigger on non card actor.
         val actor = stage.hit(position.xPosition, position.yPosition, true)
-        if (actor is HandCard) {
+        if (actor is BoardCard) {
             when (card) {
                 is HeroPower -> {
                     cardPlayedOut = HeroPowerOut(actor.secondaryId)

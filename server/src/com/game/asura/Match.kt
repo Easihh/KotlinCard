@@ -9,7 +9,7 @@ class Match(val matchId: Int = Random.nextInt()) {
     private var matchTurn = 1
     private var currentPlayerTurn = ""
     //keep track of card drawn/hero for whole match to be able to search by card secondary id instantly
-    private val cardCache: MutableMap<Int, Card> = HashMap()
+    private val matchCardCache: MutableMap<Int, Card> = HashMap()
     private val playerMap: MutableMap<String, ServerPlayer> = HashMap()
 
     fun getPlayer(key: String): ServerPlayer? {
@@ -31,12 +31,16 @@ class Match(val matchId: Int = Random.nextInt()) {
     }
 
     fun addCardToCache(card: Card) {
-        cardCache[card.getSecondayId()] = card
+        matchCardCache[card.getSecondayId()] = card
+    }
+
+    fun getCard(secondaryId: Int): Card? {
+        return matchCardCache[secondaryId]
     }
 
     fun monsterAttack(secondaryId: Int, target: Int) {
-        val attacker = cardCache[secondaryId] ?: return
-        val target = cardCache[target] ?: return
+        val attacker = matchCardCache[secondaryId] ?: return
+        val target = matchCardCache[target] ?: return
 
         println("attacker/target logic here.")
     }

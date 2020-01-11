@@ -5,6 +5,7 @@ import com.game.asura.account.CachedAccount
 import com.game.asura.account.PlayerAccount
 import com.game.asura.card.AllCard
 import com.game.asura.card.CardEffect
+import com.game.asura.card.HeroCard
 import com.game.asura.messagein.*
 import com.game.asura.messageout.*
 import com.game.asura.messaging.MessageField
@@ -104,8 +105,8 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                             println("Error, card:$cardName from player:$accountName was played no target.")
                             break
                         }
-                        //targeting  own minion [0-6] or yourself (7)
-                        if (message.cardTarget == 7) {
+                        val target = match.getCard(message.cardTarget) ?: return
+                        if (target is HeroCard) {
                             player.heroPlayer.takeDmg(3)
                             val healthField = ChangedField(MessageField.PLAYER_CURRENT_HEALTH, player.heroPlayer.getHealth())
                             changedFields.add(healthField)
@@ -113,10 +114,6 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                             messageQueue.addMessage(playerInfoOut)
                             continue
                         }
-                        if (message.cardTarget < 7) {
-                            continue
-                        }
-                        //targeting enemy minion [8-15] or enemy itself (15)
                     }
                 }
                 println("Handle card played on server here.")

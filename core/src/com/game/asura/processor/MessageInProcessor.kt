@@ -17,7 +17,6 @@ class MessageInProcessor(private val player: ClientPlayer,
             is CardDrawnIn -> {
                 val card = ClientCard(primaryId = message.primaryId, secondaryId = message.secondaryId,
                         cardCost = message.cardCost, cardType = message.cardType)
-                println("Adding card to player hand.")
                 player.handManager.addToPlayerHand(card)
                 uiManager.addCardToHand(card)
                 cardStore.add(card)
