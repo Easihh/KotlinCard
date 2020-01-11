@@ -16,6 +16,5 @@ class MatchInfoOut(channelWriter: ChannelMessageWriter,
         messageBuilder.add(MessageField.ACCOUNT_NAME, accountName)
         messageBuilder.add(MessageField.PRIMARY_CARD_ID, playerHero.getPrimaryId())
         messageBuilder.add(MessageField.SECONDARY_CARD_ID, playerHero.getSecondayId())
-        messageBuilder.add(MessageField.MATCH_ID, matchId)
     }
 }

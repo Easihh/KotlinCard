@@ -66,8 +66,8 @@ abstract class CoreMessageParser {
     }
 
     fun getCardPlayedData(): CardPlayedData {
-        return CardPlayedData(coreMsg.getCardPrimaryId(), coreMsg.getSecondaryCardId(),
-                coreMsg.getMatchId(), coreMsg.getCardTarget(), coreMsg.getBoardPosition())
+        return CardPlayedData(coreMsg.getCardPrimaryId(), coreMsg.getSecondaryCardId()
+                ,coreMsg.getCardTarget(), coreMsg.getBoardPosition())
     }
 
     fun getGameRequestData(): GameRequestData {
@@ -80,7 +80,7 @@ abstract class CoreMessageParser {
     }
 
     fun getMatchInfoData(): MatchInfoData {
-        return MatchInfoData(coreMsg.getMatchId(), coreMsg.getGameType())
+        return MatchInfoData(coreMsg.getGameType())
     }
 
     fun getCardDrawnData(): CardDrawnData {
@@ -89,19 +89,19 @@ abstract class CoreMessageParser {
     }
 
     fun getHeroPowerData(): HeroPowerData {
-        return HeroPowerData(coreMsg.getMatchId(), coreMsg.getCardTarget())
+        return HeroPowerData(coreMsg.getCardTarget())
     }
 
     fun getStartTurnData(): StartTurnData {
-        return StartTurnData(coreMsg.getMatchId())
+        return StartTurnData()
     }
 
     fun getEndTurnData(): EndTurnData {
-        return EndTurnData(coreMsg.getMatchId())
+        return EndTurnData()
     }
 
     fun getMonsterAttackData(): MonsterAttackData {
-        return MonsterAttackData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getCardTarget(), coreMsg.getMatchId())
+        return MonsterAttackData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getCardTarget())
     }
 
 }

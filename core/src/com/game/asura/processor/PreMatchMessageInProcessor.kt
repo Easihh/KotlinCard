@@ -8,7 +8,6 @@ class PreMatchMessageInProcessor {
     fun onMessage(message: DecodedMessage) {
         when (message) {
             is MatchInfoIn -> {
-                val matchId = message.matchId ?: return
                 //player.setMatchId(matchId)
             }
             else -> {

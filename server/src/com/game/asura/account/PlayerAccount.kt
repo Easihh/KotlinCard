@@ -1,11 +1,20 @@
 package com.game.asura.account
 
+import com.game.asura.Match
 import com.game.asura.parsing.Tokenizer
 
 class PlayerAccount(val clientConn: ClientChannelInfo,
                     private val clientWriter: ChannelMessageWriter,
                     private val accountKey: String,
-                    private val accountName: String) : Account {
+                    private val accountName: String,
+                    private var currentMatch: Match? = null) : Account {
+    override fun setMatch(match: Match) {
+        this.currentMatch = match
+    }
+
+    override fun getCurrentMatchId(): Int? {
+        return this.currentMatch?.matchId
+    }
 
     override fun getChannelWriter(): ChannelMessageWriter {
         return clientWriter

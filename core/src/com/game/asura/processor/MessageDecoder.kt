@@ -35,8 +35,7 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
             }
             MessageType.MATCH_INFO -> {
                 val matchInfoData = getMatchInfoData()
-                val matchId = matchInfoData.matchId ?: return
-                decodedMessage = MatchInfoIn(matchId, matchInfoData.gameType)
+                decodedMessage = MatchInfoIn(matchInfoData.gameType)
             }
             MessageType.PLAYER_INFO -> {
                 val data = getPlayerInfoData()
@@ -56,13 +55,11 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
             }
             MessageType.START_TURN -> {
                 val data = getStartTurnData()
-                val matchId = data.matchId ?: return
-                decodedMessage = StartTurnIn(matchId)
+                decodedMessage = StartTurnIn()
             }
             MessageType.END_TURN -> {
                 val data = getEndTurnData()
-                val matchId = data.matchId ?: return
-                decodedMessage = EndTurnIn(matchId)
+                decodedMessage = EndTurnIn()
             }
             else -> {
                 println("Message of type $msgType has no decode logic.")

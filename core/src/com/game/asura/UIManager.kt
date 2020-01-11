@@ -147,8 +147,7 @@ class UIManager(private val stage: Stage,
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 println("Requesting End Turn.")
-                val matchId = player.getCurrentMatchId() ?: return true
-                val endTurnRequest = EndTurnOut(matchId)
+                val endTurnRequest = EndTurnOut()
                 queue.addMessage(endTurnRequest)
                 return true
             }
@@ -160,11 +159,6 @@ class UIManager(private val stage: Stage,
     private fun setupClickListener() {
         stage.addListener(object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                val matchId = player.getCurrentMatchId()
-                if (matchId == null) {
-                    println("Error, current match is null.")
-                    return true
-                }
                 if (button == Input.Buttons.RIGHT) {
                     selectedCard?.let {
                         println("clearing target action for card:$selectedCard")
@@ -297,13 +291,11 @@ class UIManager(private val stage: Stage,
     }
 
     private fun attackCard(position: Position) {
-        val matchId = player.getCurrentMatchId() ?: return
         val attacker = selectedCard ?: return
         val target = stage.hit(position.xPosition, position.yPosition, true)
-        println("Attacking, attacker:$selectedCard, target:$target")
         if (target is BoardCard) {
             println("Attacking, attacker:$selectedCard, target:$target")
-            val attackMsg = MonsterAttackOut(matchId, attacker, target.secondaryId)
+            val attackMsg = MonsterAttackOut(attacker, target.secondaryId)
             queue.addMessage(attackMsg)
             clearTargetingAction()
         }
@@ -322,30 +314,30 @@ class UIManager(private val stage: Stage,
         stage.addActor(cardImg)
     }
 
-    private fun playMonsterCard(card: DrawableCard, position: Position, matchId: Int): CardPlayedOut? {
+    private fun playMonsterCard(card: DrawableCard, position: Position): CardPlayedOut? {
         var cardPlayedOut: CardPlayedOut? = null
         val indx = getClosestEmptyBoardIndex(position.xPosition, position.yPosition)
         if (indx != null) {
             player.boardManager.updatePlayerBoard(card, indx)
             val pos = getBoardPosition(indx)
             card.getActor().setPosition(pos.xPosition, pos.yPosition)
-            cardPlayedOut = CardPlayedOut(card, indx, matchId)
+            cardPlayedOut = CardPlayedOut(card, indx)
         }
         return cardPlayedOut
     }
 
-    private fun playTargetSpell(card: DrawableCard, position: Position, matchId: Int): Message? {
+    private fun playTargetSpell(card: DrawableCard, position: Position): Message? {
         var cardPlayedOut: Message? = null
         //the target; don't want to trigger on non card actor.
         val actor = stage.hit(position.xPosition, position.yPosition, true)
         if (actor is HandCard) {
             when (card) {
                 is HeroPower -> {
-                    cardPlayedOut = HeroPowerOut(matchId, actor.secondaryId)
+                    cardPlayedOut = HeroPowerOut(actor.secondaryId)
 
                 }
                 is ClientCard -> {
-                    cardPlayedOut = CardPlayedOut(card = card, cardTarget = actor.secondaryId, matchId = matchId)
+                    cardPlayedOut = CardPlayedOut(card = card, cardTarget = actor.secondaryId)
                 }
             }
             clearTargetingAction()
@@ -353,8 +345,8 @@ class UIManager(private val stage: Stage,
         return cardPlayedOut
     }
 
-    private fun playNonTargetSpell(card: DrawableCard, matchId: Int): CardPlayedOut {
-        return CardPlayedOut(card = card, matchId = matchId)
+    private fun playNonTargetSpell(card: DrawableCard): CardPlayedOut {
+        return CardPlayedOut(card = card)
     }
 
     private fun hasCardSelected(): Boolean {
@@ -385,7 +377,6 @@ class UIManager(private val stage: Stage,
     private fun playedCard(card: DrawableCard, position: Position) {
         var cardPlayedOut: Message? = null
         val cardType = card.getCardType()
-        val matchId = player.getCurrentMatchId() ?: return
         if (position.yPosition < 200) {
             println("Trying to trigger card play at position:${position.xPosition},${position.yPosition} " +
                     "which is near playerHand, assuming player want to put back card in hand.")
@@ -395,13 +386,13 @@ class UIManager(private val stage: Stage,
         }
         when (cardType) {
             CardType.MONSTER -> {
-                cardPlayedOut = playMonsterCard(card, position, matchId)
+                cardPlayedOut = playMonsterCard(card, position)
             }
             CardType.SPELL -> {
-                cardPlayedOut = playNonTargetSpell(card, matchId)
+                cardPlayedOut = playNonTargetSpell(card)
             }
             CardType.TARGET_SPELL -> {
-                cardPlayedOut = playTargetSpell(card, position, matchId)
+                cardPlayedOut = playTargetSpell(card, position)
             }
             else -> {
                 println("Trying to play card of invalid type:$cardType")

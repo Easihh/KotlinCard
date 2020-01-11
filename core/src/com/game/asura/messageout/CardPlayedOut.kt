@@ -7,7 +7,6 @@ import com.game.asura.messaging.MessageType
 
 class CardPlayedOut(private val card: DrawableCard,
                     private val boardIndex: Int? = null,
-                    private val matchId: Int,
                     private val cardTarget: Int? = null) : OutMessage {
 
     override fun build(messageBuilder: MessageBuilder) {
@@ -15,7 +14,6 @@ class CardPlayedOut(private val card: DrawableCard,
         messageBuilder.add(MessageField.PRIMARY_CARD_ID, card.getPrimaryId())
         messageBuilder.add(MessageField.SECONDARY_CARD_ID, card.getSecondayId())
         messageBuilder.add(MessageField.CARD_TYPE, card.getCardType().value)
-        messageBuilder.add(MessageField.MATCH_ID, matchId)
         if (cardTarget != null) {
             messageBuilder.add(MessageField.CARD_TARGET, cardTarget)
         }

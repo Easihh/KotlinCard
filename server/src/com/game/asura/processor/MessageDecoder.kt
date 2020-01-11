@@ -26,28 +26,24 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 //should validate important field here
                 val cardId = cardPlayedData.cardPrimaryId ?: return
                 val secCardId = cardPlayedData.cardSecondaryId ?: return
-                val matchId = cardPlayedData.matchId ?: return
-                decodedMessage = CardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId, matchId,
+                decodedMessage = CardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId,
                         cardPlayedData.cardTarget, cardPlayedData.boardIndex)
             }
             MessageType.HERO_POWER -> {
                 val heroPowerdata = getHeroPowerData()
-                val matchId = heroPowerdata.matchId ?: return
-                decodedMessage = HeroPowerIn(playerAccount.getAccountKey(), matchId, heroPowerdata.cardTarget)
+                decodedMessage = HeroPowerIn(playerAccount.getAccountKey(), heroPowerdata.cardTarget)
 
             }
             MessageType.END_TURN -> {
                 val endTurnData = getEndTurnData()
-                val matchId = endTurnData.matchId ?: return
-                decodedMessage = EndTurnIn(playerAccount.getAccountKey(), matchId)
+                decodedMessage = EndTurnIn(playerAccount.getAccountKey())
             }
             MessageType.MONSTER_ATTACK -> {
                 val monsterAttackData = getMonsterAttackData()
-                val matchId = monsterAttackData.matchId ?: return
                 val primaryId = monsterAttackData.primaryId ?: return
                 val secondaryId = monsterAttackData.secondaryId ?: return
                 val cardTarget = monsterAttackData.cardTarget ?: return
-                decodedMessage = MonsterAttackIn(playerAccount.getAccountKey(), matchId, primaryId, secondaryId, cardTarget)
+                decodedMessage = MonsterAttackIn(playerAccount.getAccountKey(), primaryId, secondaryId, cardTarget)
             }
             else -> {
                 println("Message of type $msgType has no decode logic.")

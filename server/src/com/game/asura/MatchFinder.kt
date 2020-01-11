@@ -5,7 +5,7 @@ class MatchFinder {
     private val allMatch: MutableMap<Int, Match> = HashMap()
 
 
-    fun findMatch(matchId: Int): Match? {
+    fun findMatch(matchId: Int?): Match? {
         return allMatch[matchId]
     }
 

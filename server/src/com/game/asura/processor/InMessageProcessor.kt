@@ -31,19 +31,20 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     println("Unable to find accountName in cache with key:${message.accountKey}")
                     return
                 }
-                val player = ServerPlayer(accountName,AllCard.MAGE_HERO.id)
+                val player = ServerPlayer(accountName, AllCard.MAGE_HERO.id)
                 player.initializeDeck()
                 val match = Match()
+                account.setMatch(match)
                 match.addPlayer(accountName, player)
                 matchFinder.addMatch(match)
                 //send MatchId to concerned players
                 val matchInfo = MatchInfoOut(account.getChannelWriter(), accountName, player.heroPlayer, matchId = match.matchId)
                 messageQueue.addMessage(matchInfo)
                 //send start turn to a player
-                val startTurn = StartTurnOut(account.getChannelWriter(), matchId = match.matchId)
+                val startTurn = StartTurnOut(account.getChannelWriter())
                 messageQueue.addMessage(startTurn)
                 //schedule end turn X seconds from now or until we receive such info player client.
-                val endTurn = EndTurnIn(account.getAccountKey(), matchId = match.matchId, matchTurn = match.getMatchTurn())
+                val endTurn = EndTurnIn(account.getAccountKey(), matchTurn = match.getMatchTurn())
                 messageQueue.addMessage(endTurn, SECOND_PER_TURN * ONE_SECOND_MILLIS)
                 //send initial draws
                 for (x in 0..3) {
@@ -56,15 +57,16 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
             }
 
             is CardPlayedIn -> {
-                val match = matchFinder.findMatch(message.matchId)
-                if (match == null) {
-                    println("Unable to find match with id:${message.matchId}.")
-                    return
-                }
+
                 val account = accountCache.getAccount(message.accountKey)
                 val accountName = account?.getAccountName()
                 if (accountName == null) {
                     println("Unable to find accountName in cache with key:${message.accountKey}.")
+                    return
+                }
+                val match = matchFinder.findMatch(account.getCurrentMatchId())
+                if (match == null) {
+                    println("Unable to find match with id:${account.getCurrentMatchId()}.")
                     return
                 }
                 val player = match.getPlayer(accountName)
@@ -113,15 +115,16 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 println("Handle card played on server here.")
             }
             is HeroPowerIn -> {
-                val match = matchFinder.findMatch(message.matchId)
-                if (match == null) {
-                    println("Unable to find match with id:${message.matchId}.")
-                    return
-                }
+
                 val account = accountCache.getAccount(message.accountKey)
                 val accountName = account?.getAccountName()
                 if (accountName == null) {
                     println("Unable to find accountName in cache with key:${message.accountKey}.")
+                    return
+                }
+                val match = matchFinder.findMatch(account.getCurrentMatchId())
+                if (match == null) {
+                    println("Unable to find match with id:${account.getCurrentMatchId()}.")
                     return
                 }
                 println("Handle Hero Power played on server here.")
@@ -135,24 +138,24 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
             is EndTurnIn -> {
                 if (message.matchTurn != null) {
                     //server is end the turn due to time being over limit
-
-                    //look if player already had ended turn
-                    val match = matchFinder.findMatch(message.matchId) ?: return
-                    if (message.matchTurn < match.getMatchTurn()) {
-                        //player has already send end turn before timer up, disregard this internal end turn msg.
-                        println("Disregarding end turn timeout scheduled since player sent end turn already for match:${message.matchId} turn:${message.matchTurn}")
-                        return
-                    }
-                    //force time out as we did not receive an end turn message in time
-                    match.increaseMatchTurn()
                     val account = accountCache.getAccount(message.accountKey)
                     val accountName = account?.getAccountName()
                     if (accountName == null) {
                         println("Unable to find accountName in cache with key:${message.accountKey}.")
                         return
                     }
+                    //look if player already had ended turn
+                    val match = matchFinder.findMatch(account.getCurrentMatchId()) ?: return
+                    if (message.matchTurn < match.getMatchTurn()) {
+                        //player has already send end turn before timer up, disregard this internal end turn msg.
+                        println("Disregarding end turn timeout scheduled since player sent end turn already for match:${account.getCurrentMatchId()} turn:${message.matchTurn}")
+                        return
+                    }
+                    //force time out as we did not receive an end turn message in time
+                    match.increaseMatchTurn()
 
-                    val endTurnOut = EndTurnOut(account.getChannelWriter(), message.matchId)
+
+                    val endTurnOut = EndTurnOut(account.getChannelWriter())
                     messageQueue.addMessage(endTurnOut)
                 }
             }
@@ -164,7 +167,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     println("Unable to find accountName in cache with key:${message.accountKey}.")
                     return
                 }
-                val match = matchFinder.findMatch(message.matchId) ?: return
+                val match = matchFinder.findMatch(account.getCurrentMatchId()) ?: return
                 match.monsterAttack(message.secondaryId, message.target)
             }
             else -> {

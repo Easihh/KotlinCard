@@ -70,11 +70,6 @@ class CoreMessage {
         return typeVal.value as Int
     }
 
-    fun getMatchId(): Int? {
-        val typeVal = fieldMap[MessageField.MATCH_ID] ?: return null
-        return typeVal.value as Int
-    }
-
     fun getCardTarget(): Int? {
         val typeVal = fieldMap[MessageField.CARD_TARGET] ?: return null
         return typeVal.value as Int
