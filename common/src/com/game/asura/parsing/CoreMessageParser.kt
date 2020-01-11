@@ -66,7 +66,7 @@ abstract class CoreMessageParser {
     }
 
     fun getCardPlayedData(): CardPlayedData {
-        return CardPlayedData(coreMsg.getCardPrimaryId(), coreMsg.getSecondaryCardId()
+        return CardPlayedData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId()
                 ,coreMsg.getCardTarget(), coreMsg.getBoardPosition())
     }
 
@@ -80,7 +80,8 @@ abstract class CoreMessageParser {
     }
 
     fun getMatchInfoData(): MatchInfoData {
-        return MatchInfoData(coreMsg.getAccountName(),coreMsg.getEnemyAccountName(),coreMsg.getPrimaryCardId(),coreMsg.getSecondaryCardId(),coreMsg.getCardType())
+        return MatchInfoData(coreMsg.getAccountName(),coreMsg.getEnemyAccountName(),coreMsg.getPrimaryHeroId(),
+                coreMsg.getSecondaryHeroId(),coreMsg.getEnemyPrimaryHeroId(),coreMsg.getEnemySecondaryHeroId())
     }
 
     fun getCardDrawnData(): CardDrawnData {

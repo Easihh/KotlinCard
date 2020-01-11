@@ -65,15 +65,31 @@ class CoreMessage {
         return typeVal.value as Int
     }
 
+    fun getPrimaryHeroId(): Int? {
+        val typeVal = fieldMap[MessageField.HERO_PRIMARY_ID] ?: return null
+        return typeVal.value as Int
+    }
+
+    fun getEnemyPrimaryHeroId(): Int? {
+        val typeVal = fieldMap[MessageField.ENEMY_HERO_PRIMARY_ID] ?: return null
+        return typeVal.value as Int
+    }
+
     fun getSecondaryCardId(): Int? {
         val typeVal = fieldMap[MessageField.SECONDARY_CARD_ID] ?: return null
         return typeVal.value as Int
     }
 
-    fun getCardPrimaryId(): Int? {
-        val typeVal = fieldMap[MessageField.PRIMARY_CARD_ID] ?: return null
+    fun getSecondaryHeroId(): Int? {
+        val typeVal = fieldMap[MessageField.HERO_SECONDARY_ID] ?: return null
         return typeVal.value as Int
     }
+
+    fun getEnemySecondaryHeroId(): Int? {
+        val typeVal = fieldMap[MessageField.ENEMY_HERO_SECONDARY_ID] ?: return null
+        return typeVal.value as Int
+    }
+
 
     fun getCardTarget(): Int? {
         val typeVal = fieldMap[MessageField.CARD_TARGET] ?: return null

@@ -122,9 +122,9 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
         stage.addActor(connectBtn)
     }
 
-    private fun toMatchScreen(heroesInfo: MatchHeroInfo) {
+    private fun toMatchScreen(matchInfoIn: MatchInfoIn) {
         canProcessMessage = false
-        parentScreen.addScreen(MatchScreen(parentScreen, messageQueue, server, heroesInfo))
+        parentScreen.addScreen(MatchScreen(parentScreen, messageQueue, server, matchInfoIn))
         parentScreen.setScreen<MatchScreen>()
     }
 

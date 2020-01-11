@@ -42,11 +42,11 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 matchFinder.addMatch(match)
                 //send MatchId to concerned players
                 //1st player
-                val matchInfo = MatchInfoOut(account.getChannelWriter(), accountName, player.heroPlayer, "Enemy")
+                val matchInfo = MatchInfoOut(account.getChannelWriter(), accountName, "Enemy", player.heroPlayer, enemyPlayer.heroPlayer)
                 //2nd player
-                val matchInfo2 = MatchInfoOut(account.getChannelWriter(), "Enemy", enemyPlayer.heroPlayer, accountName)
+                //val matchInfo2 = MatchInfoOut(account.getChannelWriter(), "Enemy", accountName, enemyPlayer.heroPlayer, player.heroPlayer)
                 messageQueue.addMessage(matchInfo)
-                messageQueue.addMessage(matchInfo2)
+                //messageQueue.addMessage(matchInfo2)
                 //send start turn to a player
                 val startTurn = StartTurnOut(account.getChannelWriter())
                 messageQueue.addMessage(startTurn)

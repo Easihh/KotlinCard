@@ -22,7 +22,11 @@ enum class MessageField(val fieldNumber: Int,
     DECK_SIZE(17, 'I'.toByte()),
     CARD_TARGET(18, 'I'.toByte()),
     END_MESSAGE(19, 'C'.toByte()),
-    MATCH_TURN(20, 'I'.toByte())
+    MATCH_TURN(20, 'I'.toByte()),
+    HERO_PRIMARY_ID(21, 'I'.toByte()),
+    HERO_SECONDARY_ID(22, 'I'.toByte()),
+    ENEMY_HERO_PRIMARY_ID(23, 'I'.toByte()),
+    ENEMY_HERO_SECONDARY_ID(24, 'I'.toByte()),
     ;
 
     companion object {

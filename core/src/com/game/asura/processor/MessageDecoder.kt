@@ -39,8 +39,9 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val enemyName = data.enemyAccountName ?: return
                 val primaryId = data.primaryHeroId ?: return
                 val secondaryId = data.secondaryHeroId ?: return
-                val cardType = data.cardType ?: return
-                decodedMessage = MatchInfoIn(accountName, enemyName, primaryId, secondaryId, cardType)
+                val enemyPrimaryId = data.enemyPrimaryHeroId ?: return
+                val enemySecondaryId = data.enemySecondaryHeroId ?: return
+                decodedMessage = MatchInfoIn(accountName, enemyName, primaryId, secondaryId, enemyPrimaryId, enemySecondaryId)
             }
             MessageType.PLAYER_INFO -> {
                 val data = getPlayerInfoData()

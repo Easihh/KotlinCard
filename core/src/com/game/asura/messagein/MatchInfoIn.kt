@@ -8,4 +8,5 @@ data class MatchInfoIn(val accountName: String,
                        val enemyName: String,
                        val primaryHeroId: Int,
                        val secondaryHeroId: Int,
-                       val cardType: CardType) : DecodedMessage
+                       val enemyPrimaryHeroId: Int,
+                       val enemySecondaryHeroId: Int) : DecodedMessage
