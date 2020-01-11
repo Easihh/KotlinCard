@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.viewport.FitViewport
+import com.game.asura.messagein.MatchInfoIn
 import com.game.asura.messageout.PlayGameRequestOut
 import com.game.asura.processor.PreMatchMessageInProcessor
 import com.game.asura.processor.PreMatchMessageOutProcessor
@@ -30,9 +31,10 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
     private val stage: Stage = Stage(viewport)
     private val batch = SpriteBatch()
     private val outProcessor = PreMatchMessageOutProcessor(server::sendMessage)
-    private val inProcessor = PreMatchMessageInProcessor()
+    private val inProcessor = PreMatchMessageInProcessor(::toMatchScreen)
     private val preMatchProcessor = PreMatchMessageProcessor(inProcessor, outProcessor)
     private lateinit var font: BitmapFont
+    private var canProcessMessage: Boolean = true
 
     init {
         setupStage()
@@ -79,8 +81,6 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
                 println("Requesting PlayGame.")
                 val playRequest = PlayGameRequestOut()
                 messageQueue.addMessage(playRequest)
-                //should wait until get response from server as we can time out..
-                parentScreen.setScreen<MatchScreen>()
                 return false
             }
         }
@@ -122,9 +122,15 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
         stage.addActor(connectBtn)
     }
 
+    private fun toMatchScreen(heroesInfo: MatchHeroInfo) {
+        canProcessMessage = false
+        parentScreen.addScreen(MatchScreen(parentScreen, messageQueue, server, heroesInfo))
+        parentScreen.setScreen<MatchScreen>()
+    }
+
     override fun render(delta: Float) {
 
-        while (messageQueue.queueIsNotEmpty()) {
+        while (canProcessMessage && messageQueue.queueIsNotEmpty()) {
             val message = messageQueue.nextMessage()
             preMatchProcessor.onMessage(message)
         }

@@ -13,7 +13,6 @@ class ServerPlayer(val playerName: String,
     val heroPlayer = ServerHero(primary, secondary)
     val handManager = HandManager()
     val boardManager = BoardManager<Card>(create = { INVALID_SERVER_CARD })
-    var currentMatchId: Int? = null
 
     fun draw(): Card? {
         if (deck.isNotEmpty()) {

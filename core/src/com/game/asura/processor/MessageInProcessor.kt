@@ -14,10 +14,6 @@ class MessageInProcessor(private val player: ClientPlayer,
             is PlayerInfoIn -> {
                 player.update(message.getChangedFields())
             }
-            /*is MatchInfoIn -> {
-                val matchId = message.matchId ?: return
-                player.setMatchId(matchId)
-            }*/
             is CardDrawnIn -> {
                 val card = ClientCard(primaryId = message.primaryId, secondaryId = message.secondaryId,
                         cardCost = message.cardCost, cardType = message.cardType)

@@ -17,3 +17,4 @@ const val INVALID_INDEX_: Int = -1
 const val SECOND_PER_TURN: Int = 90
 const val ONE_SECOND_MILLIS: Long = 1000L
 const val ONE_NANO_SECOND: Long = 1_000_000_000L
+const val MAX_PLAYER_PER_MATCH: Int = 2

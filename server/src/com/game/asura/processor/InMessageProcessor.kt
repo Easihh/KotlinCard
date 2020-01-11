@@ -32,14 +32,21 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     return
                 }
                 val player = ServerPlayer(accountName, AllCard.MAGE_HERO.id)
+                val enemyPlayer = ServerPlayer("Enemy", AllCard.MAGE_HERO.id)
                 player.initializeDeck()
+                enemyPlayer.initializeDeck()
                 val match = Match()
                 account.setMatch(match)
                 match.addPlayer(accountName, player)
+                match.addPlayer("Enemy", enemyPlayer)
                 matchFinder.addMatch(match)
                 //send MatchId to concerned players
-                val matchInfo = MatchInfoOut(account.getChannelWriter(), accountName, player.heroPlayer, matchId = match.matchId)
+                //1st player
+                val matchInfo = MatchInfoOut(account.getChannelWriter(), accountName, player.heroPlayer, "Enemy")
+                //2nd player
+                val matchInfo2 = MatchInfoOut(account.getChannelWriter(), "Enemy", enemyPlayer.heroPlayer, accountName)
                 messageQueue.addMessage(matchInfo)
+                messageQueue.addMessage(matchInfo2)
                 //send start turn to a player
                 val startTurn = StartTurnOut(account.getChannelWriter())
                 messageQueue.addMessage(startTurn)

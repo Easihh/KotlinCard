@@ -17,7 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.FitViewport
-import com.game.asura.card.AllCard
 import com.game.asura.processor.MessageInProcessor
 import com.game.asura.processor.MessageOutProcessor
 import com.game.asura.processor.MessageProcessor
@@ -28,7 +27,8 @@ import java.util.stream.Collectors
 
 class MatchScreen(private val parentScreen: KtxGame<Screen>,
                   private val messageQueue: MessageQueue,
-                  private val server: ServerBosom) : KtxScreen {
+                  private val server: ServerBosom,
+                  private val heroesInfo: MatchHeroInfo) : KtxScreen {
 
     private val batch: SpriteBatch = SpriteBatch()
     private val shaper: ShapeRenderer = ShapeRenderer()
@@ -37,23 +37,38 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     private val stage: Stage = Stage(viewport)
     private lateinit var font: BitmapFont
 
-    private var player: ClientPlayer
+    private lateinit var player: ClientPlayer
+    private lateinit var otherPlayer: ClientPlayer
     private lateinit var messageProcessor: MessageProcessor
-    private var uiManager: UIManager
+    private lateinit var uiManager: UIManager
 
     init {
         setupStage()
         //setupGraphicOptions()
         setupDisplayMode()
         setupFont()
-        player = ClientPlayer("test", MagePower(), AllCard.MAGE_HERO.id, 99999)
-        val otherPlayer = ClientPlayer("enemy", MagePower(), AllCard.MAGE_HERO.id, 7777)
-        uiManager = UIManager(stage, messageQueue, player, otherPlayer)
-        setupMessageProcessors()
+    }
+
+    private fun setupPlayer() {
+        val me = heroesInfo.getHeroInfo("Asura")
+        if (me == null) {
+            println("ERROR: unable to PlayerName:Asura in match info received.Infos:$heroesInfo")
+            return
+        }
+        player = ClientPlayer(me.accountName, MagePower(), me.primaryHeroId, me.primaryHeroId)
+        val enemy = heroesInfo.getHeroInfo(me.enemyName)
+        if (enemy == null) {
+            println("ERROR: unable to PlayerName:${me.enemyName} in match info received.Infos:$heroesInfo")
+            return
+        }
+        otherPlayer = ClientPlayer(enemy.enemyName, MagePower(), enemy.primaryHeroId, enemy.secondaryHeroId)
     }
 
     override fun show() {
         Gdx.input.inputProcessor = stage
+        setupPlayer()
+        uiManager = UIManager(stage, messageQueue, player, otherPlayer)
+        setupMessageProcessors()
     }
 
     private fun setupStage() {

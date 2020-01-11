@@ -1,6 +1,6 @@
 package com.game.asura.processor
 
-import com.game.asura.*
+import com.game.asura.InsertableQueue
 import com.game.asura.messagein.*
 import com.game.asura.messaging.MessageType
 import com.game.asura.parsing.CoreMessageParser
@@ -34,8 +34,13 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 decodedMessage = CardDrawnIn(primaryId, secondaryId, cardCost, cardType)
             }
             MessageType.MATCH_INFO -> {
-                val matchInfoData = getMatchInfoData()
-                decodedMessage = MatchInfoIn(matchInfoData.gameType)
+                val data = getMatchInfoData()
+                val accountName = data.accountName ?: return
+                val enemyName = data.enemyAccountName ?: return
+                val primaryId = data.primaryHeroId ?: return
+                val secondaryId = data.secondaryHeroId ?: return
+                val cardType = data.cardType ?: return
+                decodedMessage = MatchInfoIn(accountName, enemyName, primaryId, secondaryId, cardType)
             }
             MessageType.PLAYER_INFO -> {
                 val data = getPlayerInfoData()

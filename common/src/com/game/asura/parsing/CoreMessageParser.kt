@@ -80,7 +80,7 @@ abstract class CoreMessageParser {
     }
 
     fun getMatchInfoData(): MatchInfoData {
-        return MatchInfoData(coreMsg.getGameType())
+        return MatchInfoData(coreMsg.getAccountName(),coreMsg.getEnemyAccountName(),coreMsg.getPrimaryCardId(),coreMsg.getSecondaryCardId(),coreMsg.getCardType())
     }
 
     fun getCardDrawnData(): CardDrawnData {

@@ -1,6 +1,9 @@
 package com.game.asura.message.data
 
-import com.game.asura.GameType
+import com.game.asura.card.CardType
 
-class MatchInfoData(val gameType: GameType) {
-}
+data class MatchInfoData(val accountName: String?,
+                         val enemyAccountName: String?,
+                         val primaryHeroId: Int?,
+                         val secondaryHeroId: Int?,
+                         val cardType: CardType?)

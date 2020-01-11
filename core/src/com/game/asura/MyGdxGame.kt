@@ -11,7 +11,6 @@ class MyGdxGame : KtxGame<Screen>() {
 
     override fun create() {
         addScreen(PreMatchScreen(this, messageQueue, server))
-        addScreen(MatchScreen(this, messageQueue, server))
         setScreen<PreMatchScreen>()
     }
 }

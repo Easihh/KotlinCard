@@ -1,7 +1,7 @@
 package com.game.asura.messaging
 
-import com.game.asura.card.CardType
 import com.game.asura.GameType
+import com.game.asura.card.CardType
 
 class CoreMessage {
 
@@ -27,6 +27,11 @@ class CoreMessage {
 
     fun getAccountName(): String? {
         val typeVal = fieldMap[MessageField.ACCOUNT_NAME] ?: return null
+        return typeVal.value as String
+    }
+
+    fun getEnemyAccountName(): String? {
+        val typeVal = fieldMap[MessageField.ENEMY_ACCOUNT_NAME] ?: return null
         return typeVal.value as String
     }
 
