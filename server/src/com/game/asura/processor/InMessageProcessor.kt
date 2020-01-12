@@ -94,6 +94,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 player.playCard(cardInHand)
                 val changedFields: MutableList<ChangedField> = ArrayList()
                 if (cardInHand.getCost() > 0) {
+                    println("cardCost:${cardInHand.getCost()},currentMana:${player.heroPlayer.getCurrentMana()}")
                     val manaField = ChangedField(MessageField.PLAYER_CURRENT_MANA, player.heroPlayer.getCurrentMana())
                     changedFields.add(manaField)
                 }
@@ -107,7 +108,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                         }
                         val target = match.getCard(message.cardTarget) ?: return
                         if (target is Minion) {
-                            target.takeDamage(2)
+                            target.takeDamage(AllCard.getCard(cardInHand.getPrimaryId()).attributes.spellDmg)
                             val healthField = ChangedField(MessageField.CARD_HEALTH, target.getHealth())
                             changedFields.add(healthField)
                             val playerInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, target = target, changedFields = changedFields)

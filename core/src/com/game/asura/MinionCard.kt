@@ -2,29 +2,21 @@ package com.game.asura
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.game.asura.card.AllCard
 import com.game.asura.card.CardEffect
 import com.game.asura.card.CardType
-import com.game.asura.card.Minion
 import kotlin.random.Random
 
-val INVALID_MINION_CARD = MinionCard(-1, -1, 99, CardType.INVALID, -1, -1, -1)
+val INVALID_MINION_CARD = MinionCard(-1, -1, 99, CardType.INVALID)
 
 class MinionCard(primaryId: Int,
                  secondaryId: Int = Random.nextInt(),
                  cardCost: Int,
-                 cardType: CardType,
-                 private val attack: Int = AllCard.getCard(primaryId).attributes.attack,
-                 private var health: Int = AllCard.getCard(primaryId).attributes.health,
-                 private var maxHealth: Int = AllCard.getCard(primaryId).attributes.maxHealth) : DrawableCard(primaryId, secondaryId, cardCost, cardType), Minion {
+                 cardType: CardType) : MonsterDrawableCard(primaryId, secondaryId, cardCost, cardType) {
 
     private var currentActor: Actor
 
     init {
-        val picture = if (cardType == CardType.MONSTER) {
-            "monsterCard.png"
-        } else "card.png"
-        val texture = Texture("core/assets/$picture")
+        val texture = Texture("core/assets/monsterCard.png")
         currentActor = HandCard(texture, secondaryId)
     }
 
@@ -44,21 +36,5 @@ class MinionCard(primaryId: Int,
 
     override fun toString(): String {
         return "cardType=${getCardType()},cardPrimaryId=${getPrimaryId()}"
-    }
-
-    override fun getAttack(): Int? {
-        return attack
-    }
-
-    override fun getHealth(): Int {
-        return health
-    }
-
-    override fun getMaxHealth(): Int {
-        return maxHealth
-    }
-
-    override fun takeDamage(dmg: Int) {
-        health -= dmg
     }
 }

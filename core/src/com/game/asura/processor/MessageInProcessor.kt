@@ -1,7 +1,6 @@
 package com.game.asura.processor
 
 import com.game.asura.*
-import com.game.asura.card.AllCard
 import com.game.asura.card.CardType
 import com.game.asura.messagein.*
 import com.game.asura.parsing.DecodedMessage
@@ -13,7 +12,10 @@ class MessageInProcessor(private val player: ClientPlayer,
     fun onMessage(message: DecodedMessage) {
         when (message) {
             is CardInfoIn -> {
-                player.update(message.getChangedFields())
+                val card = cardStore.getCard(message.secondaryCardId) ?: return
+                if (card is MonsterDrawableCard) {
+                    card.update(message.getChangedFields())
+                }
             }
             is CardDrawnIn -> {
 

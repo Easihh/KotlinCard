@@ -336,7 +336,7 @@ class UIManager(private val stage: Stage,
                     cardPlayedOut = HeroPowerOut(actor.secondaryId)
 
                 }
-                is MinionCard -> {
+                is SpellCard -> {
                     cardPlayedOut = CardPlayedOut(card = card, cardTarget = actor.secondaryId)
                 }
             }

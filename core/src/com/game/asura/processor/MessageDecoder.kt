@@ -46,7 +46,9 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
             MessageType.CARD_INFO -> {
                 val data = getCardInfoData()
                 val playerName = data.playerName ?: return
-                decodedMessage = CardInfoIn(playerName, data.playerHealth, data.playerMaxHealth)
+                val primaryId = data.primaryCardId ?: return
+                val secondary = data.secondaryCardId ?: return
+                decodedMessage = CardInfoIn(playerName,primaryId,secondary, data.playerHealth, data.playerMaxHealth)
             }
             MessageType.CARD_PLAYED -> {
                 val data = getCardPlayedData()

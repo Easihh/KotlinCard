@@ -75,7 +75,7 @@ abstract class CoreMessageParser {
     }
 
     fun getCardInfoData(): CardInfoData {
-        return CardInfoData(coreMsg.getAccountName(), coreMsg.getCardHealth(), coreMsg.getMaxCardLife())
+        return CardInfoData(coreMsg.getAccountName(),coreMsg.getPrimaryCardId(),coreMsg.getSecondaryCardId(), coreMsg.getCardHealth(), coreMsg.getMaxCardLife())
     }
 
     fun getMatchInfoData(): MatchInfoData {
