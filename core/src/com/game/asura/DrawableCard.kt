@@ -2,15 +2,17 @@ package com.game.asura
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.game.asura.card.Card
+import com.game.asura.card.BaseCard
+import com.game.asura.card.CardType
+import kotlin.random.Random
 
-interface DrawableCard : Card {
+abstract class DrawableCard(primaryId: Int,
+                            secondaryId: Int = Random.nextInt(),
+                            cardCost: Int,
+                            cardType: CardType) : BaseCard(primaryId, secondaryId, cardCost, cardType) {
 
-    fun getActor(): Actor
+    abstract fun getActor(): Actor
 
-    fun transformActor(texture: Texture)
+    abstract fun transformActor(texture: Texture)
 
-    fun getAttack(): Int?
-
-    fun getHealth(): Int?
 }

@@ -6,9 +6,9 @@ class ClientPlayer(val playerName: String,
                     secondary: Int) {
 
 
-    val boardManager = BoardManager<DrawableCard>(create = { INVALID_CLIENT_CARD })
+    val boardManager = BoardManager<DrawableCard>(create = { INVALID_SPELL_CARD })
     val handManager = HandManager()
-    val heroPlayer = ClientHero(primary, secondary)
+    val heroPlayer = ClientHeroCard(primary, secondary)
 
 
     fun update(changes: List<ChangedField>) {

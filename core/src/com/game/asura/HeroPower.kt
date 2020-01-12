@@ -1,10 +1,16 @@
 package com.game.asura
 
-interface HeroPower : DrawableCard {
+import com.game.asura.card.CardType
+import kotlin.random.Random
 
-    fun isActive(): Boolean
+abstract class HeroPower(primaryId: Int,
+                         secondaryId: Int = Random.nextInt(),
+                         cardCost: Int,
+                         cardType: CardType) : DrawableCard(primaryId,secondaryId,cardCost,cardType) {
 
-    fun activate()
+    abstract fun isActive(): Boolean
 
-    fun deactivate()
+    abstract fun activate()
+
+    abstract fun deactivate()
 }

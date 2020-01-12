@@ -5,7 +5,7 @@ import com.game.asura.account.CachedAccount
 import com.game.asura.account.PlayerAccount
 import com.game.asura.card.AllCard
 import com.game.asura.card.CardEffect
-import com.game.asura.card.HeroCard
+import com.game.asura.card.Minion
 import com.game.asura.messagein.*
 import com.game.asura.messageout.*
 import com.game.asura.messaging.MessageField
@@ -106,11 +106,11 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                             break
                         }
                         val target = match.getCard(message.cardTarget) ?: return
-                        if (target is HeroCard) {
-                            player.heroPlayer.takeDmg(3)
-                            val healthField = ChangedField(MessageField.PLAYER_CURRENT_HEALTH, player.heroPlayer.getHealth())
+                        if (target is Minion) {
+                            target.takeDamage(2)
+                            val healthField = ChangedField(MessageField.CARD_HEALTH, target.getHealth())
                             changedFields.add(healthField)
-                            val playerInfoOut = PlayerInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, changedFields = changedFields)
+                            val playerInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, target = target, changedFields = changedFields)
                             messageQueue.addMessage(playerInfoOut)
                             continue
                         }

@@ -35,8 +35,8 @@ class CoreMessage {
         return typeVal.value as String
     }
 
-    fun getCurrentPlayerLife(): Int? {
-        val typeVal = fieldMap[MessageField.PLAYER_CURRENT_HEALTH] ?: return null
+    fun getCardHealth(): Int? {
+        val typeVal = fieldMap[MessageField.CARD_HEALTH] ?: return null
         return typeVal.value as Int
     }
 
@@ -45,8 +45,8 @@ class CoreMessage {
         return typeVal.value as Int
     }
 
-    fun getMaxPlayerLife(): Int? {
-        val typeVal = fieldMap[MessageField.PLAYER_MAX_HEALTH] ?: return null
+    fun getMaxCardLife(): Int? {
+        val typeVal = fieldMap[MessageField.CARD_MAX_HEALTH] ?: return null
         return typeVal.value as Int
     }
 

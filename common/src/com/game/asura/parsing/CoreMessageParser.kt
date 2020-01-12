@@ -74,9 +74,8 @@ abstract class CoreMessageParser {
         return GameRequestData(coreMsg.getGameType())
     }
 
-    fun getPlayerInfoData(): PlayerInfoData {
-        return PlayerInfoData(coreMsg.getAccountName(), coreMsg.getCurrentPlayerLife(), coreMsg.getMaxPlayerLife(),
-                coreMsg.getCurrentPlayerMana(), coreMsg.getMaxPlayerMana())
+    fun getCardInfoData(): CardInfoData {
+        return CardInfoData(coreMsg.getAccountName(), coreMsg.getCardHealth(), coreMsg.getMaxCardLife())
     }
 
     fun getMatchInfoData(): MatchInfoData {

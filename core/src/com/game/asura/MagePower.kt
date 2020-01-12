@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.game.asura.card.CardEffect
 import com.game.asura.card.CardType
 
-class MagePower : HeroPower {
+class MagePower : HeroPower(-1, -1, 2, CardType.TARGET_SPELL) {
 
     private var img: Image
 
@@ -35,33 +35,5 @@ class MagePower : HeroPower {
 
     override fun deactivate() {
         isActive = false
-    }
-
-    override fun getPrimaryId(): Int {
-        return -1
-    }
-
-    override fun getSecondayId(): Int {
-        return -1
-    }
-
-    override fun getCost(): Int {
-        return 2
-    }
-
-    override fun getCardType(): CardType {
-        return CardType.TARGET_SPELL
-    }
-
-    override fun getEffect(): List<CardEffect> {
-        return emptyList()
-    }
-
-    override fun getAttack(): Int? {
-        return null
-    }
-
-    override fun getHealth(): Int? {
-        return null
     }
 }

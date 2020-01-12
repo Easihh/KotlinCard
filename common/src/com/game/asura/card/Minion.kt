@@ -1,8 +1,12 @@
 package com.game.asura.card
 
-interface HeroCard : Card {
+interface Minion {
 
     fun getAttack(): Int?
 
     fun getHealth(): Int
+
+    fun getMaxHealth(): Int
+
+    fun takeDamage(dmg: Int)
 }

@@ -1,6 +1,7 @@
 package com.game.asura.processor
 
 import com.game.asura.*
+import com.game.asura.card.AllCard
 import com.game.asura.card.CardType
 import com.game.asura.messagein.*
 import com.game.asura.parsing.DecodedMessage
@@ -11,12 +12,18 @@ class MessageInProcessor(private val player: ClientPlayer,
 
     fun onMessage(message: DecodedMessage) {
         when (message) {
-            is PlayerInfoIn -> {
+            is CardInfoIn -> {
                 player.update(message.getChangedFields())
             }
             is CardDrawnIn -> {
-                val card = ClientCard(primaryId = message.primaryId, secondaryId = message.secondaryId,
-                        cardCost = message.cardCost, cardType = message.cardType)
+
+                val card = if (message.cardType == CardType.MONSTER) {
+                    MinionCard(primaryId = message.primaryId, secondaryId = message.secondaryId,
+                            cardCost = message.cardCost, cardType = message.cardType)
+                } else {
+                    SpellCard(primaryId = message.primaryId, secondaryId = message.secondaryId,
+                            cardCost = message.cardCost, cardType = message.cardType)
+                }
                 player.handManager.addToPlayerHand(card)
                 uiManager.addCardToHand(card)
                 cardStore.add(card)

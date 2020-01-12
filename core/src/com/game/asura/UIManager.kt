@@ -336,7 +336,7 @@ class UIManager(private val stage: Stage,
                     cardPlayedOut = HeroPowerOut(actor.secondaryId)
 
                 }
-                is ClientCard -> {
+                is MinionCard -> {
                     cardPlayedOut = CardPlayedOut(card = card, cardTarget = actor.secondaryId)
                 }
             }
@@ -434,8 +434,8 @@ class UIManager(private val stage: Stage,
         font.draw(batch, "FPS: ${Gdx.graphics.framesPerSecond}", 50f, 750f)
         font.draw(batch, "Player: ${player.playerName}", 50f, 200f)
         font.draw(batch, "Player: ${otherPlayer.playerName}", 50f, 725f)
-        font.draw(batch, "Mana: ${hero.getCurrentMana()}/${hero.getPlayerMaxMana()}", 50f, 175f)
-        font.draw(batch, "EnemyMana: ${eHero.getCurrentMana()}/${eHero.getPlayerMaxMana()}", 50f, 650f)
+        font.draw(batch, "Mana: ${hero.getCurrentMana()}/${hero.getMaxMana()}", 50f, 175f)
+        font.draw(batch, "EnemyMana: ${eHero.getCurrentMana()}/${eHero.getMaxMana()}", 50f, 650f)
         font.draw(batch, "Mouse:$mouseX,$mouseY", 50f, 625f)
         font.draw(batch, "Time:${(endTurnTime - System.nanoTime()) / ONE_NANO_SECOND}", 50f, 600f)
         batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 50f)
@@ -510,15 +510,14 @@ class UIManager(private val stage: Stage,
         batch.begin()
         for (x in 0..6) {
             val card = player.boardManager.getCardByBoardIndex(x)
-            if (card.getCardType() != CardType.INVALID) {
+            if (card.getCardType() != CardType.INVALID && card is MinionCard) {
                 if (card.getAttack() != null) {
                     batch.draw(assetStore.getTexture(Asset.ATTACK_ICON_SMALL), card.getActor().x + 6f, card.getActor().y + 6f)
                     font.draw(batch, card.getAttack().toString(), card.getActor().x + 12f, card.getActor().y + 24f)
                 }
-                if (card.getHealth() != null) {
-                    batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_SMALL), card.getActor().x + BOARD_CARD_WIDTH - 32, card.getActor().y + 6f)
-                    font.draw(batch, card.getHealth().toString(), card.getActor().x + BOARD_CARD_WIDTH - 24f, card.getActor().y + 24f)
-                }
+                //draw health
+                batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_SMALL), card.getActor().x + BOARD_CARD_WIDTH - 32, card.getActor().y + 6f)
+                font.draw(batch, card.getHealth().toString(), card.getActor().x + BOARD_CARD_WIDTH - 24f, card.getActor().y + 24f)
             }
         }
         batch.end()
