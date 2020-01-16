@@ -11,7 +11,7 @@ abstract class MonsterDrawableCard(primaryId: Int,
                                    cardCost: Int,
                                    cardType: CardType) : DrawableCard(primaryId, secondaryId, cardCost, cardType), Minion {
 
-    private val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
+    protected val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
     private val attack: Int = AllCard.getCard(primaryId).attributes.attack
     private var health: Int = AllCard.getCard(primaryId).attributes.health
     private var maxHealth: Int = AllCard.getCard(primaryId).attributes.maxHealth
@@ -42,5 +42,9 @@ abstract class MonsterDrawableCard(primaryId: Int,
 
     override fun takeDamage(dmg: Int) {
         health -= dmg
+    }
+
+    override fun isAlive(): Boolean {
+        return health > 0
     }
 }

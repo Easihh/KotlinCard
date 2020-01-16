@@ -2,7 +2,7 @@ package com.game.asura
 
 import com.game.asura.card.AllCard
 import com.game.asura.card.BaseCard
-import com.game.asura.card.Card
+import com.game.asura.card.CardType
 import java.util.*
 import kotlin.random.Random
 
@@ -40,8 +40,14 @@ class ServerPlayer(val playerName: String,
                 cardType = AllCard.FIRST_TARGET_SPELL.cardType))
     }
 
-    fun playCard(card: Card) {
+    fun playCard(card: BaseCard, boardPosition: Int?) {
         handManager.removeFromHand(card)
         heroPlayer.updateMana(card.getCost())
+        if (card.getCardType() == CardType.MONSTER) {
+            if (boardPosition == null) {
+                return
+            }
+            boardManager.updatePlayerBoard(card, boardPosition)
+        }
     }
 }

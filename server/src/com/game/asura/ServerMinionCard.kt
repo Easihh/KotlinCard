@@ -31,4 +31,8 @@ class ServerMinionCard(primaryId: Int,
     override fun takeDamage(dmg: Int) {
         health -= dmg
     }
+
+    override fun isAlive(): Boolean {
+        return health > 0
+    }
 }

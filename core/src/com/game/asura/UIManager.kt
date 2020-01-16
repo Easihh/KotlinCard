@@ -515,6 +515,7 @@ class UIManager(private val stage: Stage,
                     batch.draw(assetStore.getTexture(Asset.ATTACK_ICON_SMALL), card.getActor().x + 6f, card.getActor().y + 6f)
                     font.draw(batch, card.getAttack().toString(), card.getActor().x + 12f, card.getActor().y + 24f)
                 }
+
                 //draw health
                 batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_SMALL), card.getActor().x + BOARD_CARD_WIDTH - 32, card.getActor().y + 6f)
                 font.draw(batch, card.getHealth().toString(), card.getActor().x + BOARD_CARD_WIDTH - 24f, card.getActor().y + 24f)

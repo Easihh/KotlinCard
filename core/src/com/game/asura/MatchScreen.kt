@@ -142,7 +142,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
             shaper.rect(0f, 0f, stage.width, stage.height)
         }
         //foreground
-        shaper.color=Color.WHITE
+        shaper.color=Color.BLACK
         shaper.use(ShapeRenderer.ShapeType.Filled){
             shaper.rect(1f,1f,stage.width, stage.height)
         }

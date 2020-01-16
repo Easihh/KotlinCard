@@ -19,14 +19,14 @@ class ClientHeroCard(primaryId: Int,
     init {
         val texture = Texture("core/assets/hero.png")
         playerActor = BoardCard(texture, getSecondayId())
+        updateFncMap[MessageField.PLAYER_CURRENT_MANA] = { currentMana = it.value as Int }
+        updateFncMap[MessageField.PLAYER_MAX_MANA] = { maxMana = it.value as Int }
     }
-
 
 
     override fun getActor(): Actor {
         return playerActor
     }
-
 
 
     fun getCurrentMana(): Int {
@@ -38,11 +38,9 @@ class ClientHeroCard(primaryId: Int,
     }
 
 
-
     override fun transformActor(texture: Texture) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
 
 
 }

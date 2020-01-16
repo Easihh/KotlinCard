@@ -5,6 +5,7 @@ import com.game.asura.account.CachedAccount
 import com.game.asura.account.PlayerAccount
 import com.game.asura.card.AllCard
 import com.game.asura.card.CardEffect
+import com.game.asura.card.CardType
 import com.game.asura.card.Minion
 import com.game.asura.messagein.*
 import com.game.asura.messageout.*
@@ -87,37 +88,53 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     println("Unable to find card with secondaryId:${message.cardSecondaryId} in player:$accountName hand.")
                     return
                 }
+                if (cardInHand.getCardType() == CardType.TARGET_SPELL && message.cardTarget == null) {
+                    val cardName = AllCard.getCard(message.cardPrimaryId)
+                    println("Error, card:$cardName from player:$accountName was played no target.")
+                    return
+                }
                 //validation is finish, can now play card so send back message to all player
                 val cardPlayed = CardPlayedOut(account.getChannelWriter(), accountName, cardInHand, message.cardTarget, message.boardPosition)
                 messageQueue.addMessage(cardPlayed)
 
-                player.playCard(cardInHand)
+                player.playCard(cardInHand, message.boardPosition)
+
                 val changedFields: MutableList<ChangedField> = ArrayList()
                 if (cardInHand.getCost() > 0) {
                     println("cardCost:${cardInHand.getCost()},currentMana:${player.heroPlayer.getCurrentMana()}")
                     val manaField = ChangedField(MessageField.PLAYER_CURRENT_MANA, player.heroPlayer.getCurrentMana())
                     changedFields.add(manaField)
+                    val playerInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, card = player.heroPlayer, changedFields = changedFields)
+                    messageQueue.addMessage(playerInfoOut)
                 }
+
                 val effects = cardInHand.getEffect()
+                //only handle target spell effect for now
+                if (message.cardTarget == null) {
+                    return
+                }
+                val target = match.getCard(message.cardTarget) ?: return
+                if (target !is Minion) {
+                    return
+                }
                 for (effect in effects) {
                     if (effect == CardEffect.DEAL_DMG) {
-                        if (message.cardTarget == null) {
-                            val cardName = AllCard.getCard(message.cardPrimaryId)
-                            println("Error, card:$cardName from player:$accountName was played no target.")
-                            break
-                        }
-                        val target = match.getCard(message.cardTarget) ?: return
-                        if (target is Minion) {
-                            target.takeDamage(AllCard.getCard(cardInHand.getPrimaryId()).attributes.spellDmg)
-                            val healthField = ChangedField(MessageField.CARD_HEALTH, target.getHealth())
-                            changedFields.add(healthField)
-                            val playerInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, target = target, changedFields = changedFields)
-                            messageQueue.addMessage(playerInfoOut)
-                            continue
-                        }
+                        target.takeDamage(AllCard.getCard(cardInHand.getPrimaryId()).attributes.spellDmg)
+                        val healthField = ChangedField(MessageField.CARD_HEALTH, target.getHealth())
+                        changedFields.add(healthField)
+                        val playerInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, card = target, changedFields = changedFields)
+                        messageQueue.addMessage(playerInfoOut)
+                        continue
                     }
                 }
-                println("Handle card played on server here.")
+                //check target died and process it
+                if (!target.isAlive()) {
+                    match.removeCardFromCache(target)
+                    println("Board size before remove:${player.boardManager.cardsOnBoard()}")
+                    player.boardManager.removeCard(target)
+                    println("Board size after remove:${player.boardManager.cardsOnBoard()}")
+                    //send monster destroy message?
+                }
             }
             is HeroPowerIn -> {
 

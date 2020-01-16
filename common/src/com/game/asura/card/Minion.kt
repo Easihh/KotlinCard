@@ -9,4 +9,6 @@ interface Minion {
     fun getMaxHealth(): Int
 
     fun takeDamage(dmg: Int)
+
+    fun isAlive(): Boolean
 }

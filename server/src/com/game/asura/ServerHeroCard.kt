@@ -20,7 +20,7 @@ class ServerHeroCard(primaryId: Int,
         currentMana -= cost
     }
 
-    fun getCurrentMana():Int{
+    fun getCurrentMana(): Int {
         return currentMana
     }
 
@@ -38,5 +38,9 @@ class ServerHeroCard(primaryId: Int,
 
     override fun getMaxHealth(): Int {
         return maxHealth
+    }
+
+    override fun isAlive(): Boolean {
+        return health > 0
     }
 }
