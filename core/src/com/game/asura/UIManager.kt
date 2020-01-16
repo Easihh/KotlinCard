@@ -303,7 +303,7 @@ class UIManager(private val stage: Stage,
 
     fun addCardToHand(card: DrawableCard) {
         val cardImg = card.getActor()
-        cardImg.setScale(0.75f)
+        cardImg.setScale(1.0f)
         val lsnr = if (card.getCardType() == CardType.TARGET_SPELL) {
             TargetableCardListener(card, initTargetSpellFnc = ::initTargetSpell)
         } else {

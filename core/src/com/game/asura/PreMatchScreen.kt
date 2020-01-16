@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
@@ -34,6 +35,7 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
     private val inProcessor = PreMatchMessageInProcessor(::toMatchScreen)
     private val preMatchProcessor = PreMatchMessageProcessor(inProcessor, outProcessor)
     private lateinit var font: BitmapFont
+    private val shaper: ShapeRenderer = ShapeRenderer()
     private var canProcessMessage: Boolean = true
 
     init {
@@ -72,9 +74,9 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
 
 
     private fun setupPlayButton() {
-        val playButton = Texture(Asset.MENU_BUTTON_SMALL.path)
+        val playButton = Texture(Asset.MENU_BUTTON.path)
         val playBtn = Image(playButton)
-        playBtn.setPosition(715f, 675f)
+        playBtn.setPosition(400f, 450f)
         playBtn.setScale(1.0f, 1.0f)
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
@@ -136,8 +138,14 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
         }
 
         batch.use {
-            font.draw(it, "PLAY", 745f, 720f)
+            font.draw(it, "PLAY", 500f, 487.5f)
             font.draw(it, "CONNECT", 870f, 720f)
+        }
+
+        //view
+        shaper.color=Color.SCARLET
+        shaper.use(ShapeRenderer.ShapeType.Line){
+            shaper.rect(1f,1f,stage.width-1f, stage.height-1f)
         }
         stage.act()
         stage.draw()

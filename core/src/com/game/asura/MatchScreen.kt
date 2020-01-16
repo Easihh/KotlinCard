@@ -136,11 +136,15 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
 
         shaper.projectionMatrix = camera.combined
 
-        //background
         shaper.color = (Color.BLUE)
         shaper.use(ShapeRenderer.ShapeType.Line) {
             //Visible GameView
             shaper.rect(0f, 0f, stage.width, stage.height)
+        }
+        //foreground
+        shaper.color=Color.WHITE
+        shaper.use(ShapeRenderer.ShapeType.Filled){
+            shaper.rect(1f,1f,stage.width, stage.height)
         }
         stage.act()
         stage.draw()
