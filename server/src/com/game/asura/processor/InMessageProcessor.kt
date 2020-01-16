@@ -102,9 +102,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 val changedFields: MutableList<ChangedField> = ArrayList()
                 if (cardInHand.getCost() > 0) {
                     println("cardCost:${cardInHand.getCost()},currentMana:${player.heroPlayer.getCurrentMana()}")
-                    val manaField = ChangedField(MessageField.PLAYER_CURRENT_MANA, player.heroPlayer.getCurrentMana())
-                    changedFields.add(manaField)
-                    val playerInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, card = player.heroPlayer, changedFields = changedFields)
+                    val playerInfoOut = PlayerInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, currentMana = player.heroPlayer.getCurrentMana(), maxMana = player.heroPlayer.getMaxMana())
                     messageQueue.addMessage(playerInfoOut)
                 }
 

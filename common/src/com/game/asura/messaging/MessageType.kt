@@ -6,6 +6,7 @@ enum class MessageType(val value: Byte) {
     GAME_REQUEST('g'.toByte()),
     CONNECTION_STATE('s'.toByte()),
     CARD_INFO('i'.toByte()),
+    PLAYER_INFO('p'.toByte()),
     CARD_PLAYED('c'.toByte()),
     CARD_DRAWN('d'.toByte()),
     MATCH_INFO('m'.toByte()),

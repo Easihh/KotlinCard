@@ -23,7 +23,9 @@ class ServerHeroCard(primaryId: Int,
     fun getCurrentMana(): Int {
         return currentMana
     }
-
+    fun getMaxMana(): Int {
+        return maxMana
+    }
     override fun getAttack(): Int? {
         return attack
     }

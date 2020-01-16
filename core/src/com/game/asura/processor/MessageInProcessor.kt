@@ -17,10 +17,11 @@ class MessageInProcessor(private val player: ClientPlayer,
                     val monster = card as MonsterDrawableCard
                     monster.update(message.getChangedFields())
                 }
-                if(card.getCardType()==CardType.HERO){
-                    val hero = card as ClientHeroCard
-                    hero.update(message.getChangedFields())
-                }
+
+            }
+            is PlayerInfoIn -> {
+                player.maxMana = message.playerMaxMana
+                player.currentMana = message.playerCurrentMana
             }
             is CardDrawnIn -> {
 

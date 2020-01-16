@@ -25,6 +25,13 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
             MessageType.CONNECTION_STATE -> {
                 decodedMessage = ConnStatusIn()
             }
+            MessageType.PLAYER_INFO -> {
+                val data = getPlayerInfoData()
+                val mana = data.currentMana ?: return
+                val maxMana = data.maxMana ?: return
+                val name = data.playerName ?: return
+                decodedMessage = PlayerInfoIn(name, mana, maxMana)
+            }
             MessageType.CARD_DRAWN -> {
                 val data = getCardDrawnData()
                 val cardCost = data.cardCost ?: return
@@ -48,7 +55,7 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val playerName = data.playerName ?: return
                 val primaryId = data.primaryCardId ?: return
                 val secondary = data.secondaryCardId ?: return
-                decodedMessage = CardInfoIn(playerName,primaryId,secondary, data.playerHealth, data.playerMaxHealth)
+                decodedMessage = CardInfoIn(playerName, primaryId, secondary, data.playerHealth, data.playerMaxHealth)
             }
             MessageType.CARD_PLAYED -> {
                 val data = getCardPlayedData()

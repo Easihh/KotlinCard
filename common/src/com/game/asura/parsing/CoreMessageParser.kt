@@ -67,7 +67,7 @@ abstract class CoreMessageParser {
 
     fun getCardPlayedData(): CardPlayedData {
         return CardPlayedData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId()
-                ,coreMsg.getCardTarget(), coreMsg.getBoardPosition())
+                , coreMsg.getCardTarget(), coreMsg.getBoardPosition())
     }
 
     fun getGameRequestData(): GameRequestData {
@@ -75,12 +75,12 @@ abstract class CoreMessageParser {
     }
 
     fun getCardInfoData(): CardInfoData {
-        return CardInfoData(coreMsg.getAccountName(),coreMsg.getPrimaryCardId(),coreMsg.getSecondaryCardId(), coreMsg.getCardHealth(), coreMsg.getMaxCardLife())
+        return CardInfoData(coreMsg.getAccountName(), coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getCardHealth(), coreMsg.getMaxCardLife())
     }
 
     fun getMatchInfoData(): MatchInfoData {
-        return MatchInfoData(coreMsg.getAccountName(),coreMsg.getEnemyAccountName(),coreMsg.getPrimaryHeroId(),
-                coreMsg.getSecondaryHeroId(),coreMsg.getEnemyPrimaryHeroId(),coreMsg.getEnemySecondaryHeroId())
+        return MatchInfoData(coreMsg.getAccountName(), coreMsg.getEnemyAccountName(), coreMsg.getPrimaryHeroId(),
+                coreMsg.getSecondaryHeroId(), coreMsg.getEnemyPrimaryHeroId(), coreMsg.getEnemySecondaryHeroId())
     }
 
     fun getCardDrawnData(): CardDrawnData {
@@ -104,4 +104,7 @@ abstract class CoreMessageParser {
         return MonsterAttackData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getCardTarget())
     }
 
+    fun getPlayerInfoData(): PlayerInfoData {
+        return PlayerInfoData(coreMsg.getAccountName(), coreMsg.getCurrentPlayerMana(), coreMsg.getMaxPlayerMana())
+    }
 }
