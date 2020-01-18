@@ -103,18 +103,22 @@ class UIManager(private val stage: Stage,
         var initialX = INITIAL_BOARD_X
         for (i in 0 until MAX_BOARD_SIZE) {
             val card = player.boardManager.getCardByBoardIndex(i)
-            card.getActor().setPosition(initialX, INITIAL_BOARD_Y)
+            if (card.getCardType() != CardType.INVALID) {
+                card.getActor().setPosition(initialX, INITIAL_BOARD_Y)
+            }
             initialX += BOARD_CARD_WIDTH
         }
     }
 
     private fun addHeroesToBoard() {
+        player.heroPlayer.initCardTexture(assetStore.getCardTexture(player.heroPlayer.getPrimaryId()))
         val actor = player.heroPlayer.getActor()
 
         actor.addListener(createHeroInputListener())
         actor.setPosition(450f, 50f)
         stage.addActor(actor)
 
+        otherPlayer.heroPlayer.initCardTexture(assetStore.getCardTexture(otherPlayer.heroPlayer.getPrimaryId()))
         val otherActor = otherPlayer.heroPlayer.getActor()
         otherActor.addListener(createHeroInputListener())
         otherActor.setPosition(450f, 600f)
@@ -200,6 +204,7 @@ class UIManager(private val stage: Stage,
 
 
     private fun setupHeroesPower() {
+        player.heroPower.initCardTexture(assetStore.getCardTexture(player.heroPower.getPrimaryId()))
         val heroPower = player.heroPower.getActor()
         heroPower.setPosition(625f, 50f)
         val intputlstr = object : InputListener() {
@@ -302,6 +307,7 @@ class UIManager(private val stage: Stage,
     }
 
     fun addCardToHand(card: DrawableCard) {
+        card.initCardTexture(assetStore.getCardTexture(card.getPrimaryId()))
         val cardImg = card.getActor()
         cardImg.setScale(1.0f)
         val lsnr = if (card.getCardType() == CardType.TARGET_SPELL) {

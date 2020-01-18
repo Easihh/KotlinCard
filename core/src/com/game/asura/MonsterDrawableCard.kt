@@ -1,5 +1,6 @@
 package com.game.asura
 
+import com.badlogic.gdx.graphics.Texture
 import com.game.asura.card.AllCard
 import com.game.asura.card.CardType
 import com.game.asura.card.Minion

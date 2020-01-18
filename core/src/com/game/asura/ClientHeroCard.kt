@@ -12,14 +12,12 @@ class ClientHeroCard(primaryId: Int,
                      cardType: CardType = CardType.HERO) : MonsterDrawableCard(primaryId, secondaryId, cardCost, cardType), Minion {
 
 
+    private lateinit var playerActor: BoardCard
 
-    private val playerActor: BoardCard
-
-    init {
+    override fun initCardTexture(texture: Texture) {
         val texture = Texture("core/assets/hero.png")
         playerActor = BoardCard(texture, getSecondayId())
     }
-
 
     override fun getActor(): Actor {
         return playerActor

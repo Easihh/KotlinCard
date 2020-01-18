@@ -9,14 +9,13 @@ import kotlin.random.Random
 val INVALID_MINION_CARD = MinionCard(-1, -1, 99, CardType.INVALID)
 
 class MinionCard(primaryId: Int,
-                 secondaryId: Int = Random.nextInt(),
+                 private val secondaryId: Int = Random.nextInt(),
                  cardCost: Int,
                  cardType: CardType) : MonsterDrawableCard(primaryId, secondaryId, cardCost, cardType) {
 
-    private var currentActor: Actor
+    private lateinit var currentActor: Actor
 
-    init {
-        val texture = Texture("core/assets/monsterCard.png")
+    override fun initCardTexture(texture: Texture) {
         currentActor = HandCard(texture, secondaryId)
     }
 

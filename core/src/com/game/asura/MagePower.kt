@@ -8,11 +8,16 @@ import com.game.asura.card.CardType
 
 class MagePower : HeroPower(-1, -1, 2, CardType.TARGET_SPELL) {
 
+
     private var img: Image
 
     init {
         val texture = Texture("core/assets/power.png")
         img = Image(texture)
+    }
+
+    override fun initCardTexture(texture: Texture) {
+
     }
 
     private var isActive: Boolean = false

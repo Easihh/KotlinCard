@@ -15,4 +15,6 @@ abstract class DrawableCard(primaryId: Int,
 
     abstract fun transformActor(texture: Texture)
 
+    abstract fun initCardTexture(texture: Texture)
+
 }

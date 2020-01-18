@@ -9,18 +9,15 @@ import kotlin.random.Random
 val INVALID_SPELL_CARD = SpellCard(-1, -1, 99, CardType.INVALID)
 
 class SpellCard(primaryId: Int,
-                secondaryId: Int = Random.nextInt(),
+                private val secondaryId: Int = Random.nextInt(),
                 cardCost: Int,
                 cardType: CardType) : DrawableCard(primaryId, secondaryId, cardCost, cardType) {
 
 
-    private var currentActor: Actor
+    private lateinit var currentActor: Actor
 
-    init {
-        val picture = if (cardType == CardType.MONSTER) {
-            "monsterCard.png"
-        } else "card.png"
-        val texture = Texture("core/assets/$picture")
+
+    override fun initCardTexture(texture: Texture) {
         currentActor = HandCard(texture, secondaryId)
     }
 
