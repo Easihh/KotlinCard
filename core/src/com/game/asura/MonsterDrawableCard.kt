@@ -8,12 +8,12 @@ import kotlin.random.Random
 abstract class MonsterDrawableCard(primaryId: Int,
                                    secondaryId: Int = Random.nextInt(),
                                    cardCost: Int,
-                                   cardType: CardType) : DrawableCard(primaryId, secondaryId, cardCost, cardType), Minion {
+                                   cardType: CardType,
+                                   private var attack: Int? = null,
+                                   private var health: Int,
+                                   private var maxHealth: Int) : DrawableCard(primaryId, secondaryId, cardCost, cardType), Minion {
 
     protected val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
-    private val attack: Int = 0
-    private var health: Int = 0
-    private var maxHealth: Int = 0
 
     init {
 

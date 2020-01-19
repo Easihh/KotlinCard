@@ -24,14 +24,17 @@ class MessageInProcessor(private val player: ClientPlayer,
                 player.currentMana = message.playerCurrentMana
             }
             is CardDrawnIn -> {
+                val card = SpellCard(primaryId = message.primaryId, secondaryId = message.secondaryId,
+                        cardCost = message.cardCost, cardType = message.cardType)
 
-                val card = if (message.cardType == CardType.MONSTER) {
-                    MinionCard(primaryId = message.primaryId, secondaryId = message.secondaryId,
-                            cardCost = message.cardCost, cardType = message.cardType)
-                } else {
-                    SpellCard(primaryId = message.primaryId, secondaryId = message.secondaryId,
-                            cardCost = message.cardCost, cardType = message.cardType)
-                }
+                player.handManager.addToPlayerHand(card)
+                uiManager.addCardToHand(card)
+                cardStore.add(card)
+            }
+            is MonsterCardDrawnIn -> {
+                val card = MinionCard(primaryId = message.primaryId, secondaryId = message.secondaryId,
+                        cardCost = message.cardCost, cardType = message.cardType, attack = message.attack,
+                        health = message.health, maxHealth = message.maxHealth)
                 player.handManager.addToPlayerHand(card)
                 uiManager.addCardToHand(card)
                 cardStore.add(card)

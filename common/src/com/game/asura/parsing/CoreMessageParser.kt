@@ -1,6 +1,7 @@
 package com.game.asura.parsing
 
-import com.game.asura.*
+import com.game.asura.END_MESSAGE_DELIMITER
+import com.game.asura.EnumMapper
 import com.game.asura.message.data.*
 import com.game.asura.messaging.CoreMessage
 import com.game.asura.messaging.MessageField
@@ -85,7 +86,7 @@ abstract class CoreMessageParser {
 
     fun getCardDrawnData(): CardDrawnData {
         return CardDrawnData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getCardCost(),
-                coreMsg.getCardType())
+                coreMsg.getCardType(), coreMsg.getCardAttack(), coreMsg.getCardHealth(), coreMsg.getMaxCardLife())
     }
 
     fun getHeroPowerData(): HeroPowerData {

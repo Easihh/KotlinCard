@@ -4,12 +4,14 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.game.asura.card.CardType
 import com.game.asura.card.Minion
-import com.game.asura.messaging.MessageField
 
 class ClientHeroCard(primaryId: Int,
                      secondaryId: Int,
                      cardCost: Int = 0,
-                     cardType: CardType = CardType.HERO) : MonsterDrawableCard(primaryId, secondaryId, cardCost, cardType), Minion {
+                     cardType: CardType = CardType.HERO,
+                     attack: Int? = null,
+                     health: Int,
+                     maxHealth: Int) : MonsterDrawableCard(primaryId, secondaryId, cardCost, cardType, attack, health, maxHealth), Minion {
 
 
     private lateinit var playerActor: BoardCard

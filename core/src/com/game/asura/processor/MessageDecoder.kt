@@ -1,6 +1,7 @@
 package com.game.asura.processor
 
 import com.game.asura.InsertableQueue
+import com.game.asura.card.CardType
 import com.game.asura.messagein.*
 import com.game.asura.messaging.MessageType
 import com.game.asura.parsing.CoreMessageParser
@@ -38,7 +39,13 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val primaryId = data.primaryId ?: return
                 val secondaryId = data.secondaryId ?: return
                 val cardType = data.cardType ?: return
-                decodedMessage = CardDrawnIn(primaryId, secondaryId, cardCost, cardType)
+                decodedMessage = if (cardType == CardType.MONSTER) {
+                    val health = data.health ?: return
+                    val maxHealth = data.maxHealth ?: return
+                    MonsterCardDrawnIn(primaryId, secondaryId, cardCost, cardType, data.attack, health, maxHealth)
+                } else {
+                    CardDrawnIn(primaryId, secondaryId, cardCost, cardType)
+                }
             }
             MessageType.MATCH_INFO -> {
                 val data = getMatchInfoData()

@@ -35,9 +35,9 @@ class ServerPlayer(val playerName: String,
         val kingMaxHealth = kingSlime.maxHealth ?: return
         deck.push(ServerMinionCard(kingSlime.id, cardCost = kingSlime.cost, attack = kingSlime.attack,
                 health = kingHealth, maxHealth = kingMaxHealth))
-        val slime = cardInfoStore.getCardInfo(4) ?: return
-        val slimeHealth = kingSlime.health ?: return
-        val slimeMaxHealth = kingSlime.maxHealth ?: return
+        val slime = cardInfoStore.getCardInfo(1) ?: return
+        val slimeHealth = slime.health ?: return
+        val slimeMaxHealth = slime.maxHealth ?: return
         deck.push(ServerMinionCard(1, cardCost = 1, attack = slime.attack,
                 health = slimeHealth, maxHealth = slimeMaxHealth))
         deck.push(ServerSpellCard(2, cardCost = 2,

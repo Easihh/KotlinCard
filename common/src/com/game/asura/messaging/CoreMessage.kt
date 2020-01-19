@@ -111,6 +111,11 @@ class CoreMessage {
         return typeVal.value as Int
     }
 
+    fun getCardAttack(): Int? {
+        val typeVal = fieldMap[MessageField.CARD_ATTACK] ?: return null
+        return typeVal.value as Int
+    }
+
     fun clear() {
         fieldMap.clear()
     }
