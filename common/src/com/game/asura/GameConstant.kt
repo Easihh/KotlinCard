@@ -4,7 +4,7 @@ const val END_MESSAGE_DELIMITER = '&'
 const val MAX_BOARD_SIZE: Int = 7
 //Player Board
 const val INITIAL_BOARD_X: Float = 50f
-const val INITIAL_BOARD_Y: Float = 250f
+const val INITIAL_BOARD_Y: Float = 300f
 //Playable Area
 const val VIRTUAL_WINDOW_WIDTH: Int = 1024
 const val VIRTUAL_WINDOW_HEIGHT: Int = 1024

@@ -44,7 +44,6 @@ class UIManager(private val stage: Stage,
 
     init {
         cursor.dispose()
-        setupHeroesPower()
         addHeroesToBoard()
         addEndTurnBtn()
         val mouseMovedLstr = object : InputListener() {
@@ -116,14 +115,14 @@ class UIManager(private val stage: Stage,
         val actor = player.heroPlayer.getActor()
 
         actor.addListener(createHeroInputListener())
-        actor.setPosition(450f, 50f)
+        actor.setPosition(450f, 100f)
         stage.addActor(actor)
 
         val otherHeroTexture = assetStore.getCardTexture(otherPlayer.heroPlayer.getPrimaryId()) ?: return
         otherPlayer.heroPlayer.initCardTexture(otherHeroTexture.otherTexture)
         val otherActor = otherPlayer.heroPlayer.getActor()
         otherActor.addListener(createHeroInputListener())
-        otherActor.setPosition(450f, 600f)
+        otherActor.setPosition(450f, 800f)
         stage.addActor(otherActor)
     }
 
@@ -202,34 +201,6 @@ class UIManager(private val stage: Stage,
         updateBoardPosition()
         boardTilt = BoardManager.BoardPositionTilt.NONE
 
-    }
-
-
-    private fun setupHeroesPower() {
-        val texture = Texture("core/assets/power.png")
-        player.heroPower.initCardTexture(texture)
-        val heroPower = player.heroPower.getActor()
-        heroPower.setPosition(625f, 50f)
-        val intputlstr = object : InputListener() {
-            override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                println("Hero Power click triggered.")
-                Gdx.graphics.setCursor(cursor)
-
-                initialClickX = event.stageX
-                initialClickY = event.stageY
-                selectedCard = player.heroPower
-
-                //so that another click on hero power won't be triggered by stage hit until target action is canceled
-                heroPower.touchable = Touchable.disabled
-                return true
-            }
-        }
-        heroPower.addListener(intputlstr)
-        stage.addActor(heroPower)
-
-        val enemyPower = otherPlayer.heroPower.getActor()
-        enemyPower.setPosition(625f, 600f)
-        stage.addActor(enemyPower)
     }
 
     private fun getClosestEmptyBoardIndex(mouseX: Float, mouseY: Float): Int? {
@@ -343,10 +314,6 @@ class UIManager(private val stage: Stage,
         val actor = stage.hit(position.xPosition, position.yPosition, true)
         if (actor is BoardCard) {
             when (card) {
-                is HeroPower -> {
-                    cardPlayedOut = HeroPowerOut(actor.secondaryId)
-
-                }
                 is SpellCard -> {
                     cardPlayedOut = CardPlayedOut(card = card, cardTarget = actor.secondaryId)
                 }
@@ -442,17 +409,17 @@ class UIManager(private val stage: Stage,
         val eHero = otherPlayer.heroPlayer
         font.draw(batch, "END TURN", 835f, 195f)
 
-        font.draw(batch, "FPS: ${Gdx.graphics.framesPerSecond}", 50f, 750f)
+        font.draw(batch, "FPS: ${Gdx.graphics.framesPerSecond}", 50f, 950f)
         font.draw(batch, "Player: ${player.playerName}", 50f, 200f)
-        font.draw(batch, "Player: ${otherPlayer.playerName}", 50f, 725f)
+        font.draw(batch, "Player: ${otherPlayer.playerName}", 50f, 925f)
         font.draw(batch, "Mana: ${player.currentMana}/${player.maxMana}", 50f, 175f)
-        font.draw(batch, "EnemyMana: ${otherPlayer.currentMana}/${otherPlayer.maxMana}", 50f, 650f)
-        font.draw(batch, "Mouse:$mouseX,$mouseY", 50f, 625f)
-        font.draw(batch, "Time:${(endTurnTime - System.nanoTime()) / ONE_NANO_SECOND}", 50f, 600f)
-        batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 50f)
-        batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 600f)
+        font.draw(batch, "EnemyMana: ${otherPlayer.currentMana}/${otherPlayer.maxMana}", 50f, 850f)
+        font.draw(batch, "Mouse:$mouseX,$mouseY", 50f, 825f)
+        font.draw(batch, "Time:${(endTurnTime - System.nanoTime()) / ONE_NANO_SECOND}", 50f, 800f)
+        batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 100f)
+        batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 800f)
         font.draw(batch, hero.getHealth().toString(), 587.5f, 80f)
-        font.draw(batch, eHero.getHealth().toString(), 587.5f, 625f)
+        font.draw(batch, eHero.getHealth().toString(), 587.5f, 825f)
         batch.end()
 
         renderDebugBoard(shaper)
@@ -488,10 +455,6 @@ class UIManager(private val stage: Stage,
                 batch.end()
             }
             batch.begin()
-            //highlight selected card, but not if using hero power
-            if (it !is HeroPower) {
-                batch.draw(assetStore.getTexture(Asset.CARD_SELECTED), it.getActor().x, it.getActor().y)
-            }
             batch.end()
         }
         renderBoardCardStats(batch, font)
@@ -503,7 +466,7 @@ class UIManager(private val stage: Stage,
         var initialboardX = INITIAL_BOARD_X
         shaper.color = (Color.RED)
         for (x in 0..6) {
-            shaper.rect(initialboardX, 400f, BOARD_CARD_WIDTH, BOARD_CARD_HEIGHT)
+            shaper.rect(initialboardX, 500f, BOARD_CARD_WIDTH, BOARD_CARD_HEIGHT)
             initialboardX += BOARD_CARD_WIDTH
         }
 
@@ -511,7 +474,7 @@ class UIManager(private val stage: Stage,
         initialboardX = INITIAL_BOARD_X
         shaper.color = (Color.RED)
         for (x in 0..6) {
-            shaper.rect(initialboardX, 250f, BOARD_CARD_WIDTH, BOARD_CARD_HEIGHT)
+            shaper.rect(initialboardX, 300f, BOARD_CARD_WIDTH, BOARD_CARD_HEIGHT)
             initialboardX += BOARD_CARD_WIDTH
         }
         shaper.end()

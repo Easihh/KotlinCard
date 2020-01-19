@@ -3,7 +3,6 @@ package com.game.asura
 import com.game.asura.card.CardType
 
 class ClientPlayer(val playerName: String,
-                   val heroPower: HeroPower,
                    primary: Int,
                    secondary: Int) {
 
