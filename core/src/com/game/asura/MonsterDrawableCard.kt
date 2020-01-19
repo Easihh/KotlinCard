@@ -1,7 +1,5 @@
 package com.game.asura
 
-import com.badlogic.gdx.graphics.Texture
-import com.game.asura.card.AllCard
 import com.game.asura.card.CardType
 import com.game.asura.card.Minion
 import com.game.asura.messaging.MessageField
@@ -13,9 +11,9 @@ abstract class MonsterDrawableCard(primaryId: Int,
                                    cardType: CardType) : DrawableCard(primaryId, secondaryId, cardCost, cardType), Minion {
 
     protected val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
-    private val attack: Int = AllCard.getCard(primaryId).attributes.attack
-    private var health: Int = AllCard.getCard(primaryId).attributes.health
-    private var maxHealth: Int = AllCard.getCard(primaryId).attributes.maxHealth
+    private val attack: Int = 0
+    private var health: Int = 0
+    private var maxHealth: Int = 0
 
     init {
 

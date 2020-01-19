@@ -10,7 +10,7 @@ abstract class BaseCard(private val primaryId: Int,
     private val effects: MutableList<CardEffect> = ArrayList()
 
     init {
-        effects.add(AllCard.getCard(primaryId).effect)
+        //effects.add(AllCard.getCard(primaryId).effect)
     }
 
     override fun getPrimaryId(): Int {

@@ -1,5 +1,6 @@
 package com.game.asura
 
+import com.game.asura.card.CardInfoStore
 import com.game.asura.messageout.LoginRequestOut
 import com.game.asura.messageout.OutMessage
 import com.game.asura.messaging.MessageBuilder
@@ -18,7 +19,6 @@ class ServerBosom(private val insertableQueue: InsertableQueue) {
     private val SERVER_PORT: Int = 8555
 
     private inner class ServerMessageReader : Runnable {
-
         private val messageDecoder = MessageDecoder(insertableQueue)
         private val tokenizer = Tokenizer(bufferRead)
         var isConnected = true

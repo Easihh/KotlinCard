@@ -1,0 +1,18 @@
+[
+	{
+		"id":0,
+		"name":"Unknown",
+		"cardType":"UNKNOWN",
+		"cost":0
+		
+	},
+	{
+		"id":1,
+		"name":"Slime",
+		"cardType":"MONSTER",
+		"cost":1,
+		"attack":3,
+		"health":3,
+		"maxHealth":3
+	}
+]

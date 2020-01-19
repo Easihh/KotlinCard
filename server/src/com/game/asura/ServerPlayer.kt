@@ -1,6 +1,5 @@
 package com.game.asura
 
-import com.game.asura.card.AllCard
 import com.game.asura.card.BaseCard
 import com.game.asura.card.CardType
 import java.util.*
@@ -30,14 +29,12 @@ class ServerPlayer(val playerName: String,
 
     fun initializeDeck() {
         deck.clear()
-        deck.push(ServerMinionCard(AllCard.MONSTER_A.id, cardCost = AllCard.MONSTER_A.cost,
-                cardType = AllCard.MONSTER_A.cardType))
-        deck.push(ServerMinionCard(AllCard.FIRST_MONSTER.id, cardCost = AllCard.FIRST_MONSTER.cost,
-                cardType = AllCard.FIRST_MONSTER.cardType))
+        deck.push(ServerMinionCard(4, cardCost = 4))
+        deck.push(ServerMinionCard(1, cardCost = 1))
         //deck.push(ServerCard(AllCard.FIRST_SPELL.id, cardCost = AllCard.FIRST_SPELL.cost,
         //      cardType = AllCard.FIRST_SPELL.cardType))
-        deck.push(ServerSpellCard(AllCard.FIRST_TARGET_SPELL.id, cardCost = AllCard.FIRST_TARGET_SPELL.cost,
-                cardType = AllCard.FIRST_TARGET_SPELL.cardType))
+        deck.push(ServerSpellCard(2, cardCost = 2,
+                cardType = CardType.TARGET_SPELL))
     }
 
     fun playCard(card: BaseCard, boardPosition: Int?) {

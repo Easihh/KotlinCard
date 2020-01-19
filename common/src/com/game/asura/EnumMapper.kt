@@ -1,6 +1,5 @@
 package com.game.asura
 
-import com.game.asura.card.AllCard
 import com.game.asura.card.CardType
 import com.game.asura.messaging.MessageField
 import com.game.asura.messaging.MessageType
@@ -8,7 +7,7 @@ import com.game.asura.messaging.MessageType
 class EnumMapper {
 
     private val enumMap: MutableMap<MessageField, (Byte) -> String> = HashMap()
-    private val enumMapInt: MutableMap<MessageField, (Int) -> String> = HashMap()
+    private val enumMapInt: MutableMap<MessageField, (Int) -> String?> = HashMap()
 
     init {
         val messageTypeFnc: (Byte) -> String = {
@@ -23,14 +22,12 @@ class EnumMapper {
         val cardTypeFnc: (Byte) -> String = {
             CardType.getCardType(it).name
         }
-        val cardNameFnc: (Any) -> String = {
-            AllCard.getCard(it as Int).name
-        }
+
         enumMap.putIfAbsent(MessageField.MESSAGE_TYPE, messageTypeFnc)
         enumMap.putIfAbsent(MessageField.CONN_STATUS, connStatusFnc)
         enumMap.putIfAbsent(MessageField.GAME_TYPE, gameTypeFnc)
         enumMap.putIfAbsent(MessageField.CARD_TYPE, cardTypeFnc)
-        enumMapInt.putIfAbsent(MessageField.PRIMARY_CARD_ID, cardNameFnc)
+        //enumMapInt.putIfAbsent(MessageField.PRIMARY_CARD_ID, cardNameFnc)
     }
 
     fun getFieldValueName(field: MessageField, value: Byte): String? {

@@ -6,6 +6,6 @@ enum class CardAsset(val primaryId: Int,
     FIRST_MONSTER(1, "core/assets/slime.png"),
     FIRST_TARGET_SPELL(2, "core/assets/card.png"),
     //FIRST_SPELL(3, ""),
-    //MONSTER_A(4, "")
-    MAGE_HERO(5,"core/assets/hero.png")
+    //KING_SLIME(4, "")
+    MAGE_HERO(5, "core/assets/hero.png")
 }

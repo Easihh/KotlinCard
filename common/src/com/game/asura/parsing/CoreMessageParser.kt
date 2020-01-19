@@ -1,6 +1,7 @@
 package com.game.asura.parsing
 
 import com.game.asura.*
+import com.game.asura.card.CardInfoStore
 import com.game.asura.message.data.*
 import com.game.asura.messaging.CoreMessage
 import com.game.asura.messaging.MessageField

@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.game.asura.card.CardInfoStore
 import com.game.asura.card.CardType
 import com.game.asura.messageout.CardPlayedOut
 import com.game.asura.messageout.EndTurnOut
@@ -25,10 +26,11 @@ import com.game.asura.messaging.Message
 class UIManager(private val stage: Stage,
                 private val queue: InsertableQueue,
                 private val player: ClientPlayer,
-                private val otherPlayer: ClientPlayer) {
+                private val otherPlayer: ClientPlayer,
+                private val cardInfoStore: CardInfoStore) {
 
 
-    private val assetStore = AssetStore()
+    private val assetStore = AssetStore(cardInfoStore)
     private var mouseX: Float = 0f
     private var mouseY: Float = 0f
     private var initialClickX: Float = 0f
@@ -259,7 +261,7 @@ class UIManager(private val stage: Stage,
     fun moveCardToBoard(card: DrawableCard, boardIndex: Int) {
 
         //need change texture of actor as its now on board
-        card.transformActor(assetStore.getTexture(Asset.BOARD_CARD))
+        card.transformActor(assetStore.getBoardCardTexture(card.getPrimaryId()))
         //add new actor to stage as it was destroyed
         stage.addActor(card.getActor())
         val pos = getBoardPosition(boardIndex)

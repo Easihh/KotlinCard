@@ -3,10 +3,7 @@ package com.game.asura.processor
 import com.game.asura.*
 import com.game.asura.account.CachedAccount
 import com.game.asura.account.PlayerAccount
-import com.game.asura.card.AllCard
-import com.game.asura.card.CardEffect
-import com.game.asura.card.CardType
-import com.game.asura.card.Minion
+import com.game.asura.card.*
 import com.game.asura.messagein.*
 import com.game.asura.messageout.*
 import com.game.asura.messaging.MessageField
@@ -14,7 +11,8 @@ import com.game.asura.parsing.DecodedMessage
 
 class InMessageProcessor(private val messageQueue: InsertableQueue,
                          private val accountCache: CachedAccount,
-                         private val matchFinder: MatchFinder) {
+                         private val matchFinder: MatchFinder,
+                         private val cardInfoStore: CardInfoStore) {
 
     fun onMessage(message: DecodedMessage) {
         when (message) {
@@ -33,8 +31,8 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     println("Unable to find accountName in cache with key:${message.accountKey}")
                     return
                 }
-                val player = ServerPlayer(accountName, AllCard.MAGE_HERO.id)
-                val enemyPlayer = ServerPlayer("Enemy", AllCard.MAGE_HERO.id)
+                val player = ServerPlayer(accountName, 5)
+                val enemyPlayer = ServerPlayer("Enemy", 5)
                 player.initializeDeck()
                 enemyPlayer.initializeDeck()
                 val match = Match()
@@ -89,7 +87,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     return
                 }
                 if (cardInHand.getCardType() == CardType.TARGET_SPELL && message.cardTarget == null) {
-                    val cardName = AllCard.getCard(message.cardPrimaryId)
+                    val cardName = cardInfoStore.getCardInfo(message.cardPrimaryId)?.name
                     println("Error, card:$cardName from player:$accountName was played no target.")
                     return
                 }
@@ -117,7 +115,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 }
                 for (effect in effects) {
                     if (effect == CardEffect.DEAL_DMG) {
-                        target.takeDamage(AllCard.getCard(cardInHand.getPrimaryId()).attributes.spellDmg)
+                        target.takeDamage(3)
                         val healthField = ChangedField(MessageField.CARD_HEALTH, target.getHealth())
                         changedFields.add(healthField)
                         val playerInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, card = target, changedFields = changedFields)

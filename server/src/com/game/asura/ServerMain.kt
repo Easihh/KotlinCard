@@ -1,6 +1,7 @@
 package com.game.asura
 
 import com.game.asura.account.*
+import com.game.asura.card.CardInfoStore
 import com.game.asura.messaging.MessageField
 import com.game.asura.processor.InMessageProcessor
 import com.game.asura.processor.MessageDecoder
@@ -19,7 +20,8 @@ class ServerMain {
     inner class MainLogicProcessor : Runnable {
 
         private val matchFinder = MatchFinder()
-        private val inProcessor = InMessageProcessor(messageQueue, accountCache, matchFinder)
+        private val cardInfoStore = CardInfoStore()
+        private val inProcessor = InMessageProcessor(messageQueue, accountCache, matchFinder,cardInfoStore)
         private val outProcessor = OutMessageProcessor()
         private val messageProcessor = MessageProcessor(inProcessor, outProcessor)
 

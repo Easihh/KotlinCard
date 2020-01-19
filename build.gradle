@@ -11,12 +11,15 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
 
     }
 }
 
 allprojects {
     apply plugin: "idea"
+    apply plugin: 'kotlinx-serialization'
+    apply plugin: "kotlin"
 
     version = '1.0'
     ext {
@@ -38,14 +41,13 @@ allprojects {
     }
 }
 project(":common") {
-    apply plugin: "kotlin"
+
     dependencies {
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0"
     }
 }
 project(":desktop") {
-    apply plugin: "kotlin"
-
 
     dependencies {
         compile project(":core")
@@ -58,8 +60,6 @@ project(":desktop") {
 }
 
 project(":core") {
-    apply plugin: "kotlin"
-
 
     dependencies {
         compile project(":common")
@@ -70,11 +70,11 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile "io.github.libktx:ktx-app:$ktxVersion"
         compile "io.github.libktx:ktx-graphics:$ktxVersion"
+
         
     }
 }
 project(":server") {
-    apply plugin: "kotlin"
     dependencies {
         compile project(":common")
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"

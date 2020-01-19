@@ -11,7 +11,7 @@ fun main(arg: Array<String>) {
     config.forceExit = false
     config.title = "Some Title"
     config.width = 1024
-    config.height = 768
+    config.height = 1024
     config.resizable = true
     config.fullscreen = false
     val myGame = MyGdxGame()

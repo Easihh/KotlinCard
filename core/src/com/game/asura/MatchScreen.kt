@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.FitViewport
+import com.game.asura.card.CardInfoStore
 import com.game.asura.messagein.MatchInfoIn
 import com.game.asura.processor.MessageInProcessor
 import com.game.asura.processor.MessageOutProcessor
@@ -36,6 +37,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     private val camera: OrthographicCamera = OrthographicCamera()
     private val viewport: FitViewport = FitViewport(VIRTUAL_WINDOW_WIDTH.toFloat(), VIRTUAL_WINDOW_HEIGHT.toFloat(), camera)
     private val stage: Stage = Stage(viewport)
+    private val cardInfoStore: CardInfoStore = CardInfoStore()
     private lateinit var font: BitmapFont
 
     private lateinit var player: ClientPlayer
@@ -58,7 +60,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     override fun show() {
         Gdx.input.inputProcessor = stage
         setupPlayer()
-        uiManager = UIManager(stage, messageQueue, player, otherPlayer)
+        uiManager = UIManager(stage, messageQueue, player, otherPlayer, cardInfoStore)
         setupMessageProcessors()
     }
 
@@ -142,9 +144,9 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
             shaper.rect(0f, 0f, stage.width, stage.height)
         }
         //foreground
-        shaper.color=Color.BLACK
-        shaper.use(ShapeRenderer.ShapeType.Filled){
-            shaper.rect(1f,1f,stage.width, stage.height)
+        shaper.color = Color.BLACK
+        shaper.use(ShapeRenderer.ShapeType.Filled) {
+            shaper.rect(1f, 1f, stage.width, stage.height)
         }
         stage.act()
         stage.draw()
