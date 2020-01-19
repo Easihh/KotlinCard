@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.game.asura.card.CardInfoStore
 import com.game.asura.card.CardType
 import com.game.asura.messageout.CardPlayedOut
 import com.game.asura.messageout.EndTurnOut
@@ -26,11 +25,10 @@ import com.game.asura.messaging.Message
 class UIManager(private val stage: Stage,
                 private val queue: InsertableQueue,
                 private val player: ClientPlayer,
-                private val otherPlayer: ClientPlayer,
-                private val cardInfoStore: CardInfoStore) {
+                private val otherPlayer: ClientPlayer) {
 
 
-    private val assetStore = AssetStore(cardInfoStore)
+    private val assetStore = AssetStore()
     private var mouseX: Float = 0f
     private var mouseY: Float = 0f
     private var initialClickX: Float = 0f
@@ -113,14 +111,16 @@ class UIManager(private val stage: Stage,
     }
 
     private fun addHeroesToBoard() {
-        player.heroPlayer.initCardTexture(assetStore.getCardTexture(player.heroPlayer.getPrimaryId()))
+        val heroTexture = assetStore.getCardTexture(player.heroPlayer.getPrimaryId()) ?: return
+        player.heroPlayer.initCardTexture(heroTexture.otherTexture)
         val actor = player.heroPlayer.getActor()
 
         actor.addListener(createHeroInputListener())
         actor.setPosition(450f, 50f)
         stage.addActor(actor)
 
-        otherPlayer.heroPlayer.initCardTexture(assetStore.getCardTexture(otherPlayer.heroPlayer.getPrimaryId()))
+        val otherHeroTexture = assetStore.getCardTexture(otherPlayer.heroPlayer.getPrimaryId()) ?: return
+        otherPlayer.heroPlayer.initCardTexture(otherHeroTexture.otherTexture)
         val otherActor = otherPlayer.heroPlayer.getActor()
         otherActor.addListener(createHeroInputListener())
         otherActor.setPosition(450f, 600f)
@@ -206,7 +206,8 @@ class UIManager(private val stage: Stage,
 
 
     private fun setupHeroesPower() {
-        player.heroPower.initCardTexture(assetStore.getCardTexture(player.heroPower.getPrimaryId()))
+        val texture = Texture("core/assets/power.png")
+        player.heroPower.initCardTexture(texture)
         val heroPower = player.heroPower.getActor()
         heroPower.setPosition(625f, 50f)
         val intputlstr = object : InputListener() {
@@ -261,7 +262,8 @@ class UIManager(private val stage: Stage,
     fun moveCardToBoard(card: DrawableCard, boardIndex: Int) {
 
         //need change texture of actor as its now on board
-        card.transformActor(assetStore.getBoardCardTexture(card.getPrimaryId()))
+        val cardTexture = assetStore.getCardTexture(card.getPrimaryId()) ?: return
+        card.transformActor(cardTexture.onBoardTexture)
         //add new actor to stage as it was destroyed
         stage.addActor(card.getActor())
         val pos = getBoardPosition(boardIndex)
@@ -309,7 +311,8 @@ class UIManager(private val stage: Stage,
     }
 
     fun addCardToHand(card: DrawableCard) {
-        card.initCardTexture(assetStore.getCardTexture(card.getPrimaryId()))
+        val cardTexture = assetStore.getCardTexture(card.getPrimaryId()) ?: return
+        card.initCardTexture(cardTexture.inHandTexture)
         val cardImg = card.getActor()
         cardImg.setScale(1.0f)
         val lsnr = if (card.getCardType() == CardType.TARGET_SPELL) {

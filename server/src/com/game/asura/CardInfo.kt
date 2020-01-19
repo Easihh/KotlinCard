@@ -1,5 +1,6 @@
-package com.game.asura.card
+package com.game.asura
 
+import com.game.asura.card.CardType
 import kotlinx.serialization.Serializable
 
 @Serializable

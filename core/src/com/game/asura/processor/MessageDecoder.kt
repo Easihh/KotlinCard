@@ -1,7 +1,6 @@
 package com.game.asura.processor
 
 import com.game.asura.InsertableQueue
-import com.game.asura.card.CardInfoStore
 import com.game.asura.messagein.*
 import com.game.asura.messaging.MessageType
 import com.game.asura.parsing.CoreMessageParser

@@ -1,7 +1,6 @@
 package com.game.asura
 
 import com.game.asura.account.*
-import com.game.asura.card.CardInfoStore
 import com.game.asura.messaging.MessageField
 import com.game.asura.processor.InMessageProcessor
 import com.game.asura.processor.MessageDecoder

@@ -1,11 +1,11 @@
-package com.game.asura.card
+package com.game.asura
 
 class CardInfoStore {
 
     private val cardInfoMap: Map<Int, CardInfo>
 
     init {
-        val jsonCardList = JsonCardList()
+        val jsonCardList = JsonCardInfo()
         cardInfoMap = jsonCardList.getAllCardInfo().map { it.id to it }.toMap()
     }
 

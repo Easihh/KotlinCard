@@ -17,7 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.FitViewport
-import com.game.asura.card.CardInfoStore
 import com.game.asura.messagein.MatchInfoIn
 import com.game.asura.processor.MessageInProcessor
 import com.game.asura.processor.MessageOutProcessor
@@ -37,7 +36,6 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     private val camera: OrthographicCamera = OrthographicCamera()
     private val viewport: FitViewport = FitViewport(VIRTUAL_WINDOW_WIDTH.toFloat(), VIRTUAL_WINDOW_HEIGHT.toFloat(), camera)
     private val stage: Stage = Stage(viewport)
-    private val cardInfoStore: CardInfoStore = CardInfoStore()
     private lateinit var font: BitmapFont
 
     private lateinit var player: ClientPlayer
@@ -60,7 +58,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     override fun show() {
         Gdx.input.inputProcessor = stage
         setupPlayer()
-        uiManager = UIManager(stage, messageQueue, player, otherPlayer, cardInfoStore)
+        uiManager = UIManager(stage, messageQueue, player, otherPlayer)
         setupMessageProcessors()
     }
 

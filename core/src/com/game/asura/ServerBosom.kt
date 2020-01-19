@@ -1,6 +1,5 @@
 package com.game.asura
 
-import com.game.asura.card.CardInfoStore
 import com.game.asura.messageout.LoginRequestOut
 import com.game.asura.messageout.OutMessage
 import com.game.asura.messaging.MessageBuilder

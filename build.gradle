@@ -12,7 +12,6 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
-
     }
 }
 
@@ -44,7 +43,6 @@ project(":common") {
 
     dependencies {
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-        implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0"
     }
 }
 project(":desktop") {
@@ -70,6 +68,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile "io.github.libktx:ktx-app:$ktxVersion"
         compile "io.github.libktx:ktx-graphics:$ktxVersion"
+        implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0"
 
         
     }
@@ -78,5 +77,6 @@ project(":server") {
     dependencies {
         compile project(":common")
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0"
     }
 }

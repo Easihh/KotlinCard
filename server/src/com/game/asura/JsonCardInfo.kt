@@ -1,11 +1,11 @@
-package com.game.asura.card
+package com.game.asura
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.list
 import java.io.File
 
-class JsonCardList {
+class JsonCardInfo {
 
     private val cards: List<CardInfo>
 
@@ -17,7 +17,6 @@ class JsonCardList {
         }
         val json = Json(JsonConfiguration.Stable)
         cards = json.parse(CardInfo.serializer().list, inputStr)
-        println("JSON result:$cards")
     }
 
     fun getAllCardInfo(): List<CardInfo> {

@@ -1,0 +1,25 @@
+[
+	{
+		"id":0,
+		"inHand":"core/assets/null_texture.png",
+		"onBoard":"core/assets/null_texture.png"
+	},
+	{
+		"id":1,
+		"inHand":"core/assets/slime.png",
+		"onBoard":"core/assets/slime_board.png"
+	},
+	{
+		"id":2,
+		"inHand":"core/assets/spellCard.png"
+	},
+	{
+		"id":4,
+		"inHand":"core/assets/king_slime.png",
+		"onBoard":"core/assets/king_slime_board.png"
+	},
+	{
+		"id":5,
+		"other":"core/assets/hero.png"
+	}
+]
