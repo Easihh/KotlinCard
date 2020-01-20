@@ -60,16 +60,15 @@ class MessageInProcessor(private val player: ClientPlayer,
                     }
                 }
             }
-            is HeroPowerIn -> {
-                val target = cardStore.getCard(message.cardTarget) ?: return
-                println("Handle effect of card:$target being the target of hero power.")
-            }
             is StartTurnIn -> {
                 uiManager.startTurnTimer()
             }
             is EndTurnIn -> {
                 println("End Turn Received from server.")
                 //cancel all pending action etc here
+            }
+            is MatchEndIn->{
+                println("Match result:${message.matchResult}")
             }
             else -> {
                 println("Unable to process message:$message missing logic.")

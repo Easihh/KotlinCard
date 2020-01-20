@@ -1,6 +1,7 @@
 package com.game.asura.messaging
 
 import com.game.asura.GameType
+import com.game.asura.MatchResult
 import com.game.asura.card.CardType
 
 class CoreMessage {
@@ -109,6 +110,11 @@ class CoreMessage {
     fun getMatchTurn(): Int? {
         val typeVal = fieldMap[MessageField.MATCH_TURN] ?: return null
         return typeVal.value as Int
+    }
+
+    fun getMatchResult(): MatchResult? {
+        val typeVal = fieldMap[MessageField.MATCH_RESULT] ?: return null
+        return MatchResult.getMatchResultType(typeVal.value as Byte)
     }
 
     fun getCardAttack(): Int? {

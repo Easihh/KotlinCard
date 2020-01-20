@@ -28,6 +28,7 @@ enum class MessageField(val fieldNumber: Int,
     ENEMY_HERO_PRIMARY_ID(23, 'I'.toByte()),
     ENEMY_HERO_SECONDARY_ID(24, 'I'.toByte()),
     CARD_ATTACK(25, 'I'.toByte()),
+    MATCH_RESULT(26, 'B'.toByte()),
     ;
 
     companion object {

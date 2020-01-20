@@ -18,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.game.asura.card.CardType
 import com.game.asura.messageout.CardPlayedOut
 import com.game.asura.messageout.EndTurnOut
-import com.game.asura.messageout.HeroPowerOut
 import com.game.asura.messageout.MonsterAttackOut
 import com.game.asura.messaging.Message
 

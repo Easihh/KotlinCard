@@ -1,13 +1,13 @@
 package com.game.asura.processor
 
-import com.game.asura.messagein.MatchInfoIn
+import com.game.asura.messagein.MatchStartIn
 import com.game.asura.parsing.DecodedMessage
 
-class PreMatchMessageInProcessor(val toMatchScreen: (MatchInfoIn) -> Unit) {
+class PreMatchMessageInProcessor(val toMatchScreen: (MatchStartIn) -> Unit) {
 
     fun onMessage(message: DecodedMessage) {
         when (message) {
-            is MatchInfoIn -> {
+            is MatchStartIn -> {
                 toMatchScreen(message)
             }
             else -> {

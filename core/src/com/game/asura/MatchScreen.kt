@@ -17,7 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.FitViewport
-import com.game.asura.messagein.MatchInfoIn
+import com.game.asura.messagein.MatchStartIn
 import com.game.asura.processor.MessageInProcessor
 import com.game.asura.processor.MessageOutProcessor
 import com.game.asura.processor.MessageProcessor
@@ -29,7 +29,7 @@ import java.util.stream.Collectors
 class MatchScreen(private val parentScreen: KtxGame<Screen>,
                   private val messageQueue: MessageQueue,
                   private val server: ServerBosom,
-                  private val matchInfo: MatchInfoIn) : KtxScreen {
+                  private val matchStart: MatchStartIn) : KtxScreen {
 
     private val batch: SpriteBatch = SpriteBatch()
     private val shaper: ShapeRenderer = ShapeRenderer()
@@ -52,8 +52,8 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     }
 
     private fun setupPlayer() {
-        player = ClientPlayer(matchInfo.accountName, matchInfo.primaryHeroId, matchInfo.primaryHeroId)
-        otherPlayer = ClientPlayer(matchInfo.enemyName, matchInfo.enemyPrimaryHeroId, matchInfo.enemySecondaryHeroId)
+        player = ClientPlayer(matchStart.accountName, matchStart.primaryHeroId, matchStart.secondaryHeroId)
+        otherPlayer = ClientPlayer(matchStart.enemyName, matchStart.enemyPrimaryHeroId, matchStart.enemySecondaryHeroId)
         cardStore.add(player.heroPlayer)
         cardStore.add(otherPlayer.heroPlayer)
     }

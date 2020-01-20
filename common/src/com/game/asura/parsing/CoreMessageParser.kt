@@ -79,18 +79,18 @@ abstract class CoreMessageParser {
         return CardInfoData(coreMsg.getAccountName(), coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getCardHealth(), coreMsg.getMaxCardLife())
     }
 
-    fun getMatchInfoData(): MatchInfoData {
-        return MatchInfoData(coreMsg.getAccountName(), coreMsg.getEnemyAccountName(), coreMsg.getPrimaryHeroId(),
+    fun getMatchStartData(): MatchStartData {
+        return MatchStartData(coreMsg.getAccountName(), coreMsg.getEnemyAccountName(), coreMsg.getPrimaryHeroId(),
                 coreMsg.getSecondaryHeroId(), coreMsg.getEnemyPrimaryHeroId(), coreMsg.getEnemySecondaryHeroId())
+    }
+
+    fun getMatchEndData():MatchEndData{
+        return MatchEndData(coreMsg.getAccountName(),coreMsg.getMatchResult())
     }
 
     fun getCardDrawnData(): CardDrawnData {
         return CardDrawnData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getCardCost(),
                 coreMsg.getCardType(), coreMsg.getCardAttack(), coreMsg.getCardHealth(), coreMsg.getMaxCardLife())
-    }
-
-    fun getHeroPowerData(): HeroPowerData {
-        return HeroPowerData(coreMsg.getCardTarget())
     }
 
     fun getStartTurnData(): StartTurnData {

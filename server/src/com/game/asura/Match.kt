@@ -17,6 +17,17 @@ class Match(val matchId: Int = Random.nextInt()) {
         return playerMap[key]
     }
 
+    fun getCardOwner(secondaryId: Int): ServerPlayer? {
+        for (player in playerMap.values) {
+            if (player.boardManager.cardIsPresentOnBoard(secondaryId) ||
+                    player.heroPlayer.getSecondayId() == secondaryId ||
+                    player.handManager.cardIsInHand(secondaryId)) {
+                return player
+            }
+        }
+        return null
+    }
+
     fun addPlayer(key: String, value: ServerPlayer) {
         playerMap.putIfAbsent(key, value)
         //add "Hero" player as its also a card to be retrieved on attack/defense

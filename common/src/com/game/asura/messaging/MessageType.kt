@@ -9,10 +9,10 @@ enum class MessageType(val value: Byte) {
     PLAYER_INFO('p'.toByte()),
     CARD_PLAYED('c'.toByte()),
     CARD_DRAWN('d'.toByte()),
-    MATCH_INFO('m'.toByte()),
+    MATCH_START('m'.toByte()),
+    MATCH_END('t'.toByte()),
     START_TURN('s'.toByte()),
     END_TURN('e'.toByte()),
-    HERO_POWER('h'.toByte()),
     MONSTER_ATTACK('a'.toByte());
 
 

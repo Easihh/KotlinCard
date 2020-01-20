@@ -29,11 +29,6 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 decodedMessage = CardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId,
                         cardPlayedData.cardTarget, cardPlayedData.boardIndex)
             }
-            MessageType.HERO_POWER -> {
-                val heroPowerdata = getHeroPowerData()
-                decodedMessage = HeroPowerIn(playerAccount.getAccountKey(), heroPowerdata.cardTarget)
-
-            }
             MessageType.END_TURN -> {
                 val endTurnData = getEndTurnData()
                 decodedMessage = EndTurnIn(playerAccount.getAccountKey())

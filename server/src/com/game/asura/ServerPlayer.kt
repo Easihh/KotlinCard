@@ -6,6 +6,7 @@ import java.util.*
 import kotlin.random.Random
 
 class ServerPlayer(val playerName: String,
+                   val accountKey: String,
                    primary: Int,
                    secondary: Int = Random.nextInt(),
                    val cardInfoStore: CardInfoStore) {

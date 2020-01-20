@@ -48,15 +48,21 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                     CardDrawnIn(primaryId, secondaryId, cardCost, cardType)
                 }
             }
-            MessageType.MATCH_INFO -> {
-                val data = getMatchInfoData()
+            MessageType.MATCH_START -> {
+                val data = getMatchStartData()
                 val accountName = data.accountName ?: return
                 val enemyName = data.enemyAccountName ?: return
                 val primaryId = data.primaryHeroId ?: return
                 val secondaryId = data.secondaryHeroId ?: return
                 val enemyPrimaryId = data.enemyPrimaryHeroId ?: return
                 val enemySecondaryId = data.enemySecondaryHeroId ?: return
-                decodedMessage = MatchInfoIn(accountName, enemyName, primaryId, secondaryId, enemyPrimaryId, enemySecondaryId)
+                decodedMessage = MatchStartIn(accountName, enemyName, primaryId, secondaryId, enemyPrimaryId, enemySecondaryId)
+            }
+            MessageType.MATCH_END -> {
+                val data = getMatchEndData()
+                val accountName = data.accountName ?: return
+                val matchResult = data.matchResult ?: return
+                decodedMessage = MatchEndIn(accountName, matchResult)
             }
             MessageType.CARD_INFO -> {
                 val data = getCardInfoData()
@@ -70,11 +76,6 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val primaryId = data.cardPrimaryId ?: return
                 val secondary = data.cardSecondaryId ?: return
                 decodedMessage = CardPlayedIn(primaryId, secondary, data.boardIndex)
-            }
-            MessageType.HERO_POWER -> {
-                val data = getHeroPowerData()
-                val target = data.cardTarget ?: return
-                decodedMessage = HeroPowerIn(target)
             }
             MessageType.START_TURN -> {
                 val data = getStartTurnData()

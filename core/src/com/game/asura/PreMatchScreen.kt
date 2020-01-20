@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.viewport.FitViewport
-import com.game.asura.messagein.MatchInfoIn
+import com.game.asura.messagein.MatchStartIn
 import com.game.asura.messageout.PlayGameRequestOut
 import com.game.asura.processor.PreMatchMessageInProcessor
 import com.game.asura.processor.PreMatchMessageOutProcessor
@@ -124,9 +124,9 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
         stage.addActor(connectBtn)
     }
 
-    private fun toMatchScreen(matchInfoIn: MatchInfoIn) {
+    private fun toMatchScreen(matchStartIn: MatchStartIn) {
         canProcessMessage = false
-        parentScreen.addScreen(MatchScreen(parentScreen, messageQueue, server, matchInfoIn))
+        parentScreen.addScreen(MatchScreen(parentScreen, messageQueue, server, matchStartIn))
         parentScreen.setScreen<MatchScreen>()
     }
 

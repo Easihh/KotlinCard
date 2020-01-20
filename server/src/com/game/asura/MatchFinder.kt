@@ -13,4 +13,8 @@ class MatchFinder {
         allMatch[match.matchId] = match
     }
 
+    fun removeMatch(match: Match) {
+        allMatch.remove(match.matchId)
+    }
+
 }
