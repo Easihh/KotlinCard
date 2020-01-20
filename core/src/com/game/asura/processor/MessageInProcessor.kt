@@ -5,6 +5,7 @@ import com.game.asura.*
 import com.game.asura.card.CardType
 import com.game.asura.messagein.*
 import com.game.asura.parsing.DecodedMessage
+import com.game.asura.screen.MatchScreen
 import com.game.asura.screen.PreMatchScreen
 import ktx.app.KtxGame
 
@@ -73,6 +74,7 @@ class MessageInProcessor(private val player: ClientPlayer,
             }
             is MatchEndIn -> {
                 println("Match result:${msg.matchResult}")
+                parentScreen.removeScreen<MatchScreen>()
                 parentScreen.setScreen<PreMatchScreen>()
 
 

@@ -50,7 +50,6 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
     private fun setupStage() {
         println("Current DisplayMode:${Gdx.graphics.displayMode}")
         stage.addListener(object : InputListener() {
-            /** Called when a key goes down. When true is returned, the event is [handled][Event.handle].  */
             override fun keyDown(event: InputEvent, keycode: Int): Boolean {
                 println("Exiting the application.")
                 if (keycode == Input.Keys.ESCAPE) {
