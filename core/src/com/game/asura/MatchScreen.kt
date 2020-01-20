@@ -36,6 +36,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     private val camera: OrthographicCamera = OrthographicCamera()
     private val viewport: FitViewport = FitViewport(VIRTUAL_WINDOW_WIDTH.toFloat(), VIRTUAL_WINDOW_HEIGHT.toFloat(), camera)
     private val stage: Stage = Stage(viewport)
+    private val cardStore = CardStore()
     private lateinit var font: BitmapFont
 
     private lateinit var player: ClientPlayer
@@ -53,6 +54,8 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     private fun setupPlayer() {
         player = ClientPlayer(matchInfo.accountName, matchInfo.primaryHeroId, matchInfo.primaryHeroId)
         otherPlayer = ClientPlayer(matchInfo.enemyName, matchInfo.enemyPrimaryHeroId, matchInfo.enemySecondaryHeroId)
+        cardStore.add(player.heroPlayer)
+        cardStore.add(otherPlayer.heroPlayer)
     }
 
     override fun show() {
@@ -86,7 +89,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     }
 
     private fun setupMessageProcessors() {
-        val messageInProcessor = MessageInProcessor(player, uiManager, CardStore())
+        val messageInProcessor = MessageInProcessor(player, uiManager, cardStore)
         val messageOutProcessor = MessageOutProcessor(server::sendMessage)
         messageProcessor = MessageProcessor(messageInProcessor, messageOutProcessor)
     }

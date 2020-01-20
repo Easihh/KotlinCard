@@ -9,7 +9,7 @@ abstract class MonsterDrawableCard(primaryId: Int,
                                    secondaryId: Int = Random.nextInt(),
                                    cardCost: Int,
                                    cardType: CardType,
-                                   private var attack: Int? = null,
+                                   private var attack: Int,
                                    private var health: Int,
                                    private var maxHealth: Int) : DrawableCard(primaryId, secondaryId, cardCost, cardType), Minion {
 
@@ -35,7 +35,7 @@ abstract class MonsterDrawableCard(primaryId: Int,
         return maxHealth
     }
 
-    override fun getAttack(): Int? {
+    override fun getAttack(): Int {
         return attack
     }
 

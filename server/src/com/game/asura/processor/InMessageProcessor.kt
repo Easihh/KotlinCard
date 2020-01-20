@@ -3,7 +3,9 @@ package com.game.asura.processor
 import com.game.asura.*
 import com.game.asura.account.CachedAccount
 import com.game.asura.account.PlayerAccount
-import com.game.asura.card.*
+import com.game.asura.card.CardEffect
+import com.game.asura.card.CardType
+import com.game.asura.card.Minion
 import com.game.asura.messagein.*
 import com.game.asura.messageout.*
 import com.game.asura.messaging.MessageField
@@ -186,7 +188,22 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     return
                 }
                 val match = matchFinder.findMatch(account.getCurrentMatchId()) ?: return
-                match.monsterAttack(message.secondaryId, message.target)
+                val attacker = match.getCard(message.secondaryId) ?: return
+                val defender = match.getCard(message.target) ?: return
+                if (attacker !is Minion || defender !is Minion) {
+                    return
+                }
+                match.monsterAttack(attacker, defender)
+                val changedFieldsAttacker: MutableList<ChangedField> = ArrayList()
+                val changedFieldsDefender: MutableList<ChangedField> = ArrayList()
+                val healthFieldA = ChangedField(MessageField.CARD_HEALTH, attacker.getHealth())
+                val healthFieldD = ChangedField(MessageField.CARD_HEALTH, defender.getHealth())
+                changedFieldsAttacker.add(healthFieldA)
+                changedFieldsDefender.add(healthFieldD)
+                var cardInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, card = attacker, changedFields = changedFieldsAttacker)
+                messageQueue.addMessage(cardInfoOut)
+                cardInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, card = defender, changedFields = changedFieldsDefender)
+                messageQueue.addMessage(cardInfoOut)
             }
             else -> {
                 println("Error unable to processIn message:$message")

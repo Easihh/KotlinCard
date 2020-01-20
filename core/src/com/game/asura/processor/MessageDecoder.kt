@@ -42,7 +42,8 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 decodedMessage = if (cardType == CardType.MONSTER) {
                     val health = data.health ?: return
                     val maxHealth = data.maxHealth ?: return
-                    MonsterCardDrawnIn(primaryId, secondaryId, cardCost, cardType, data.attack, health, maxHealth)
+                    val attack = data.attack ?: return
+                    MonsterCardDrawnIn(primaryId, secondaryId, cardCost, cardType, attack, health, maxHealth)
                 } else {
                     CardDrawnIn(primaryId, secondaryId, cardCost, cardType)
                 }

@@ -6,13 +6,13 @@ import com.game.asura.card.CardEffect
 import com.game.asura.card.CardType
 import kotlin.random.Random
 
-val INVALID_MINION_CARD = MinionCard(-1, -1, 99, CardType.INVALID, null, -1, -1)
+val INVALID_MINION_CARD = MinionCard(-1, -1, 99, CardType.INVALID, -1, -1, -1)
 
 class MinionCard(primaryId: Int,
                  private val secondaryId: Int = Random.nextInt(),
                  cardCost: Int,
                  cardType: CardType,
-                 attack: Int? = null,
+                 attack: Int,
                  health: Int,
                  maxHealth: Int) : MonsterDrawableCard(primaryId, secondaryId, cardCost, cardType, attack, health, maxHealth) {
 

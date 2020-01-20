@@ -9,7 +9,7 @@ class ClientHeroCard(primaryId: Int,
                      secondaryId: Int,
                      cardCost: Int = 0,
                      cardType: CardType = CardType.HERO,
-                     attack: Int? = null,
+                     attack: Int = -1,
                      health: Int,
                      maxHealth: Int) : MonsterDrawableCard(primaryId, secondaryId, cardCost, cardType, attack, health, maxHealth), Minion {
 

@@ -1,6 +1,7 @@
 package com.game.asura
 
 import com.game.asura.card.BaseCard
+import com.game.asura.card.Minion
 import kotlin.random.Random
 
 class Match(val matchId: Int = Random.nextInt()) {
@@ -42,11 +43,9 @@ class Match(val matchId: Int = Random.nextInt()) {
         return matchCardCache[secondaryId]
     }
 
-    fun monsterAttack(secondaryId: Int, target: Int) {
-        val attacker = matchCardCache[secondaryId] ?: return
-        val target = matchCardCache[target] ?: return
-
-        println("attacker/target logic here.")
+    fun monsterAttack(attacker: Minion, defender: Minion) {
+        attacker.takeDamage(defender.getAttack())
+        defender.takeDamage(attacker.getAttack())
     }
 
 }

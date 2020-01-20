@@ -15,8 +15,6 @@ class CardInfoIn(val playerName: String,
     init {
         addField(MessageField.CARD_HEALTH, playerHealth)
         addField(MessageField.CARD_MAX_HEALTH, playerMaxHealth)
-        addField(MessageField.PLAYER_CURRENT_MANA, playerHealth)
-        addField(MessageField.PLAYER_MAX_MANA, playerMaxHealth)
     }
 
     private fun addField(field: MessageField, value: Any?) {

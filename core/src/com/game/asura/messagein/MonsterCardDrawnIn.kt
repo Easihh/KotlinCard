@@ -7,6 +7,6 @@ class MonsterCardDrawnIn(val primaryId: Int,
                          val secondaryId: Int,
                          val cardCost: Int,
                          val cardType: CardType,
-                         val attack: Int?,
+                         val attack: Int,
                          val health: Int,
                          val maxHealth: Int) : DecodedMessage

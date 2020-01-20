@@ -25,9 +25,7 @@ class CardDrawnOut(channelWriter: ChannelMessageWriter,
             val attack = monster.getAttack()
             val health = monster.getHealth()
             val maxHealth = monster.getMaxHealth()
-            if (attack != null) {
-                messageBuilder.add(MessageField.CARD_ATTACK, attack)
-            }
+            messageBuilder.add(MessageField.CARD_ATTACK, attack)
             messageBuilder.add(MessageField.CARD_HEALTH, health)
             messageBuilder.add(MessageField.CARD_MAX_HEALTH, maxHealth)
         }

@@ -13,7 +13,7 @@ class MessageInProcessor(private val player: ClientPlayer,
         when (message) {
             is CardInfoIn -> {
                 val card = cardStore.getCard(message.secondaryCardId) ?: return
-                if (card.getCardType() == CardType.MONSTER) {
+                if (card.getCardType() == CardType.MONSTER || card.getCardType()==CardType.HERO) {
                     val monster = card as MonsterDrawableCard
                     monster.update(message.getChangedFields())
                 }

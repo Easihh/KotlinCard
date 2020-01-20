@@ -5,17 +5,17 @@ import com.game.asura.card.CardType
 import com.game.asura.card.Minion
 import kotlin.random.Random
 
-val INVALID_MINION_CARD = ServerMinionCard(-1, -1, 99, CardType.INVALID, null, -1, -1)
+val INVALID_MINION_CARD = ServerMinionCard(-1, -1, 99, CardType.INVALID, -1, -1, -1)
 
 class ServerMinionCard(primaryId: Int,
                        secondaryId: Int = Random.nextInt(),
                        cardCost: Int = 0,
                        cardType: CardType = CardType.MONSTER,
-                       private val attack: Int? = null,
-                       private var health: Int =0,
+                       private val attack: Int = 0,
+                       private var health: Int = 0,
                        private var maxHealth: Int = 0) : BaseCard(primaryId, secondaryId, cardCost, cardType), Minion {
 
-    override fun getAttack(): Int? {
+    override fun getAttack(): Int {
         return attack
     }
 
