@@ -1,4 +1,4 @@
-package com.game.asura
+package com.game.asura.screen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
@@ -10,15 +10,18 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.scenes.scene2d.*
-import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.scenes.scene2d.Event
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.viewport.FitViewport
+import com.game.asura.*
 import com.game.asura.messagein.MatchStartIn
 import com.game.asura.messageout.PlayGameRequestOut
+import com.game.asura.processor.MessageDispatcher
+import com.game.asura.processor.MessageOutProcessor
 import com.game.asura.processor.PreMatchMessageInProcessor
-import com.game.asura.processor.PreMatchMessageOutProcessor
-import com.game.asura.processor.PreMatchMessageProcessor
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.graphics.use
@@ -31,9 +34,9 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
     private val viewport: FitViewport = FitViewport(VIRTUAL_WINDOW_WIDTH.toFloat(), VIRTUAL_WINDOW_HEIGHT.toFloat(), camera)
     private val stage: Stage = Stage(viewport)
     private val batch = SpriteBatch()
-    private val outProcessor = PreMatchMessageOutProcessor(server::sendMessage)
+    private val outProcessor = MessageOutProcessor(server::sendMessage)
     private val inProcessor = PreMatchMessageInProcessor(::toMatchScreen)
-    private val preMatchProcessor = PreMatchMessageProcessor(inProcessor, outProcessor)
+    private val messageDispatcher = MessageDispatcher(inProcessor, outProcessor)
     private lateinit var font: BitmapFont
     private val shaper: ShapeRenderer = ShapeRenderer()
     private var canProcessMessage: Boolean = true
@@ -41,7 +44,6 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
     init {
         setupStage()
         setupFont()
-        setupConnectButton()
         setupPlayButton()
     }
 
@@ -62,6 +64,7 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
 
     override fun show() {
         Gdx.input.inputProcessor = stage
+        canProcessMessage = true
     }
 
     private fun setupFont() {
@@ -90,40 +93,6 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
         stage.addActor(playBtn)
     }
 
-    private fun setupConnectButton() {
-        val img = Texture(Asset.MENU_BUTTON_SMALL.path)
-        val connectBtn = Image(img)
-        connectBtn.setPosition(850f, 675f)
-        val listener = object : InputListener() {
-            override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                val skin = Skin(Gdx.files.internal("core/assets/uiskin.json"))
-                val connFailed = Dialog("Error", skin)
-                connFailed.setPosition(Gdx.graphics.displayMode.width / 2f, Gdx.graphics.displayMode.height / 2f)
-                val lbl = Label.LabelStyle(font, Color.WHITE)
-                connFailed.text("CONNECTION TO SERVER FAILED\n SERVER MAY BE DOWN", lbl)
-                val okBtn = TextButton("OK", skin)
-                val lsnr = object : ChangeListener() {
-                    override fun changed(event: ChangeEvent?, actor: Actor?) {
-                        Gdx.app.exit()
-                    }
-                }
-                connFailed.buttonTable.defaults().height(64f)
-                connFailed.buttonTable.defaults().width(96f)
-                okBtn.addListener(lsnr)
-                connFailed.button(okBtn)
-                //connFailed.setSize(VIRTUAL_WINDOW_WIDTH.to, 256f)
-                connFailed.isMovable = false
-                connFailed.isModal = true
-                if (!server.connect()) {
-                    connFailed.show(stage)
-                }
-                return false
-            }
-        }
-        connectBtn.addListener(listener)
-        stage.addActor(connectBtn)
-    }
-
     private fun toMatchScreen(matchStartIn: MatchStartIn) {
         canProcessMessage = false
         parentScreen.addScreen(MatchScreen(parentScreen, messageQueue, server, matchStartIn))
@@ -134,18 +103,17 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
 
         while (canProcessMessage && messageQueue.queueIsNotEmpty()) {
             val message = messageQueue.nextMessage()
-            preMatchProcessor.onMessage(message)
+            messageDispatcher.onMessage(message)
         }
 
         batch.use {
             font.draw(it, "PLAY", 500f, 487.5f)
-            font.draw(it, "CONNECT", 870f, 720f)
         }
 
         //view
-        shaper.color=Color.SCARLET
-        shaper.use(ShapeRenderer.ShapeType.Line){
-            shaper.rect(1f,1f,stage.width-1f, stage.height-1f)
+        shaper.color = Color.SCARLET
+        shaper.use(ShapeRenderer.ShapeType.Line) {
+            shaper.rect(1f, 1f, stage.width - 1f, stage.height - 1f)
         }
         stage.act()
         stage.draw()

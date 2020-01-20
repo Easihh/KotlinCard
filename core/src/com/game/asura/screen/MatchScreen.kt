@@ -1,4 +1,4 @@
-package com.game.asura
+package com.game.asura.screen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Graphics
@@ -17,10 +17,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.FitViewport
+import com.game.asura.*
 import com.game.asura.messagein.MatchStartIn
 import com.game.asura.processor.MessageInProcessor
 import com.game.asura.processor.MessageOutProcessor
-import com.game.asura.processor.MessageProcessor
+import com.game.asura.processor.MessageDispatcher
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.graphics.use
@@ -41,7 +42,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
 
     private lateinit var player: ClientPlayer
     private lateinit var otherPlayer: ClientPlayer
-    private lateinit var messageProcessor: MessageProcessor
+    private lateinit var messageDispatcher: MessageDispatcher
     private lateinit var uiManager: UIManager
 
     init {
@@ -89,9 +90,9 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     }
 
     private fun setupMessageProcessors() {
-        val messageInProcessor = MessageInProcessor(player, uiManager, cardStore)
+        val messageInProcessor = MessageInProcessor(player, uiManager, cardStore,parentScreen)
         val messageOutProcessor = MessageOutProcessor(server::sendMessage)
-        messageProcessor = MessageProcessor(messageInProcessor, messageOutProcessor)
+        messageDispatcher = MessageDispatcher(messageInProcessor, messageOutProcessor)
     }
 
     private fun setupDisplayMode() {
@@ -132,7 +133,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
 
         while (messageQueue.queueIsNotEmpty()) {
             val message = messageQueue.nextMessage()
-            messageProcessor.onMessage(message)
+            messageDispatcher.onMessage(message)
         }
 
         camera.update()

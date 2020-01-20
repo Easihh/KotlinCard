@@ -25,6 +25,8 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 val account = message.getPlayerAccount() as PlayerAccount
                 accountCache.addActiveAccount(account.getAccountKey(), account)
                 println("Added accountKey:${account.getAccountKey()} with name:${account.getAccountName()} to activePlayer list.")
+                val reply = LoginRequestReplyOut(account.getChannelWriter(), LoginStatus.CONNECTED)
+                messageQueue.addMessage(reply)
             }
             is GameRequestIn -> {
                 val account = accountCache.getAccount(message.accountKey)

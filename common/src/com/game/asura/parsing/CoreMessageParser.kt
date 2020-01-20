@@ -84,8 +84,8 @@ abstract class CoreMessageParser {
                 coreMsg.getSecondaryHeroId(), coreMsg.getEnemyPrimaryHeroId(), coreMsg.getEnemySecondaryHeroId())
     }
 
-    fun getMatchEndData():MatchEndData{
-        return MatchEndData(coreMsg.getAccountName(),coreMsg.getMatchResult())
+    fun getMatchEndData(): MatchEndData {
+        return MatchEndData(coreMsg.getAccountName(), coreMsg.getMatchResult())
     }
 
     fun getCardDrawnData(): CardDrawnData {
@@ -107,5 +107,9 @@ abstract class CoreMessageParser {
 
     fun getPlayerInfoData(): PlayerInfoData {
         return PlayerInfoData(coreMsg.getAccountName(), coreMsg.getCurrentPlayerMana(), coreMsg.getMaxPlayerMana())
+    }
+
+    fun getLoginReplyData(): LoginReplyData {
+        return LoginReplyData(coreMsg.getLoginStatus())
     }
 }

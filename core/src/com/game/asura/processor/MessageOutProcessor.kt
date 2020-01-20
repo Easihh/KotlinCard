@@ -2,9 +2,9 @@ package com.game.asura.processor
 
 import com.game.asura.messageout.OutMessage
 
-class MessageOutProcessor(val sendFnc: (OutMessage) -> Unit) {
+class MessageOutProcessor(val sendFnc: (OutMessage) -> Unit):MessageProcessor<OutMessage> {
 
-    fun onMessage(message: OutMessage) {
-        sendFnc(message)
+    override fun onMessage(msg: OutMessage) {
+        sendFnc(msg)
     }
 }

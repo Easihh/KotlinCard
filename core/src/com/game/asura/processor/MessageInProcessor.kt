@@ -1,59 +1,63 @@
 package com.game.asura.processor
 
+import com.badlogic.gdx.Screen
 import com.game.asura.*
 import com.game.asura.card.CardType
 import com.game.asura.messagein.*
 import com.game.asura.parsing.DecodedMessage
+import com.game.asura.screen.PreMatchScreen
+import ktx.app.KtxGame
 
 class MessageInProcessor(private val player: ClientPlayer,
                          private val uiManager: UIManager,
-                         private val cardStore: CardStore) {
+                         private val cardStore: CardStore,
+                         private val parentScreen: KtxGame<Screen>) : MessageProcessor<DecodedMessage> {
 
-    fun onMessage(message: DecodedMessage) {
-        when (message) {
+    override fun onMessage(msg: DecodedMessage) {
+        when (msg) {
             is CardInfoIn -> {
-                val card = cardStore.getCard(message.secondaryCardId) ?: return
-                if (card.getCardType() == CardType.MONSTER || card.getCardType()==CardType.HERO) {
+                val card = cardStore.getCard(msg.secondaryCardId) ?: return
+                if (card.getCardType() == CardType.MONSTER || card.getCardType() == CardType.HERO) {
                     val monster = card as MonsterDrawableCard
-                    monster.update(message.getChangedFields())
+                    monster.update(msg.getChangedFields())
                 }
 
             }
             is PlayerInfoIn -> {
-                player.maxMana = message.playerMaxMana
-                player.currentMana = message.playerCurrentMana
+                player.maxMana = msg.playerMaxMana
+                player.currentMana = msg.playerCurrentMana
             }
             is CardDrawnIn -> {
-                val card = SpellCard(primaryId = message.primaryId, secondaryId = message.secondaryId,
-                        cardCost = message.cardCost, cardType = message.cardType)
+                val card = SpellCard(primaryId = msg.primaryId, secondaryId = msg.secondaryId,
+                        cardCost = msg.cardCost, cardType = msg.cardType)
 
                 player.handManager.addToPlayerHand(card)
                 uiManager.addCardToHand(card)
                 cardStore.add(card)
             }
             is MonsterCardDrawnIn -> {
-                val card = MinionCard(primaryId = message.primaryId, secondaryId = message.secondaryId,
-                        cardCost = message.cardCost, cardType = message.cardType, attack = message.attack,
-                        health = message.health, maxHealth = message.maxHealth)
+                val card = MinionCard(primaryId = msg.primaryId, secondaryId = msg.secondaryId,
+                        cardCost = msg.cardCost, cardType = msg.cardType, attack = msg.attack,
+                        health = msg.health, maxHealth = msg.maxHealth)
                 player.handManager.addToPlayerHand(card)
                 uiManager.addCardToHand(card)
                 cardStore.add(card)
             }
             is CardPlayedIn -> {
                 //only assume 1 player for now
-                val card = player.handManager.getCardFromHand(message.secondaryId) ?: return
+                val card = player.handManager.getCardFromHand(msg.secondaryId) ?: return
                 println("Removing card:$card from player hand.")
                 player.handManager.removeFromHand(card)
                 //if it was a monster put it in play
                 when (card.getCardType()) {
                     CardType.MONSTER -> {
-                        if (message.boardIndex == null) {
+                        if (msg.boardIndex == null) {
                             println("Error, card is of type:${card.getCardType()} but no board index present.")
                             return
                         }
                         val myCard = card as DrawableCard
-                        player.boardManager.updatePlayerBoard(myCard, message.boardIndex)
-                        uiManager.moveCardToBoard(myCard, message.boardIndex)
+                        player.boardManager.updatePlayerBoard(myCard, msg.boardIndex)
+                        uiManager.moveCardToBoard(myCard, msg.boardIndex)
                     }
                     else -> {
                         uiManager.removeCardfromHand(card as DrawableCard)
@@ -67,11 +71,14 @@ class MessageInProcessor(private val player: ClientPlayer,
                 println("End Turn Received from server.")
                 //cancel all pending action etc here
             }
-            is MatchEndIn->{
-                println("Match result:${message.matchResult}")
+            is MatchEndIn -> {
+                println("Match result:${msg.matchResult}")
+                parentScreen.setScreen<PreMatchScreen>()
+
+
             }
             else -> {
-                println("Unable to process message:$message missing logic.")
+                println("Unable to process message:$msg missing logic.")
             }
         }
     }

@@ -23,8 +23,10 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
         parseMessage(tokenizer)
         var decodedMessage: DecodedMessage? = null
         when (val msgType = getMessageType()) {
-            MessageType.CONNECTION_STATE -> {
-                decodedMessage = ConnStatusIn()
+            MessageType.LOGIN_REPLY -> {
+                val data = getLoginReplyData()
+                val status = data.logStatus ?: return
+                decodedMessage = LoginReplyIn(status)
             }
             MessageType.PLAYER_INFO -> {
                 val data = getPlayerInfoData()

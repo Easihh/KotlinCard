@@ -4,7 +4,7 @@ enum class MessageType(val value: Byte) {
     UNKNOWN('u'.toByte()),
     LOGIN_REQUEST('l'.toByte()),
     GAME_REQUEST('g'.toByte()),
-    CONNECTION_STATE('s'.toByte()),
+    LOGIN_REPLY('r'.toByte()),
     CARD_INFO('i'.toByte()),
     PLAYER_INFO('p'.toByte()),
     CARD_PLAYED('c'.toByte()),

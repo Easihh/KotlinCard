@@ -1,6 +1,7 @@
 package com.game.asura.messaging
 
 import com.game.asura.GameType
+import com.game.asura.LoginStatus
 import com.game.asura.MatchResult
 import com.game.asura.card.CardType
 
@@ -121,6 +122,12 @@ class CoreMessage {
         val typeVal = fieldMap[MessageField.CARD_ATTACK] ?: return null
         return typeVal.value as Int
     }
+
+    fun getLoginStatus(): LoginStatus? {
+        val typeVal = fieldMap[MessageField.LOGIN_STATUS] ?: return null
+        return LoginStatus.getLoginStatus(typeVal.value as Byte)
+    }
+
 
     fun clear() {
         fieldMap.clear()

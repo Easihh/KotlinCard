@@ -4,8 +4,8 @@ import com.game.asura.parsing.DecodedMessage
 import com.game.asura.messaging.Message
 import com.game.asura.messageout.OutMessage
 
-class PreMatchMessageProcessor(private val inProcessor: PreMatchMessageInProcessor,
-                               private val outProcessor: PreMatchMessageOutProcessor) {
+class MessageDispatcher(private val inProcessor: MessageProcessor<DecodedMessage>,
+                        private val outProcessor: MessageProcessor<OutMessage>) {
 
     fun onMessage(msg: Message) {
         when (msg) {
