@@ -141,7 +141,8 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
 
         val cropX = (width - viewportWidth) / 2f
         val cropY = (height - viewportHeight) / 2f
-        println("CropX:$cropX cropY:$cropY scaleX:${scaled.x} scaledY:${scaled.y}")
+        println("CropX:$cropX cropY:$cropY scaleX:${scaled.x} scaledY:${scaled.y}, viewportWidth:$viewportWidth viewportHeight:$viewportHeight")
+
         viewport.setScreenBounds(cropX.toInt(), cropY.toInt(),
                 Gdx.graphics.width - cropX.toInt(), Gdx.graphics.height)
         viewport.apply(true)

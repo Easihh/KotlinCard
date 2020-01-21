@@ -19,9 +19,9 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.asura.*
 import com.game.asura.messagein.MatchStartIn
+import com.game.asura.processor.MessageDispatcher
 import com.game.asura.processor.MessageInProcessor
 import com.game.asura.processor.MessageOutProcessor
-import com.game.asura.processor.MessageDispatcher
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.graphics.use
@@ -90,7 +90,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     }
 
     private fun setupMessageProcessors() {
-        val messageInProcessor = MessageInProcessor(player, uiManager, cardStore,parentScreen)
+        val messageInProcessor = MessageInProcessor(player, uiManager, cardStore, parentScreen)
         val messageOutProcessor = MessageOutProcessor(server::sendMessage)
         messageDispatcher = MessageDispatcher(messageInProcessor, messageOutProcessor)
     }
@@ -139,16 +139,12 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
         camera.update()
 
         shaper.projectionMatrix = camera.combined
+        batch.projectionMatrix = camera.combined
 
         shaper.color = (Color.BLUE)
         shaper.use(ShapeRenderer.ShapeType.Line) {
             //Visible GameView
-            shaper.rect(0f, 0f, stage.width, stage.height)
-        }
-        //foreground
-        shaper.color = Color.BLACK
-        shaper.use(ShapeRenderer.ShapeType.Filled) {
-            shaper.rect(1f, 1f, stage.width, stage.height)
+            shaper.rect(1f, 0f, stage.width, stage.height)
         }
         stage.act()
         stage.draw()
@@ -165,9 +161,11 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
 
         val cropX = (width - viewportWidth) / 2f
         val cropY = (height - viewportHeight) / 2f
-        println("CropX:$cropX cropY:$cropY scaleX:${scaled.x} scaledY:${scaled.y}")
+        val screenWidth = Gdx.graphics.width - cropX.toInt()
+        val screenHeight = Gdx.graphics.height - cropY.toInt()
+        println("CropX:$cropX cropY:$cropY scaleX:${scaled.x} scaledY:${scaled.y}, viewportWidth:$viewportWidth viewportHeight:$viewportHeight")
         viewport.setScreenBounds(cropX.toInt(), cropY.toInt(),
-                Gdx.graphics.width - cropX.toInt(), Gdx.graphics.height)
+                screenWidth, screenHeight)
         viewport.apply(true)
     }
 
