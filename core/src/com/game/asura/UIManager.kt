@@ -32,6 +32,7 @@ class UIManager(private val stage: Stage,
     private var mouseY: Float = 0f
     private var initialClickX: Float = 0f
     private var initialClickY: Float = 0f
+    private val emptyCardBoard = Sprite(assetStore.getTexture(Asset.EMPTY_BOARD_CARD))
     private val arrowImg = Sprite(assetStore.getTexture(Asset.ARROW_POINTER))
     private val systemCursor = Cursor.SystemCursor.Hand
     private val invisibleCursor = Pixmap(Gdx.files.internal("core/assets/invisibleCursor.png"))
@@ -421,7 +422,7 @@ class UIManager(private val stage: Stage,
         font.draw(batch, eHero.getHealth().toString(), 587.5f, 825f)
         batch.end()
 
-        renderDebugBoard(shaper)
+        renderDebugBoard(batch, shaper)
         selectedCard?.let {
             if (it.getCardType() == CardType.TARGET_SPELL) {
                 val angle = 180.0 / Math.PI * Math.atan2(initialClickX.toDouble() - mouseX, mouseY.toDouble() - initialClickY)
@@ -459,24 +460,27 @@ class UIManager(private val stage: Stage,
         renderBoardCardStats(batch, font)
     }
 
-    private fun renderDebugBoard(shaper: ShapeRenderer) {
-        shaper.begin(ShapeRenderer.ShapeType.Line)
+    private fun renderDebugBoard(batch: SpriteBatch, shaper: ShapeRenderer) {
+        batch.begin()
         //draw enemy board
         var initialboardX = INITIAL_BOARD_X
-        shaper.color = (Color.RED)
         for (x in 0..6) {
-            shaper.rect(initialboardX, 500f, BOARD_CARD_WIDTH, BOARD_CARD_HEIGHT)
+            if (otherPlayer.boardManager.getCardByBoardIndex(x).getCardType() == CardType.INVALID) {
+                batch.draw(emptyCardBoard, initialboardX, 500f)
+            }
             initialboardX += BOARD_CARD_WIDTH
         }
 
         //draw our own board
         initialboardX = INITIAL_BOARD_X
-        shaper.color = (Color.RED)
+
         for (x in 0..6) {
-            shaper.rect(initialboardX, 300f, BOARD_CARD_WIDTH, BOARD_CARD_HEIGHT)
+            if (player.boardManager.getCardByBoardIndex(x).getCardType() == CardType.INVALID) {
+                batch.draw(emptyCardBoard, initialboardX, 300f)
+            }
             initialboardX += BOARD_CARD_WIDTH
         }
-        shaper.end()
+        batch.end()
     }
 
     private fun renderBoardCardStats(batch: SpriteBatch, font: BitmapFont) {

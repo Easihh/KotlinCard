@@ -13,7 +13,7 @@ fun main(arg: Array<String>) {
     config.width = 1024
     config.height = 1024
     config.resizable = true
-    config.fullscreen = false
+    config.fullscreen = true
     val myGame = MyGdxGame()
     LwjglApplication(myGame, config)
 }

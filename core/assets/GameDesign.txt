@@ -1,0 +1,11 @@
+-Based on evolve
+-no action possible on enemy turn
+- 4 color pixel art; white,black,dark gray,light gray
+-Monster will evolve automatically if 3 of same type are on player's board
+- Evolved Version card are not part of deck/total
+-Tie allowed
+-Timed turn 60? seconds max
+-restrict to 10? mana max; increase by 1 each turn starting at 0?
+-Minion HP does not reset at end of turn
+Win condition: Opponent HP reaches 0,match turn reach 100
+on player turn:draw card, play 1 or more card, use card ability & attack.

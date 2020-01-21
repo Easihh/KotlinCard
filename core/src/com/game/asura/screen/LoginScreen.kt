@@ -102,6 +102,13 @@ class LoginScreen(private val parentScreen: KtxGame<Screen>,
         }
         connectBtn.addListener(listener)
         stage.addActor(connectBtn)
+
+        val skin = Skin(Gdx.files.internal("core/assets/uiskin.json"))
+        val account = TextField("DefaultTextHere", skin)
+        account.height = 64f
+        account.width = 256f
+        account.setPosition(500f, 500f)
+        stage.addActor(account)
     }
 
     private fun toPreMatchScreen() {
@@ -128,6 +135,20 @@ class LoginScreen(private val parentScreen: KtxGame<Screen>,
         stage.act()
         stage.draw()
 
+    }
+
+    override fun resize(width: Int, height: Int) {
+        println("Resizing:Height=$height width=$width graphicW:${Gdx.graphics.width} graphicH:${Gdx.graphics.height}")
+        val scaled = viewport.scaling.apply(VIRTUAL_WINDOW_WIDTH.toFloat(), VIRTUAL_WINDOW_HEIGHT.toFloat(), width.toFloat(), height.toFloat())
+        val viewportWidth = Math.round(scaled.x)
+        val viewportHeight = Math.round(scaled.y)
+
+        val cropX = (width - viewportWidth) / 2f
+        val cropY = (height - viewportHeight) / 2f
+        println("CropX:$cropX cropY:$cropY scaleX:${scaled.x} scaledY:${scaled.y}")
+        viewport.setScreenBounds(cropX.toInt(), cropY.toInt(),
+                Gdx.graphics.width - cropX.toInt(), Gdx.graphics.height)
+        viewport.apply(true)
     }
 
     override fun dispose() {

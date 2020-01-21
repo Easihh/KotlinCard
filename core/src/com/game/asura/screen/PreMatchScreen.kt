@@ -45,6 +45,8 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
         setupStage()
         setupFont()
         setupPlayButton()
+        setupCollection()
+        setupOption()
     }
 
     private fun setupStage() {
@@ -92,6 +94,17 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
         stage.addActor(playBtn)
     }
 
+    private fun setupCollection() {
+        val collectButton = Texture(Asset.MENU_BUTTON.path)
+        val playBtn = Image(collectButton)
+        playBtn.setPosition(400f, 375f)
+        playBtn.setScale(1.0f, 1.0f)
+        stage.addActor(playBtn)
+    }
+    private fun setupOption() {
+
+    }
+
     private fun toMatchScreen(matchStartIn: MatchStartIn) {
         canProcessMessage = false
         parentScreen.addScreen(MatchScreen(parentScreen, messageQueue, server, matchStartIn))
@@ -106,7 +119,8 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
         }
 
         batch.use {
-            font.draw(it, "PLAY", 500f, 487.5f)
+            font.draw(it, "Battle", 500f, 487.5f)
+            font.draw(it, "Collection", 475f, 412.5f)
         }
 
         //view
@@ -117,6 +131,20 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
         stage.act()
         stage.draw()
 
+    }
+
+    override fun resize(width: Int, height: Int) {
+        println("Resizing:Height=$height width=$width graphicW:${Gdx.graphics.width} graphicH:${Gdx.graphics.height}")
+        val scaled = viewport.scaling.apply(VIRTUAL_WINDOW_WIDTH.toFloat(), VIRTUAL_WINDOW_HEIGHT.toFloat(), width.toFloat(), height.toFloat())
+        val viewportWidth = Math.round(scaled.x)
+        val viewportHeight = Math.round(scaled.y)
+
+        val cropX = (width - viewportWidth) / 2f
+        val cropY = (height - viewportHeight) / 2f
+        println("CropX:$cropX cropY:$cropY scaleX:${scaled.x} scaledY:${scaled.y}")
+        viewport.setScreenBounds(cropX.toInt(), cropY.toInt(),
+                Gdx.graphics.width - cropX.toInt(), Gdx.graphics.height)
+        viewport.apply(true)
     }
 
     override fun dispose() {

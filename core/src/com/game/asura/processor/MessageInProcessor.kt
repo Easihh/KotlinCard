@@ -76,8 +76,6 @@ class MessageInProcessor(private val player: ClientPlayer,
                 println("Match result:${msg.matchResult}")
                 parentScreen.removeScreen<MatchScreen>()
                 parentScreen.setScreen<PreMatchScreen>()
-
-
             }
             else -> {
                 println("Unable to process message:$msg missing logic.")

@@ -9,5 +9,6 @@ enum class Asset(val path: String) {
     CARD_TARGETED("core/assets/cardTargeted.png"),
     TARGET_CIRCLE("core/assets/target.png"),
     MENU_BUTTON("core/assets/menu_btn.png"),
-    MENU_BUTTON_SMALL("core/assets/menu_btn_small.png")
+    MENU_BUTTON_SMALL("core/assets/menu_btn_small.png"),
+    EMPTY_BOARD_CARD("core/assets/empty_board_card.png")
 }
