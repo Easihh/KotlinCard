@@ -15,8 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.asura.*
-import com.game.asura.messagein.MatchStartIn
-import com.game.asura.processor.*
+import com.game.asura.processor.LoginMessageInProcessor
+import com.game.asura.processor.MessageDispatcher
+import com.game.asura.processor.MessageOutProcessor
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.graphics.use
@@ -104,11 +105,33 @@ class LoginScreen(private val parentScreen: KtxGame<Screen>,
         stage.addActor(connectBtn)
 
         val skin = Skin(Gdx.files.internal("core/assets/uiskin.json"))
-        val account = TextField("DefaultTextHere", skin)
-        account.height = 64f
-        account.width = 256f
-        account.setPosition(500f, 500f)
-        stage.addActor(account)
+        val accountNameStr = Label("Account Name", skin)
+        accountNameStr.color = Color.WHITE
+        accountNameStr.height = 64f
+        accountNameStr.width = 256f
+        accountNameStr.setPosition(400f, 575f)
+        stage.addActor(accountNameStr)
+        val accountName = TextField("DefaultTextHere", skin)
+        accountName.color = Color.DARK_GRAY
+        accountName.height = 64f
+        accountName.width = 256f
+        accountName.setPosition(400f, 500f)
+        stage.addActor(accountName)
+
+        val accountPasswordStr = Label("Account Password", skin)
+        accountPasswordStr.color = Color.WHITE
+        accountPasswordStr.height = 64f
+        accountPasswordStr.width = 256f
+        accountPasswordStr.setPosition(400f, 425f)
+        stage.addActor(accountPasswordStr)
+        val accountPassw = TextField("DefaultPassword", skin)
+        accountPassw.isPasswordMode = true
+        accountPassw.setPasswordCharacter('*')
+        accountPassw.color = Color.DARK_GRAY
+        accountPassw.height = 64f
+        accountPassw.width = 256f
+        accountPassw.setPosition(400f, 350f)
+        stage.addActor(accountPassw)
     }
 
     private fun toPreMatchScreen() {
@@ -122,6 +145,9 @@ class LoginScreen(private val parentScreen: KtxGame<Screen>,
             val message = messageQueue.nextMessage()
             messageDispatcher.onMessage(message)
         }
+
+        shaper.projectionMatrix = camera.combined
+        batch.projectionMatrix = camera.combined
 
         batch.use {
             font.draw(it, "CONNECT", 870f, 720f)

@@ -118,6 +118,9 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
             messageDispatcher.onMessage(message)
         }
 
+        shaper.projectionMatrix = camera.combined
+        batch.projectionMatrix = camera.combined
+
         batch.use {
             font.draw(it, "Battle", 500f, 487.5f)
             font.draw(it, "Collection", 475f, 412.5f)
