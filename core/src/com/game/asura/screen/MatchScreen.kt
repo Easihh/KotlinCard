@@ -144,7 +144,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
         shaper.color = (Color.BLUE)
         shaper.use(ShapeRenderer.ShapeType.Line) {
             //Visible GameView
-            shaper.rect(1f, 0f, stage.width, stage.height)
+            shaper.rect(1f, 1f, stage.width-1f, stage.height-2f)
         }
         stage.act()
         stage.draw()
@@ -164,7 +164,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
         val screenWidth = Gdx.graphics.width - cropX.toInt()
         val screenHeight = Gdx.graphics.height - cropY.toInt()
         println("CropX:$cropX cropY:$cropY scaleX:${scaled.x} scaledY:${scaled.y}, viewportWidth:$viewportWidth viewportHeight:$viewportHeight")
-        viewport.setScreenBounds(cropX.toInt(), cropY.toInt(),
+        viewport.setScreenBounds((cropX / 2).toInt(), cropY.toInt(),
                 screenWidth, screenHeight)
         viewport.apply(true)
     }

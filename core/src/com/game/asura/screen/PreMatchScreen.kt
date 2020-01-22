@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.scenes.scene2d.Event
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -101,6 +100,7 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
         playBtn.setScale(1.0f, 1.0f)
         stage.addActor(playBtn)
     }
+
     private fun setupOption() {
 
     }
@@ -129,7 +129,7 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
         //view
         shaper.color = Color.SCARLET
         shaper.use(ShapeRenderer.ShapeType.Line) {
-            shaper.rect(1f, 1f, stage.width - 1f, stage.height - 1f)
+            shaper.rect(1f, 1f, stage.width - 1f, stage.height - 2f)
         }
         stage.act()
         stage.draw()
@@ -144,10 +144,12 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
 
         val cropX = (width - viewportWidth) / 2f
         val cropY = (height - viewportHeight) / 2f
+        val screenWidth = Gdx.graphics.width - cropX.toInt()
+        val screenHeight = Gdx.graphics.height - cropY.toInt()
         println("CropX:$cropX cropY:$cropY scaleX:${scaled.x} scaledY:${scaled.y}, viewportWidth:$viewportWidth viewportHeight:$viewportHeight")
 
-        viewport.setScreenBounds(cropX.toInt(), cropY.toInt(),
-                Gdx.graphics.width - cropX.toInt(), Gdx.graphics.height)
+        viewport.setScreenBounds((cropX / 2).toInt(), cropY.toInt(),
+                screenWidth, screenHeight)
         viewport.apply(true)
     }
 
