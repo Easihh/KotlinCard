@@ -21,7 +21,7 @@ class BoardManager<T : Card>(create: () -> T) {
 
     fun boardIsEmpty(): Boolean {
         var count = 0
-        for (index in 0..6) {
+        for (index in 0 until MAX_BOARD_SIZE) {
             if (playerBoard[index].getCardType() != CardType.INVALID) {
                 count++
             }
@@ -30,7 +30,7 @@ class BoardManager<T : Card>(create: () -> T) {
     }
 
     fun getRightMostCardOnBoard(): Int {
-        for (indx in 6 downTo 0) {
+        for (indx in MAX_BOARD_SIZE - 1 downTo 0) {
             if (playerBoard[indx].getCardType() != CardType.INVALID) {
                 return indx
             }
@@ -40,7 +40,7 @@ class BoardManager<T : Card>(create: () -> T) {
     }
 
     fun getLeftMostCardOnBoard(): Int {
-        for (indx in 0 until 7) {
+        for (indx in 0 until MAX_BOARD_SIZE) {
             if (playerBoard[indx].getCardType() != CardType.INVALID) {
                 return indx
             }

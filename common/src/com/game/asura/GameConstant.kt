@@ -1,9 +1,9 @@
 package com.game.asura
 
 const val END_MESSAGE_DELIMITER = '&'
-const val MAX_BOARD_SIZE: Int = 7
+const val MAX_BOARD_SIZE: Int = 5
 //Player Board
-const val INITIAL_BOARD_X: Float = 50f
+const val INITIAL_BOARD_X: Float = 150f
 const val INITIAL_BOARD_Y: Float = 300f
 //Playable Area
 const val VIRTUAL_WINDOW_WIDTH: Int = 1024

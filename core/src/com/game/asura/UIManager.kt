@@ -464,7 +464,7 @@ class UIManager(private val stage: Stage,
         batch.begin()
         //draw enemy board
         var initialboardX = INITIAL_BOARD_X
-        for (x in 0..6) {
+        for (x in 0 until MAX_BOARD_SIZE) {
             if (otherPlayer.boardManager.getCardByBoardIndex(x).getCardType() == CardType.INVALID) {
                 batch.draw(emptyCardBoard, initialboardX, 500f)
             }
@@ -474,7 +474,7 @@ class UIManager(private val stage: Stage,
         //draw our own board
         initialboardX = INITIAL_BOARD_X
 
-        for (x in 0..6) {
+        for (x in 0 until MAX_BOARD_SIZE) {
             if (player.boardManager.getCardByBoardIndex(x).getCardType() == CardType.INVALID) {
                 batch.draw(emptyCardBoard, initialboardX, 300f)
             }
@@ -485,13 +485,12 @@ class UIManager(private val stage: Stage,
 
     private fun renderBoardCardStats(batch: SpriteBatch, font: BitmapFont) {
         batch.begin()
-        for (x in 0..6) {
+        for (x in 0 until MAX_BOARD_SIZE) {
             val card = player.boardManager.getCardByBoardIndex(x)
             if (card.getCardType() != CardType.INVALID && card is MinionCard) {
-                if (card.getAttack() != null) {
-                    batch.draw(assetStore.getTexture(Asset.ATTACK_ICON_SMALL), card.getActor().x + 6f, card.getActor().y + 6f)
-                    font.draw(batch, card.getAttack().toString(), card.getActor().x + 12f, card.getActor().y + 24f)
-                }
+                //draw attack
+                batch.draw(assetStore.getTexture(Asset.ATTACK_ICON_SMALL), card.getActor().x + 6f, card.getActor().y + 6f)
+                font.draw(batch, card.getAttack().toString(), card.getActor().x + 12f, card.getActor().y + 24f)
 
                 //draw health
                 batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_SMALL), card.getActor().x + BOARD_CARD_WIDTH - 32, card.getActor().y + 6f)
