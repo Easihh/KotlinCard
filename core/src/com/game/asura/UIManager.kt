@@ -2,7 +2,6 @@ package com.game.asura
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Cursor
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
@@ -67,6 +66,10 @@ class UIManager(private val stage: Stage,
                                 BoardManager.BoardPositionTilt.RIGHT
                             }
                             if (currentTilt != boardTilt) {
+                                //may have tilted from a different direction and did not cancel action yet.
+                                if (boardTilt != BoardManager.BoardPositionTilt.NONE) {
+                                    resetCardTilt()
+                                }
                                 boardTilt = currentTilt
                                 moveCardByTilt()
                                 updateBoardPosition()
@@ -84,6 +87,7 @@ class UIManager(private val stage: Stage,
     }
 
     private fun moveCardByTilt() {
+
         when (boardTilt) {
             BoardManager.BoardPositionTilt.LEFT -> {
                 player.boardManager.moveCardLeft()
@@ -102,6 +106,7 @@ class UIManager(private val stage: Stage,
         var initialX = INITIAL_BOARD_X
         for (i in 0 until MAX_BOARD_SIZE) {
             val card = player.boardManager.getCardByBoardIndex(i)
+            println("card at position:$i ,$card")
             if (card.getCardType() != CardType.INVALID) {
                 card.getActor().setPosition(initialX, INITIAL_BOARD_Y)
             }
@@ -186,7 +191,14 @@ class UIManager(private val stage: Stage,
         selectedCard = null
         //reset to normal cursor here
         Gdx.graphics.setSystemCursor(systemCursor)
-        //move back card to previous value if we havent played the game
+        //move back card to previous value if we havent played the card
+        resetCardTilt()
+        updateBoardPosition()
+        boardTilt = BoardManager.BoardPositionTilt.NONE
+
+    }
+
+    private fun resetCardTilt() {
         when (boardTilt) {
             BoardManager.BoardPositionTilt.LEFT -> {
                 player.boardManager.moveCardRight()
@@ -198,9 +210,6 @@ class UIManager(private val stage: Stage,
                 //do nothing
             }
         }
-        updateBoardPosition()
-        boardTilt = BoardManager.BoardPositionTilt.NONE
-
     }
 
     private fun getClosestEmptyBoardIndex(mouseX: Float, mouseY: Float): Int? {

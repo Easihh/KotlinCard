@@ -58,14 +58,20 @@ class BoardManager<T : Card>(create: () -> T) {
     }
 
     fun moveCardRight() {
-        val indx = getRightMostCardOnBoard()
-        if (indx >= MAX_BOARD_SIZE - 1) {
-            println("Cannot move cards right since indx is :$indx")
+        val rightMost = getRightMostCardOnBoard()
+        val leftMost = getLeftMostCardOnBoard()
+        if (rightMost >= MAX_BOARD_SIZE - 1) {
+            println("Cannot move cards right since rightmost indx is :$rightMost")
+            return
+        }
+        if (leftMost <= 0) {
+            println("Cannot move cards right since leftmost indx is :$leftMost")
             return
         }
         //no 0 case as this would mean the board was already full
-        for (i in MAX_BOARD_SIZE - 2 downTo 0) {
-            playerBoard[i + 1] = playerBoard[i]
+        for (i in MAX_BOARD_SIZE - 1 downTo leftMost) {
+            //println("Card At i=${playerBoard[i]}")
+            playerBoard[i] = playerBoard[i - 1]
         }
     }
 
@@ -75,10 +81,14 @@ class BoardManager<T : Card>(create: () -> T) {
             println("Cannot move cards left since indx is :$indx")
             return
         }
-        //no 0 case as this would mean the board was already full
-        for (i in 1 until MAX_BOARD_SIZE - 2) {
+        //no 0 case as we cant move left at this point
+        for (i in 1 until MAX_BOARD_SIZE - 1) {
             playerBoard[i] = playerBoard[i + 1]
         }
+        /*for (i in MAX_BOARD_SIZE - 1 downTo indx) {
+            println("Card At i=${playerBoard[i - 1]}")
+            playerBoard[i - 1] = playerBoard[i]
+        }*/
     }
 
     fun cardIsPresentOnBoard(secondaryId: Int): Boolean {
