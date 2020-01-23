@@ -123,6 +123,16 @@ class CoreMessage {
         return typeVal.value as Int
     }
 
+    fun getFirstMonsterId(): Int? {
+        val typeVal = fieldMap[MessageField.FIRST_MONSTER_ID] ?: return null
+        return typeVal.value as Int
+    }
+
+    fun getSecondMonsterId(): Int? {
+        val typeVal = fieldMap[MessageField.SECOND_MONSTER_ID] ?: return null
+        return typeVal.value as Int
+    }
+
     fun getLoginStatus(): LoginStatus? {
         val typeVal = fieldMap[MessageField.LOGIN_STATUS] ?: return null
         return LoginStatus.getLoginStatus(typeVal.value as Byte)

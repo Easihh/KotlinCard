@@ -99,6 +99,26 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 messageQueue.addMessage(cardPlayed)
 
                 player.playCard(cardInHand, message.boardPosition)
+                //check for double to merge
+                if (cardInHand is ServerMinionCard && cardInHand.canEvolve()) {
+                    val dupeList = player.boardManager.findDuplicate(cardInHand.getPrimaryId())
+                    if (dupeList.size >= MERGE_IF_DUPLICATE_REACH) {
+                        val evInfo = cardInfoStore.getCardInfo(cardInHand.evolveId!!) ?: return
+                        evInfo.health ?: return
+                        evInfo.maxHealth ?: return
+                        val evolved = ServerMinionCard(primaryId = evInfo.id, cardCost = evInfo.cost, cardType = evInfo.cardType,
+                                attack = evInfo.attack ?: 0, health = evInfo.health, maxHealth = evInfo.maxHealth,
+                                evolveId = evInfo.evolveId)
+                        match.addCardToCache(evolved)
+                        player.boardManager.mergeCard(dupeList, evolved, INVALID_MINION_CARD)
+                        //evolved monster should take position of the 1st minion of that type that was on board
+                        val evolvePos = dupeList.stream().filter { c -> c.dupeCard.getSecondayId() != cardInHand.getSecondayId() }.findFirst().get().boardIdx
+                        val minionEvolved = MonsterEvolveOut(channelWriter = account.getChannelWriter(),
+                                card = evolved, boardPosition = evolvePos, firstMonsterId = dupeList[0].dupeCard.getSecondayId(),
+                                secondMonsterId = dupeList[1].dupeCard.getSecondayId())
+                        messageQueue.addMessage(minionEvolved)
+                    }
+                }
 
                 val changedFields: MutableList<ChangedField> = ArrayList()
                 if (cardInHand.getCost() > 0) {
@@ -106,6 +126,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     val playerInfoOut = PlayerInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, currentMana = player.heroPlayer.getCurrentMana(), maxMana = player.heroPlayer.getMaxMana())
                     messageQueue.addMessage(playerInfoOut)
                 }
+
 
                 val effects = cardInHand.getEffect()
                 //only handle target spell effect for now

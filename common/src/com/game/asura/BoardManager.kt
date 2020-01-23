@@ -3,7 +3,7 @@ package com.game.asura
 import com.game.asura.card.Card
 import com.game.asura.card.CardType
 
-class BoardManager<T : Card>(create: () -> T) {
+class BoardManager<T : Card>(private val create: () -> T) {
 
     enum class BoardPositionTilt {
         LEFT,
@@ -70,7 +70,6 @@ class BoardManager<T : Card>(create: () -> T) {
         }
         //no 0 case as this would mean the board was already full
         for (i in MAX_BOARD_SIZE - 1 downTo leftMost) {
-            //println("Card At i=${playerBoard[i]}")
             playerBoard[i] = playerBoard[i - 1]
         }
     }
@@ -85,10 +84,6 @@ class BoardManager<T : Card>(create: () -> T) {
         for (i in 1 until MAX_BOARD_SIZE - 1) {
             playerBoard[i] = playerBoard[i + 1]
         }
-        /*for (i in MAX_BOARD_SIZE - 1 downTo indx) {
-            println("Card At i=${playerBoard[i - 1]}")
-            playerBoard[i - 1] = playerBoard[i]
-        }*/
     }
 
     fun cardIsPresentOnBoard(secondaryId: Int): Boolean {
@@ -99,7 +94,32 @@ class BoardManager<T : Card>(create: () -> T) {
         return playerBoard.stream().filter { c -> c.getCardType() != CardType.INVALID }.count()
     }
 
+
     fun removeCard(target: T) {
-        playerBoard.removeIf { t -> t.getSecondayId() == target.getSecondayId() }
+        //board should always  contains 5 space(invalid obj for no card in that indx)
+        // otherwise player sending monster placement will have issue.
+        for (i in 0 until MAX_BOARD_SIZE) {
+            if (playerBoard[i].getSecondayId() == target.getSecondayId()) {
+                playerBoard[i] = create()
+            }
+        }
+    }
+
+    fun findDuplicate(primaryId: Int): List<DuplicatedCard> {
+        val dupeList: MutableList<DuplicatedCard> = ArrayList()
+        for (i in 0 until MAX_BOARD_SIZE) {
+            if (playerBoard[i].getPrimaryId() == primaryId) {
+                dupeList.add(DuplicatedCard(playerBoard[i], i))
+            }
+        }
+        return dupeList
+    }
+
+    //temporary set to passed invalid card until fix this class use by client
+    fun mergeCard(toMerge: List<DuplicatedCard>, evolve: T, toReplace: T) {
+        for (card in toMerge) {
+            playerBoard[card.boardIdx] = toReplace
+        }
+        playerBoard[toMerge[0].boardIdx] = evolve
     }
 }

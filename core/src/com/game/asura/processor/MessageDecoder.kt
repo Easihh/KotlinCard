@@ -87,6 +87,21 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val data = getEndTurnData()
                 decodedMessage = EndTurnIn()
             }
+            MessageType.MONSTER_EVOLVE -> {
+                val data = getMonsterEvolveData()
+                val boardIndx = data.boardPosition ?: return
+                val firstMonsterId = data.firstMonsterId ?: return
+                val secondMonsterId = data.secondMonsterId ?: return
+                val cardType = data.cardType ?: return
+                val cardCost = data.cardCost ?: return
+                val primaryId = data.primaryCardId ?: return
+                val secondaryId = data.secondaryCardId ?: return
+                val attack = data.attack ?: return
+                val health = data.health ?: return
+                val maxHealth = data.maxHealth ?: return
+                decodedMessage = MonsterEvolveIn(primaryId, secondaryId, firstMonsterId, secondMonsterId,
+                        boardIndx, cardCost, cardType, attack, health, maxHealth)
+            }
             else -> {
                 println("Message of type $msgType has no decode logic.")
             }

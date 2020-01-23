@@ -10,4 +10,5 @@ data class CardInfo(val id: Int,
                     val cardType: CardType,
                     val attack: Int? = null,
                     val health: Int? = null,
-                    val maxHealth: Int? = null)
+                    val maxHealth: Int? = null,
+                    val evolveId: Int? = null)

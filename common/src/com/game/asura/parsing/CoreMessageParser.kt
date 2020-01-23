@@ -112,4 +112,9 @@ abstract class CoreMessageParser {
     fun getLoginReplyData(): LoginReplyData {
         return LoginReplyData(coreMsg.getLoginStatus())
     }
+
+    fun getMonsterEvolveData(): MonsterEvolveData {
+        return MonsterEvolveData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getCardCost(), coreMsg.getCardType(),
+                coreMsg.getFirstMonsterId(), coreMsg.getSecondMonsterId(), coreMsg.getBoardPosition(), coreMsg.getCardAttack(), coreMsg.getCardHealth(), coreMsg.getMaxCardLife())
+    }
 }

@@ -31,18 +31,14 @@ class ServerPlayer(val playerName: String,
 
     fun initializeDeck() {
         deck.clear()
-        val kingSlime = cardInfoStore.getCardInfo(4) ?: return
-        val kingHealth = kingSlime.health ?: return
-        val kingMaxHealth = kingSlime.maxHealth ?: return
-        val kingAttack = kingSlime.attack ?: return
-        deck.push(ServerMinionCard(kingSlime.id, cardCost = kingSlime.cost, attack = kingAttack,
-                health = kingHealth, maxHealth = kingMaxHealth))
         val slime = cardInfoStore.getCardInfo(1) ?: return
         val slimeHealth = slime.health ?: return
         val slimeMaxHealth = slime.maxHealth ?: return
         val slimeAttack = slime.attack ?: return
         deck.push(ServerMinionCard(1, cardCost = 1, attack = slimeAttack,
-                health = slimeHealth, maxHealth = slimeMaxHealth))
+                health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId))
+        deck.push(ServerMinionCard(1, cardCost = 1, attack = slimeAttack,
+                health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId))
         deck.push(ServerSpellCard(2, cardCost = 2,
                 cardType = CardType.TARGET_SPELL))
     }

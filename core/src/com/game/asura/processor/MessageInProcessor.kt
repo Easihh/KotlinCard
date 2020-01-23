@@ -77,6 +77,16 @@ class MessageInProcessor(private val player: ClientPlayer,
                 parentScreen.removeScreen<MatchScreen>()
                 parentScreen.setScreen<PreMatchScreen>()
             }
+            is MonsterEvolveIn -> {
+                val evolved = MinionCard(msg.primaryCardId, msg.secondaryCardId, msg.cardCost, msg.cardType, msg.attack, msg.health, msg.maxHealth)
+                val firstMonster = cardStore.getCard(msg.firstMonsterId) ?: return
+                val secondMonster = cardStore.getCard(msg.secondMonsterId) ?: return
+                player.boardManager.removeCard(firstMonster)
+                player.boardManager.removeCard(secondMonster)
+                uiManager.initCardTexture(evolved)
+                uiManager.moveCardToBoard(evolved, msg.boardPosition)
+                player.boardManager.updatePlayerBoard(evolved, msg.boardPosition)
+            }
             else -> {
                 println("Unable to process message:$msg missing logic.")
             }

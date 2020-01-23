@@ -12,8 +12,4 @@ class CardInfoStore {
     fun getCardInfo(id: Int): CardInfo? {
         return cardInfoMap[id]
     }
-
-    fun getValues(): Collection<CardInfo> {
-        return cardInfoMap.values
-    }
 }

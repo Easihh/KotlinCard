@@ -5,6 +5,7 @@
 - Evolved Version card are not part of deck/total
 -Tie allowed
 -Timed turn 60? seconds max
+-leave special card slot for special card/weather?
 -special card type only 1 per turn? 
 -non monster card type with no max per turn/item card
 -card type 1 of same type per deck?
@@ -13,3 +14,4 @@
 -Minion HP does not reset at end of turn
 Win condition: Opponent HP reaches 0,match turn reach 100
 on player turn:draw card, play 1 or more card, use card ability & attack.
+-status alignment? confuse/sleep etc removed by card/evolve or coin flip at start of turn?

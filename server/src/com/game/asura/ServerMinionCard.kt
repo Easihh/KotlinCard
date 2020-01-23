@@ -13,7 +13,12 @@ class ServerMinionCard(primaryId: Int,
                        cardType: CardType = CardType.MONSTER,
                        private val attack: Int = 0,
                        private var health: Int = 0,
-                       private var maxHealth: Int = 0) : BaseCard(primaryId, secondaryId, cardCost, cardType), Minion {
+                       private var maxHealth: Int = 0,
+                       val evolveId: Int? = null) : BaseCard(primaryId, secondaryId, cardCost, cardType), Minion {
+
+    fun canEvolve(): Boolean {
+        return evolveId != null
+    }
 
     override fun getAttack(): Int {
         return attack

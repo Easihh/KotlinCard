@@ -13,7 +13,8 @@
 		"cost":1,
 		"attack":1,
 		"health":3,
-		"maxHealth":3
+		"maxHealth":3,
+		"evolveId":4
 	},
 	{
 		"id":4,

@@ -38,7 +38,7 @@ class UIManager(private val stage: Stage,
     private val cursor = Gdx.graphics.newCursor(invisibleCursor, 0, 0)
     private var selectedCard: DrawableCard? = null
     //to keep track of whether board card should tilt 1 index left or right due to pending card placement.
-    private var boardTilt = BoardManager.BoardPositionTilt.NONE
+    //private var boardTilt = BoardManager.BoardPositionTilt.NONE
     private var endTurnTime: Long = System.currentTimeMillis()
 
     init {
@@ -59,22 +59,7 @@ class UIManager(private val stage: Stage,
                             it.getActor().setPosition(mouseX - (BOARD_CARD_WIDTH / 2), mouseY - (BOARD_CARD_HEIGHT / 2))
                         }
                         if (it.getCardType() == CardType.MONSTER && !player.boardManager.boardIsEmpty()) {
-                            val halfScreen = VIRTUAL_WINDOW_WIDTH / 2f
-                            val currentTilt = if (event.stageX >= halfScreen) {
-                                BoardManager.BoardPositionTilt.LEFT
-                            } else {
-                                BoardManager.BoardPositionTilt.RIGHT
-                            }
-                            if (currentTilt != boardTilt) {
-                                //may have tilted from a different direction and did not cancel action yet.
-                                if (boardTilt != BoardManager.BoardPositionTilt.NONE) {
-                                    resetCardTilt()
-                                }
-                                boardTilt = currentTilt
-                                moveCardByTilt()
-                                updateBoardPosition()
-
-                            }
+                            updateBoardPosition()
                         }
                     }
                 }
@@ -84,22 +69,6 @@ class UIManager(private val stage: Stage,
         }
         stage.addListener(mouseMovedLstr)
         setupClickListener()
-    }
-
-    private fun moveCardByTilt() {
-
-        when (boardTilt) {
-            BoardManager.BoardPositionTilt.LEFT -> {
-                player.boardManager.moveCardLeft()
-            }
-            BoardManager.BoardPositionTilt.RIGHT -> {
-                player.boardManager.moveCardRight()
-            }
-            else -> {
-                //don't need to reposition board
-                return
-            }
-        }
     }
 
     private fun updateBoardPosition() {
@@ -191,25 +160,8 @@ class UIManager(private val stage: Stage,
         selectedCard = null
         //reset to normal cursor here
         Gdx.graphics.setSystemCursor(systemCursor)
-        //move back card to previous value if we havent played the card
-        resetCardTilt()
         updateBoardPosition()
-        boardTilt = BoardManager.BoardPositionTilt.NONE
 
-    }
-
-    private fun resetCardTilt() {
-        when (boardTilt) {
-            BoardManager.BoardPositionTilt.LEFT -> {
-                player.boardManager.moveCardRight()
-            }
-            BoardManager.BoardPositionTilt.RIGHT -> {
-                player.boardManager.moveCardLeft()
-            }
-            else -> {
-                //do nothing
-            }
-        }
     }
 
     private fun getClosestEmptyBoardIndex(mouseX: Float, mouseY: Float): Int? {
@@ -290,9 +242,13 @@ class UIManager(private val stage: Stage,
         }
     }
 
-    fun addCardToHand(card: DrawableCard) {
+    fun initCardTexture(card: DrawableCard) {
         val cardTexture = assetStore.getCardTexture(card.getPrimaryId()) ?: return
         card.initCardTexture(cardTexture.inHandTexture)
+    }
+
+    fun addCardToHand(card: DrawableCard) {
+        initCardTexture(card)
         val cardImg = card.getActor()
         cardImg.setScale(1.0f)
         val lsnr = if (card.getCardType() == CardType.TARGET_SPELL) {
@@ -394,7 +350,6 @@ class UIManager(private val stage: Stage,
         //remove card input listener as it was played
         card.getActor().clearListeners()
         selectedCard = null
-        boardTilt = BoardManager.BoardPositionTilt.NONE
         queue.addMessage(cardPlayedOut)
     }
 
