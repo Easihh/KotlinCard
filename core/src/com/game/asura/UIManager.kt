@@ -9,10 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.scenes.scene2d.InputEvent
-import com.badlogic.gdx.scenes.scene2d.InputListener
-import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.game.asura.card.CardType
 import com.game.asura.messageout.CardPlayedOut
@@ -40,11 +37,16 @@ class UIManager(private val stage: Stage,
     //to keep track of whether board card should tilt 1 index left or right due to pending card placement.
     //private var boardTilt = BoardManager.BoardPositionTilt.NONE
     private var endTurnTime: Long = System.currentTimeMillis()
+    private val backgroundG = Group()
+    private val foregroundG = Group()
 
     init {
+        stage.addActor(backgroundG)
+        stage.addActor(foregroundG)
         cursor.dispose()
         addHeroesToBoard()
         addEndTurnBtn()
+        setupEmptyBoardActor()
         val mouseMovedLstr = object : InputListener() {
             override fun mouseMoved(event: InputEvent?, x: Float, y: Float): Boolean {
                 if (event == null) {
@@ -90,14 +92,14 @@ class UIManager(private val stage: Stage,
 
         actor.addListener(createHeroInputListener())
         actor.setPosition(450f, 100f)
-        stage.addActor(actor)
+        backgroundG.addActor(actor)
 
         val otherHeroTexture = assetStore.getCardTexture(otherPlayer.heroPlayer.getPrimaryId()) ?: return
         otherPlayer.heroPlayer.initCardTexture(otherHeroTexture.otherTexture)
         val otherActor = otherPlayer.heroPlayer.getActor()
         otherActor.addListener(createHeroInputListener())
         otherActor.setPosition(450f, 800f)
-        stage.addActor(otherActor)
+        backgroundG.addActor(otherActor)
     }
 
     private fun createHeroInputListener(): InputListener {
@@ -132,7 +134,7 @@ class UIManager(private val stage: Stage,
             }
         }
         endTurn.addListener(listener)
-        stage.addActor(endTurn)
+        backgroundG.addActor(endTurn)
     }
 
     private fun setupClickListener() {
@@ -258,7 +260,7 @@ class UIManager(private val stage: Stage,
         }
         updateCardPositionInHand()
         cardImg.addListener(lsnr)
-        stage.addActor(cardImg)
+        foregroundG.addActor(cardImg)
     }
 
     private fun playMonsterCard(card: DrawableCard, position: Position): CardPlayedOut? {
@@ -434,17 +436,21 @@ class UIManager(private val stage: Stage,
             }
             initialboardX += BOARD_CARD_WIDTH
         }
+        batch.end()
+    }
 
+    private fun setupEmptyBoardActor() {
         //draw our own board
-        initialboardX = INITIAL_BOARD_X
-
+        var initialboardX = INITIAL_BOARD_X
         for (x in 0 until MAX_BOARD_SIZE) {
-            if (player.boardManager.getCardByBoardIndex(x).getCardType() == CardType.INVALID) {
-                batch.draw(emptyCardBoard, initialboardX, 300f)
+            val card = player.boardManager.getCardByBoardIndex(x)
+            if (card.getCardType() == CardType.INVALID) {
+                card.initCardTexture(emptyCardBoard.texture)
+                card.getActor().setPosition(initialboardX, 300f)
+                backgroundG.addActor(card.getActor())
             }
             initialboardX += BOARD_CARD_WIDTH
         }
-        batch.end()
     }
 
     private fun renderBoardCardStats(batch: SpriteBatch, font: BitmapFont) {

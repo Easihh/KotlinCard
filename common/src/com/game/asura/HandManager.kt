@@ -3,19 +3,19 @@ package com.game.asura
 import com.game.asura.card.BaseCard
 import com.game.asura.card.Card
 
-class HandManager {
+class HandManager<T:BaseCard> {
 
-    private val cardsInHand: MutableList<BaseCard> = ArrayList()
+    private val cardsInHand: MutableList<T> = ArrayList()
 
-    fun getCardsInHand(): List<BaseCard> {
+    fun getCardsInHand(): List<T> {
         return cardsInHand
     }
 
-    fun addToPlayerHand(card: BaseCard) {
+    fun addToPlayerHand(card: T) {
         cardsInHand.add(card)
     }
 
-    fun getCardFromHand(cardSecondaryId: Int): BaseCard? {
+    fun getCardFromHand(cardSecondaryId: Int): T? {
         val optional = cardsInHand.stream().filter { it.getSecondayId() == cardSecondaryId }.findFirst()
         if (optional.isPresent) {
             return optional.get()
@@ -23,7 +23,7 @@ class HandManager {
         return null
     }
 
-    fun removeFromHand(card: BaseCard) {
+    fun removeFromHand(card: T) {
         cardsInHand.remove(card)
     }
 

@@ -13,7 +13,7 @@ abstract class MonsterDrawableCard(primaryId: Int,
                                    private var health: Int,
                                    private var maxHealth: Int) : DrawableCard(primaryId, secondaryId, cardCost, cardType), Minion {
 
-    protected val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
+    private val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
 
     init {
 

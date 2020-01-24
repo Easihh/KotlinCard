@@ -1,9 +1,11 @@
 -Based on evolve
 -no action possible on enemy turn
+- allow place card at any position?
 - 4 color pixel art; white,black,dark gray,light gray
 -Monster will evolve automatically if 3? of same type are on player's board
 - Evolved Version card are not part of deck/total
 -Tie allowed
+- Attack/Block phase ??
 -Timed turn 60? seconds max
 -leave special card slot for special card/weather?
 -special card type only 1 per turn? 

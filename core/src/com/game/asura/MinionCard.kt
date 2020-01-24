@@ -37,6 +37,7 @@ class MinionCard(primaryId: Int,
     }
 
     override fun toString(): String {
-        return "cardType=${getCardType()},cardPrimaryId=${getPrimaryId()}"
+        return "cardType=${getCardType()},cardPrimaryId=${getPrimaryId()},cardSecondaryId=${getSecondayId()}," +
+                "attack=${getAttack()},health=${getHealth()},maxHealth=${getMaxHealth()}"
     }
 }

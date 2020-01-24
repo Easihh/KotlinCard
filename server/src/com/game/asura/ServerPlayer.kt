@@ -13,7 +13,7 @@ class ServerPlayer(val playerName: String,
 
     private val deck: Stack<BaseCard> = Stack()
     val heroPlayer = ServerHeroCard(primary, secondary)
-    val handManager = HandManager()
+    val handManager = HandManager<BaseCard>()
     val boardManager = BoardManager<BaseCard>(create = { INVALID_MINION_CARD })
 
     fun draw(): BaseCard? {
