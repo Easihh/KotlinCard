@@ -39,12 +39,13 @@ class UIManager(private val stage: Stage,
     private var endTurnTime: Long = System.currentTimeMillis()
     private val backgroundG = Group()
     private val foregroundG = Group()
+    private var nextPhase: String = "END TURN"
 
     init {
         stage.addActor(backgroundG)
         stage.addActor(foregroundG)
         cursor.dispose()
-        addHeroesToBoard()
+        //addHeroesToBoard()
         addEndTurnBtn()
         setupEmptyBoardActor()
         val mouseMovedLstr = object : InputListener() {
@@ -77,7 +78,6 @@ class UIManager(private val stage: Stage,
         var initialX = INITIAL_BOARD_X
         for (i in 0 until MAX_BOARD_SIZE) {
             val card = player.boardManager.getCardByBoardIndex(i)
-            println("card at position:$i ,$card")
             if (card.getCardType() != CardType.INVALID) {
                 card.getActor().setPosition(initialX, INITIAL_BOARD_Y)
             }
@@ -166,27 +166,26 @@ class UIManager(private val stage: Stage,
 
     }
 
-    private fun getClosestEmptyBoardIndex(mouseX: Float, mouseY: Float): Int? {
+    private fun getClosestBoardIndex(mouseX: Float, mouseY: Float): Int? {
         val boardManager = player.boardManager
-        if (boardManager.boardIsEmpty()) {
-            return (MAX_BOARD_SIZE / 2)
-        }
-        //determine whether the click was left or right of screen
-        if (mouseX > VIRTUAL_WINDOW_WIDTH / 2f) {
-            //right of screen, move to the right-most spot of any non-occupied board if possible
-            val indx = boardManager.getRightMostCardOnBoard() + 1
-            if (indx >= MAX_BOARD_SIZE) {
-                println("Cannot place card,right board is full")
-                return null
+        var initialX = INITIAL_BOARD_X
+        var closestIndx: Int? = null
+        for (i in 0 until MAX_BOARD_SIZE) {
+            if (mouseX >= initialX && mouseX <= initialX + BOARD_CARD_WIDTH) {
+                closestIndx = i
+                break
             }
-            return indx
+            initialX += BOARD_CARD_WIDTH
         }
-        val indx = boardManager.getLeftMostCardOnBoard() - 1
-        if (indx < 0) {
-            println("Cannot place card,left board is full")
+        if (closestIndx == null) {
             return null
         }
-        return indx
+        if (boardManager.getCardByBoardIndex(closestIndx).getCardType() != CardType.INVALID) {
+            //card already exist at the wanted location!
+            return null
+        }
+
+        return closestIndx
     }
 
     private fun getBoardPosition(boardIndex: Int): Position {
@@ -265,7 +264,7 @@ class UIManager(private val stage: Stage,
 
     private fun playMonsterCard(card: DrawableCard, position: Position): CardPlayedOut? {
         var cardPlayedOut: CardPlayedOut? = null
-        val indx = getClosestEmptyBoardIndex(position.xPosition, position.yPosition)
+        val indx = getClosestBoardIndex(position.xPosition, position.yPosition)
         if (indx != null) {
             player.boardManager.updatePlayerBoard(card, indx)
             val pos = getBoardPosition(indx)
@@ -373,7 +372,7 @@ class UIManager(private val stage: Stage,
         batch.begin()
         val hero = player.heroPlayer
         val eHero = otherPlayer.heroPlayer
-        font.draw(batch, "END TURN", 835f, 195f)
+        font.draw(batch, nextPhase, 835f, 195f)
 
         font.draw(batch, "FPS: ${Gdx.graphics.framesPerSecond}", 50f, 950f)
         font.draw(batch, "Player: ${player.playerName}", 50f, 200f)

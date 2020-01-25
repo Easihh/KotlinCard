@@ -11,6 +11,7 @@ class ClientPlayer(val playerName: String,
     val handManager = HandManager<DrawableCard>()
     val heroPlayer = ClientHeroCard(primary, secondary, 0, CardType.HERO, -1, 30, 30)
 
+    var playerLifePoint: Int = 30
     var currentMana: Int = 0
     var maxMana: Int = 10
 }
