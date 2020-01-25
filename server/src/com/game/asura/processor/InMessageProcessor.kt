@@ -22,11 +22,14 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 //login validation here
 
                 //login accept
-                val account = message.getPlayerAccount() as PlayerAccount
+                val account = message.playerAccount as PlayerAccount
                 accountCache.addActiveAccount(account.getAccountKey(), account)
                 println("Added accountKey:${account.getAccountKey()} with name:${account.getAccountName()} to activePlayer list.")
                 val reply = LoginRequestReplyOut(account.getChannelWriter(), LoginStatus.CONNECTED)
                 messageQueue.addMessage(reply)
+
+                //add dummy enemy player for testing
+
             }
             is GameRequestIn -> {
                 val account = accountCache.getAccount(message.accountKey)
@@ -123,7 +126,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 val changedFields: MutableList<ChangedField> = ArrayList()
                 if (cardInHand.getCost() > 0) {
                     println("cardCost:${cardInHand.getCost()},currentMana:${player.currentMana}")
-                    val playerInfoOut = PlayerInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, currentMana = player.currentMana, maxMana = player.maxMana)
+                    val playerInfoOut = PlayerInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, currentMana = player.currentMana, maxMana = player.maxMana, playerHealth = player.playerLifePoint)
                     messageQueue.addMessage(playerInfoOut)
                 }
 
@@ -190,7 +193,19 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 }
                 val match = matchFinder.findMatch(account.getCurrentMatchId()) ?: return
 
-                match.processAttack(accountName)
+                val bResult = match.processAttack(accountName) ?: return
+                if (bResult.defenderWasDamaged()) {
+                    //temp disable as we don't have 2nd player connected in dev
+                    // val defenderAccount = accountCache.getAccount(bResult.defender.accountKey) ?: return
+                    val dPlayer = bResult.defender
+                    /*val playerInfoOut = PlayerInfoOut(defenderAccount.getChannelWriter(), dPlayer.playerName,
+                            dPlayer.currentMana, dPlayer.maxMana, dPlayer.playerLifePoint)
+                    messageQueue.addMessage(playerInfoOut)*/
+
+                    val playerInfoOut = PlayerInfoOut(account.getChannelWriter(), dPlayer.playerName,
+                            dPlayer.currentMana, dPlayer.maxMana, dPlayer.playerLifePoint)
+                    messageQueue.addMessage(playerInfoOut)
+                }
                 /*val changedFieldsAttacker: MutableList<ChangedField> = ArrayList()
                 val changedFieldsDefender: MutableList<ChangedField> = ArrayList()
                 val healthFieldA = ChangedField(MessageField.CARD_HEALTH, attacker.getHealth())

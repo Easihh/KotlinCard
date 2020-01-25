@@ -33,7 +33,8 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val mana = data.currentMana ?: return
                 val maxMana = data.maxMana ?: return
                 val name = data.playerName ?: return
-                decodedMessage = PlayerInfoIn(name, mana, maxMana)
+                val health = data.health ?: return
+                decodedMessage = PlayerInfoIn(name, mana, maxMana, health)
             }
             MessageType.CARD_DRAWN -> {
                 val data = getCardDrawnData()

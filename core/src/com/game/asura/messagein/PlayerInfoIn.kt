@@ -4,5 +4,6 @@ import com.game.asura.parsing.DecodedMessage
 
 data class PlayerInfoIn(val playerName: String,
                         val playerCurrentMana: Int,
-                        val playerMaxMana: Int) : DecodedMessage {
+                        val playerMaxMana: Int,
+                        val playerHealth: Int) : DecodedMessage {
 }

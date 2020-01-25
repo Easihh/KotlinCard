@@ -105,7 +105,8 @@ abstract class CoreMessageParser {
     }
 
     fun getPlayerInfoData(): PlayerInfoData {
-        return PlayerInfoData(coreMsg.getAccountName(), coreMsg.getCurrentPlayerMana(), coreMsg.getMaxPlayerMana())
+        return PlayerInfoData(coreMsg.getAccountName(), coreMsg.getCurrentPlayerMana(),
+                coreMsg.getMaxPlayerMana(), coreMsg.getPlayerHealth())
     }
 
     fun getLoginReplyData(): LoginReplyData {

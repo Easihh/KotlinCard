@@ -41,10 +41,11 @@ class Match(val matchId: Int = Random.nextInt()) {
         return matchCardCache[secondaryId]
     }
 
-    fun processAttack(attackingPlayer: String) {
-        val attackPlayer = getPlayer(attackingPlayer) ?: return
+    fun processAttack(attackingPlayer: String): BattleResult? {
+        val attackPlayer = getPlayer(attackingPlayer) ?: return null
         val defenderName = playerMap.keys.stream().filter { s -> s != attackingPlayer }.findFirst().get()
-        val defenderPlayer = getPlayer(defenderName) ?: return
+        val defenderPlayer = getPlayer(defenderName) ?: return null
+        val bResult = BattleResult(defenderPlayer)
         if (defenderPlayer.boardManager.boardIsEmpty()) {
             //defender has no minion on board, deal all dmg to player
             var dmg = 0
@@ -55,8 +56,10 @@ class Match(val matchId: Int = Random.nextInt()) {
                 }
             }
             println("Dealing $dmg damage to player $defenderName")
-            return
+            defenderPlayer.playerLifePoint -= dmg
+            bResult.defenderTakeDamage()
         }
+        return bResult
     }
 
 }

@@ -133,6 +133,11 @@ class CoreMessage {
         return typeVal.value as Int
     }
 
+    fun getPlayerHealth(): Int? {
+        val typeVal = fieldMap[MessageField.PLAYER_HEALTH] ?: return null
+        return typeVal.value as Int
+    }
+
     fun getLoginStatus(): LoginStatus? {
         val typeVal = fieldMap[MessageField.LOGIN_STATUS] ?: return null
         return LoginStatus.getLoginStatus(typeVal.value as Byte)

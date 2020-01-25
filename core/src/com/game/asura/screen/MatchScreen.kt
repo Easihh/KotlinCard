@@ -88,7 +88,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     }
 
     private fun setupMessageProcessors() {
-        val messageInProcessor = MessageInProcessor(player, uiManager, cardStore, parentScreen)
+        val messageInProcessor = MessageInProcessor(player, uiManager, cardStore, parentScreen,otherPlayer)
         val messageOutProcessor = MessageOutProcessor(server::sendMessage)
         messageDispatcher = MessageDispatcher(messageInProcessor, messageOutProcessor)
     }

@@ -12,21 +12,30 @@ import ktx.app.KtxGame
 class MessageInProcessor(private val player: ClientPlayer,
                          private val uiManager: UIManager,
                          private val cardStore: CardStore,
-                         private val parentScreen: KtxGame<Screen>) : MessageProcessor<DecodedMessage> {
+                         private val parentScreen: KtxGame<Screen>,
+                         private val opponent: ClientPlayer) : MessageProcessor<DecodedMessage> {
 
     override fun onMessage(msg: DecodedMessage) {
         when (msg) {
             is CardInfoIn -> {
                 val card = cardStore.getCard(msg.secondaryCardId) ?: return
-                if (card.getCardType() == CardType.MONSTER || card.getCardType() == CardType.HERO) {
+                if (card.getCardType() == CardType.MONSTER) {
                     val monster = card as MonsterDrawableCard
                     monster.update(msg.getChangedFields())
                 }
 
             }
             is PlayerInfoIn -> {
-                player.maxMana = msg.playerMaxMana
-                player.currentMana = msg.playerCurrentMana
+                if (msg.playerName.toLowerCase() == player.playerName.toLowerCase()) {
+                    player.maxMana = msg.playerMaxMana
+                    player.currentMana = msg.playerCurrentMana
+                    player.playerLifePoint = msg.playerHealth
+                }
+                if (msg.playerName.toLowerCase() == opponent.playerName.toLowerCase()) {
+                    opponent.maxMana = msg.playerMaxMana
+                    opponent.currentMana = msg.playerCurrentMana
+                    opponent.playerLifePoint = msg.playerHealth
+                }
             }
             is CardDrawnIn -> {
                 val card = SpellCard(primaryId = msg.primaryId, secondaryId = msg.secondaryId,

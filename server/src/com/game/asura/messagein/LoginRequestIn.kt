@@ -3,9 +3,4 @@ package com.game.asura.messagein
 import com.game.asura.account.Account
 import com.game.asura.parsing.DecodedMessage
 
-class LoginRequestIn(private val playerAccount: Account) : DecodedMessage {
-
-    fun getPlayerAccount(): Account {
-        return playerAccount
-    }
-}
+data class LoginRequestIn(val playerAccount: Account) : DecodedMessage

@@ -5,8 +5,7 @@ enum class CardType(val value: Byte) {
     MONSTER('1'.toByte()),
     SPELL('2'.toByte()),
     TARGET_SPELL('3'.toByte()),
-    HERO('4'.toByte()),
-    INVALID('5'.toByte());
+    INVALID('4'.toByte());
 
     companion object {
         private val fieldNumberToName: Map<Byte, CardType> = values().map { it.value to it }.toMap()
