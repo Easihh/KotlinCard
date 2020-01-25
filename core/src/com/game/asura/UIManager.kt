@@ -12,9 +12,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.game.asura.card.CardType
+import com.game.asura.messageout.AttackOut
 import com.game.asura.messageout.CardPlayedOut
 import com.game.asura.messageout.EndTurnOut
-import com.game.asura.messageout.MonsterAttackOut
 import com.game.asura.messaging.Message
 
 class UIManager(private val stage: Stage,
@@ -39,14 +39,19 @@ class UIManager(private val stage: Stage,
     private var endTurnTime: Long = System.currentTimeMillis()
     private val backgroundG = Group()
     private val foregroundG = Group()
-    private var nextPhase: String = "END TURN"
+
+    private enum class PHASE {
+        ATTACK,
+        END_TURN
+    }
+
+    private var nextPhase: PHASE = PHASE.END_TURN
 
     init {
         stage.addActor(backgroundG)
         stage.addActor(foregroundG)
         cursor.dispose()
-        //addHeroesToBoard()
-        addEndTurnBtn()
+        addNextPhaseBtn()
         setupEmptyBoardActor()
         val mouseMovedLstr = object : InputListener() {
             override fun mouseMoved(event: InputEvent?, x: Float, y: Float): Boolean {
@@ -85,51 +90,23 @@ class UIManager(private val stage: Stage,
         }
     }
 
-    private fun addHeroesToBoard() {
-        val heroTexture = assetStore.getCardTexture(player.heroPlayer.getPrimaryId()) ?: return
-        player.heroPlayer.initCardTexture(heroTexture.otherTexture)
-        val actor = player.heroPlayer.getActor()
-
-        actor.addListener(createHeroInputListener())
-        actor.setPosition(450f, 100f)
-        backgroundG.addActor(actor)
-
-        val otherHeroTexture = assetStore.getCardTexture(otherPlayer.heroPlayer.getPrimaryId()) ?: return
-        otherPlayer.heroPlayer.initCardTexture(otherHeroTexture.otherTexture)
-        val otherActor = otherPlayer.heroPlayer.getActor()
-        otherActor.addListener(createHeroInputListener())
-        otherActor.setPosition(450f, 800f)
-        backgroundG.addActor(otherActor)
-    }
-
-    private fun createHeroInputListener(): InputListener {
-        return object : InputListener() {
-            override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                if (button == Input.Buttons.LEFT) {
-                    selectedCard?.let {
-                        //being target of card/monster
-                        if (it.getCardType() == CardType.MONSTER) {
-                            attackCard(Position(event.stageX, event.stageY))
-                        }
-                        if (it.getCardType() == CardType.TARGET_SPELL) {
-                            playedCard(it, Position(event.stageX, event.stageY))
-                        }
-                    }
-                }
-                return true
-            }
-        }
-    }
-
-    private fun addEndTurnBtn() {
+    private fun addNextPhaseBtn() {
         val endTurnButton = Texture(Asset.MENU_BUTTON_SMALL.path)
         val endTurn = Image(endTurnButton)
         endTurn.setPosition(VIRTUAL_WINDOW_WIDTH - 200f, 150f)
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                println("Requesting End Turn.")
-                val endTurnRequest = EndTurnOut()
-                queue.addMessage(endTurnRequest)
+                println("Requesting ${nextPhase.name}")
+                val msg: Message = when (nextPhase) {
+                    PHASE.END_TURN -> {
+                        EndTurnOut()
+                    }
+                    PHASE.ATTACK -> {
+                        AttackOut()
+                    }
+                }
+                queue.addMessage(msg)
+
                 return true
             }
         }
@@ -206,18 +183,9 @@ class UIManager(private val stage: Stage,
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 if (button == Input.Buttons.LEFT) {
                     println("board card is touched.SourceTarget:$selectedCard")
-                    if (selectedCard == null) {
-                        initTargetSpell(card, Position(event.stageX, event.stageY))
-                        //disable actor as we don't want to trigger more mouse click on itself
-                        // until our targeting is done
-                        card.getActor().touchable = Touchable.disabled
-                        return true
-                    }
-                    //card is being target by something ie target spell/hero power etc
+                    //card is being target by something ie target spell
                     selectedCard?.let {
-                        if (player.boardManager.cardIsPresentOnBoard(it.getSecondayId())) {
-                            attackCard(Position(event.stageX, event.stageY))
-                        } else if (player.handManager.cardIsInHand(it.getSecondayId())) {
+                        if (player.handManager.cardIsInHand(it.getSecondayId())) {
                             playedCard(it, Position(event.stageX, event.stageY))
                         }
                     }
@@ -228,19 +196,8 @@ class UIManager(private val stage: Stage,
 
         }
         card.getActor().addListener(targetListener)
-
+        nextPhase = PHASE.ATTACK
         updateCardPositionInHand()
-    }
-
-    private fun attackCard(position: Position) {
-        val attacker = selectedCard ?: return
-        val target = stage.hit(position.xPosition, position.yPosition, true)
-        if (target is BoardCard) {
-            println("Attacking, attacker:$selectedCard, target:$target")
-            val attackMsg = MonsterAttackOut(attacker, target.secondaryId)
-            queue.addMessage(attackMsg)
-            clearTargetingAction()
-        }
     }
 
     fun initCardTexture(card: DrawableCard) {
@@ -370,9 +327,7 @@ class UIManager(private val stage: Stage,
 
     fun render(batch: SpriteBatch, font: BitmapFont, shaper: ShapeRenderer) {
         batch.begin()
-        val hero = player.heroPlayer
-        val eHero = otherPlayer.heroPlayer
-        font.draw(batch, nextPhase, 835f, 195f)
+        font.draw(batch, nextPhase.name, 835f, 195f)
 
         font.draw(batch, "FPS: ${Gdx.graphics.framesPerSecond}", 50f, 950f)
         font.draw(batch, "Player: ${player.playerName}", 50f, 200f)
@@ -383,8 +338,8 @@ class UIManager(private val stage: Stage,
         font.draw(batch, "Time:${(endTurnTime - System.nanoTime()) / ONE_NANO_SECOND}", 50f, 800f)
         batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 100f)
         batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 800f)
-        font.draw(batch, hero.getHealth().toString(), 587.5f, 80f)
-        font.draw(batch, eHero.getHealth().toString(), 587.5f, 825f)
+        font.draw(batch, player.playerLifePoint.toString(), 587.5f, 80f)
+        font.draw(batch, otherPlayer.playerLifePoint.toString(), 587.5f, 825f)
         batch.end()
 
         renderDebugBoard(batch, shaper)

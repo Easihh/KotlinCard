@@ -80,8 +80,7 @@ abstract class CoreMessageParser {
     }
 
     fun getMatchStartData(): MatchStartData {
-        return MatchStartData(coreMsg.getAccountName(), coreMsg.getEnemyAccountName(), coreMsg.getPrimaryHeroId(),
-                coreMsg.getSecondaryHeroId(), coreMsg.getEnemyPrimaryHeroId(), coreMsg.getEnemySecondaryHeroId())
+        return MatchStartData(coreMsg.getAccountName(), coreMsg.getEnemyAccountName())
     }
 
     fun getMatchEndData(): MatchEndData {

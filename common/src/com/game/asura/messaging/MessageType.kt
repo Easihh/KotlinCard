@@ -13,7 +13,7 @@ enum class MessageType(val value: Byte) {
     MATCH_END('t'.toByte()),
     START_TURN('s'.toByte()),
     END_TURN('e'.toByte()),
-    MONSTER_ATTACK('a'.toByte()),
+    ATTACK('a'.toByte()),
     MONSTER_EVOLVE('v'.toByte());
 
 

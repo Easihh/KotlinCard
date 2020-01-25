@@ -53,10 +53,8 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     }
 
     private fun setupPlayer() {
-        player = ClientPlayer(matchStart.accountName, matchStart.primaryHeroId, matchStart.secondaryHeroId)
-        otherPlayer = ClientPlayer(matchStart.enemyName, matchStart.enemyPrimaryHeroId, matchStart.enemySecondaryHeroId)
-        cardStore.add(player.heroPlayer)
-        cardStore.add(otherPlayer.heroPlayer)
+        player = ClientPlayer(matchStart.accountName)
+        otherPlayer = ClientPlayer(matchStart.enemyName)
     }
 
     override fun show() {

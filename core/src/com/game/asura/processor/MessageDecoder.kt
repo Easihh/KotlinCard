@@ -54,11 +54,7 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val data = getMatchStartData()
                 val accountName = data.accountName ?: return
                 val enemyName = data.enemyAccountName ?: return
-                val primaryId = data.primaryHeroId ?: return
-                val secondaryId = data.secondaryHeroId ?: return
-                val enemyPrimaryId = data.enemyPrimaryHeroId ?: return
-                val enemySecondaryId = data.enemySecondaryHeroId ?: return
-                decodedMessage = MatchStartIn(accountName, enemyName, primaryId, secondaryId, enemyPrimaryId, enemySecondaryId)
+                decodedMessage = MatchStartIn(accountName, enemyName)
             }
             MessageType.MATCH_END -> {
                 val data = getMatchEndData()

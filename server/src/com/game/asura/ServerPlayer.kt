@@ -7,14 +7,13 @@ import kotlin.random.Random
 
 class ServerPlayer(val playerName: String,
                    val accountKey: String,
-                   primary: Int,
-                   secondary: Int = Random.nextInt(),
                    val cardInfoStore: CardInfoStore) {
 
     private val deck: Stack<BaseCard> = Stack()
-    val heroPlayer = ServerHeroCard(primary, secondary)
     val handManager = HandManager<BaseCard>()
     val boardManager = BoardManager<BaseCard>(create = { INVALID_MINION_CARD })
+    var currentMana: Int = 0
+    var maxMana: Int = 10
 
     fun draw(): BaseCard? {
         if (deck.isNotEmpty()) {
@@ -45,7 +44,7 @@ class ServerPlayer(val playerName: String,
 
     fun playCard(card: BaseCard, boardPosition: Int?) {
         handManager.removeFromHand(card)
-        heroPlayer.updateMana(card.getCost())
+        currentMana -= card.getCost()
         if (card.getCardType() == CardType.MONSTER) {
             if (boardPosition == null) {
                 return

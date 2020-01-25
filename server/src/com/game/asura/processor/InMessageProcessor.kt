@@ -35,8 +35,8 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     println("Unable to find accountName in cache with key:${message.accountKey}")
                     return
                 }
-                val player = ServerPlayer(accountName, message.accountKey, 5, cardInfoStore = cardInfoStore)
-                val enemyPlayer = ServerPlayer("Enemy", "enemyAccountKey", 5, cardInfoStore = cardInfoStore)
+                val player = ServerPlayer(accountName, message.accountKey, cardInfoStore)
+                val enemyPlayer = ServerPlayer("Enemy", "enemyAccountKey", cardInfoStore)
                 player.initializeDeck()
                 enemyPlayer.initializeDeck()
                 val match = Match()
@@ -45,7 +45,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 match.addPlayer("Enemy", enemyPlayer)
                 matchFinder.addMatch(match)
                 //1st player
-                val matchInfo = MatchStartOut(account.getChannelWriter(), accountName, "Enemy", player.heroPlayer, enemyPlayer.heroPlayer)
+                val matchInfo = MatchStartOut(account.getChannelWriter(), accountName, "Enemy")
                 //2nd player
                 //val matchInfo2 = MatchStartOut(account.getChannelWriter(), "Enemy", accountName, enemyPlayer.heroPlayer, player.heroPlayer)
                 messageQueue.addMessage(matchInfo)
@@ -122,8 +122,8 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
 
                 val changedFields: MutableList<ChangedField> = ArrayList()
                 if (cardInHand.getCost() > 0) {
-                    println("cardCost:${cardInHand.getCost()},currentMana:${player.heroPlayer.getCurrentMana()}")
-                    val playerInfoOut = PlayerInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, currentMana = player.heroPlayer.getCurrentMana(), maxMana = player.heroPlayer.getMaxMana())
+                    println("cardCost:${cardInHand.getCost()},currentMana:${player.currentMana}")
+                    val playerInfoOut = PlayerInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, currentMana = player.currentMana, maxMana = player.maxMana)
                     messageQueue.addMessage(playerInfoOut)
                 }
 
@@ -181,7 +181,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 }
             }
 
-            is MonsterAttackIn -> {
+            is AttackIn -> {
                 val account = accountCache.getAccount(message.accountKey)
                 val accountName = account?.getAccountName()
                 if (accountName == null) {
@@ -189,13 +189,9 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     return
                 }
                 val match = matchFinder.findMatch(account.getCurrentMatchId()) ?: return
-                val attacker = match.getCard(message.secondaryId) ?: return
-                val defender = match.getCard(message.target) ?: return
-                if (attacker !is Minion || defender !is Minion) {
-                    return
-                }
-                match.monsterAttack(attacker, defender)
-                val changedFieldsAttacker: MutableList<ChangedField> = ArrayList()
+
+                match.processAttack(accountName)
+                /*val changedFieldsAttacker: MutableList<ChangedField> = ArrayList()
                 val changedFieldsDefender: MutableList<ChangedField> = ArrayList()
                 val healthFieldA = ChangedField(MessageField.CARD_HEALTH, attacker.getHealth())
                 val healthFieldD = ChangedField(MessageField.CARD_HEALTH, defender.getHealth())
@@ -206,39 +202,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 messageQueue.addMessage(cardInfoOut)
                 cardInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accountName = accountName,
                         card = defender, changedFields = changedFieldsDefender)
-                messageQueue.addMessage(cardInfoOut)
-
-                if (attacker.getCardType() == CardType.HERO && !attacker.isAlive()) {
-
-                    // attacker hero died, process end match
-                    val matchEnd = MatchEndOut(account.getChannelWriter(), accountName = accountName,
-                            matchResult = MatchResult.LOSS)
-                    messageQueue.addMessage(matchEnd)
-                    //disable for now as we are testing with a single connected player in a match
-
-                    /*
-                    val defenderPlayer = match.getCardOwner(defender.getSecondayId()) ?: return
-                    val defenderAccount = accountCache.getAccount(defenderPlayer.accountKey) ?: return
-                    matchEnd = MatchEndOut(defenderAccount.getChannelWriter(), accountName = accountName,
-                            matchResult = MatchResult.WIN)*/
-                    //messageQueue.addMessage(matchEnd)
-                    matchFinder.removeMatch(match)
-                }
-                if (defender.getCardType() == CardType.HERO && !defender.isAlive()) {
-                    println("Defending hero is dead.Ending match:${match.matchId}")
-                    // defender hero died, process end match
-
-                    //disable for now as we are testing with a single connected player in a match
-                    /*val defenderPlayer = match.getCardOwner(defender.getSecondayId()) ?: return
-                    val defenderAccount = accountCache.getAccount(defenderPlayer.accountKey) ?: return
-                    var matchEnd = MatchEndOut(defenderAccount.getChannelWriter(), accountName = accountName,
-                            matchResult = MatchResult.LOSS)
-                    messageQueue.addMessage(matchEnd)*/
-                    val matchEnd = MatchEndOut(account.getChannelWriter(), accountName = accountName,
-                            matchResult = MatchResult.WIN)
-                    messageQueue.addMessage(matchEnd)
-                    matchFinder.removeMatch(match)
-                }
+                messageQueue.addMessage(cardInfoOut)*/
             }
             else -> {
                 println("Error unable to processIn message:$message")

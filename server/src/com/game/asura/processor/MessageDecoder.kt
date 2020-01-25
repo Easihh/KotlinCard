@@ -33,12 +33,8 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val endTurnData = getEndTurnData()
                 decodedMessage = EndTurnIn(playerAccount.getAccountKey())
             }
-            MessageType.MONSTER_ATTACK -> {
-                val monsterAttackData = getMonsterAttackData()
-                val primaryId = monsterAttackData.primaryId ?: return
-                val secondaryId = monsterAttackData.secondaryId ?: return
-                val cardTarget = monsterAttackData.cardTarget ?: return
-                decodedMessage = MonsterAttackIn(playerAccount.getAccountKey(), primaryId, secondaryId, cardTarget)
+            MessageType.ATTACK -> {
+                decodedMessage = AttackIn(playerAccount.getAccountKey())
             }
             else -> {
                 println("Message of type $msgType has no decode logic.")

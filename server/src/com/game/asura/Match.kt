@@ -1,7 +1,7 @@
 package com.game.asura
 
 import com.game.asura.card.BaseCard
-import com.game.asura.card.Minion
+import com.game.asura.card.CardType
 import kotlin.random.Random
 
 class Match(val matchId: Int = Random.nextInt()) {
@@ -17,21 +17,8 @@ class Match(val matchId: Int = Random.nextInt()) {
         return playerMap[key]
     }
 
-    fun getCardOwner(secondaryId: Int): ServerPlayer? {
-        for (player in playerMap.values) {
-            if (player.boardManager.cardIsPresentOnBoard(secondaryId) ||
-                    player.heroPlayer.getSecondayId() == secondaryId ||
-                    player.handManager.cardIsInHand(secondaryId)) {
-                return player
-            }
-        }
-        return null
-    }
-
     fun addPlayer(key: String, value: ServerPlayer) {
         playerMap.putIfAbsent(key, value)
-        //add "Hero" player as its also a card to be retrieved on attack/defense
-        addCardToCache(value.heroPlayer)
     }
 
     fun getMatchTurn(): Int {
@@ -54,9 +41,22 @@ class Match(val matchId: Int = Random.nextInt()) {
         return matchCardCache[secondaryId]
     }
 
-    fun monsterAttack(attacker: Minion, defender: Minion) {
-        attacker.takeDamage(defender.getAttack())
-        defender.takeDamage(attacker.getAttack())
+    fun processAttack(attackingPlayer: String) {
+        val attackPlayer = getPlayer(attackingPlayer) ?: return
+        val defenderName = playerMap.keys.stream().filter { s -> s != attackingPlayer }.findFirst().get()
+        val defenderPlayer = getPlayer(defenderName) ?: return
+        if (defenderPlayer.boardManager.boardIsEmpty()) {
+            //defender has no minion on board, deal all dmg to player
+            var dmg = 0
+            for (i in 0 until MAX_BOARD_SIZE) {
+                val card = attackPlayer.boardManager.getCardByBoardIndex(i) as ServerMinionCard
+                if (card.getCardType() != CardType.INVALID) {
+                    dmg += card.getAttack()
+                }
+            }
+            println("Dealing $dmg damage to player $defenderName")
+            return
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package com.game.asura
 
 import com.game.asura.card.Card
 import com.game.asura.card.CardType
+import java.util.stream.Collectors
 
 class BoardManager<T : Card>(private val create: () -> T) {
 
@@ -55,6 +56,10 @@ class BoardManager<T : Card>(private val create: () -> T) {
 
     fun getCardByBoardIndex(boardIndex: Int): T {
         return playerBoard[boardIndex]
+    }
+
+    fun getValidBoardCards(): List<T> {
+        return playerBoard.stream().filter { c -> c.getCardType() != CardType.INVALID }.collect(Collectors.toList())
     }
 
     fun moveCardRight() {
