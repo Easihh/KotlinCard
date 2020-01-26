@@ -17,7 +17,7 @@ class ServerBosom(private val insertableQueue: InsertableQueue) {
     private val SERVER_HOST: String = "localhost"
     private val SERVER_PORT: Int = 8555
 
-    private inner class ServerMessageReader : Runnable {
+    private inner class ServerMessageReader(private val accountName: String) : Runnable {
         private val messageDecoder = MessageDecoder(insertableQueue)
         private val tokenizer = Tokenizer(bufferRead)
         var isConnected = true
@@ -29,8 +29,8 @@ class ServerBosom(private val insertableQueue: InsertableQueue) {
             channel.register(selector, SelectionKey.OP_READ)
 
             //Login
-            println("Requesting login to server.")
-            val connRequest = LoginRequestOut("Asura")
+            println("Requesting login to server with account $accountName")
+            val connRequest = LoginRequestOut(accountName)
             insertableQueue.addMessage(connRequest)
 
             while (isConnected) {
@@ -69,11 +69,11 @@ class ServerBosom(private val insertableQueue: InsertableQueue) {
     private val messageBuilder = MessageBuilder(bufferWrite)
     private lateinit var channel: SocketChannel
 
-    fun connect(): Boolean {
+    fun connect(accountName: String): Boolean {
 
         try {
             thread(true, true, null, "MessageReader") {
-                ServerMessageReader().run()
+                ServerMessageReader(accountName).run()
             }
         } catch (e: Exception) {
             println("Error Connecting to server:$SERVER_HOST with port:$SERVER_PORT.")

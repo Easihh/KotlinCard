@@ -1,7 +1,6 @@
 package com.game.asura.screen
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
@@ -10,7 +9,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.viewport.FitViewport
@@ -45,7 +47,7 @@ class LoginScreen(private val parentScreen: KtxGame<Screen>,
 
     private fun setupStage() {
         println("Current DisplayMode:${Gdx.graphics.displayMode}")
-        stage.addListener(object : InputListener() {
+        /*stage.addListener(object : InputListener() {
             /** Called when a key goes down. When true is returned, the event is [handled][Event.handle].  */
             override fun keyDown(event: InputEvent, keycode: Int): Boolean {
                 println("Exiting the application.")
@@ -55,7 +57,7 @@ class LoginScreen(private val parentScreen: KtxGame<Screen>,
                 }
                 return false
             }
-        })
+        })*/
     }
 
     override fun show() {
@@ -75,6 +77,37 @@ class LoginScreen(private val parentScreen: KtxGame<Screen>,
         val img = Texture(Asset.MENU_BUTTON_SMALL.path)
         val connectBtn = Image(img)
         connectBtn.setPosition(850f, 675f)
+        stage.addActor(connectBtn)
+
+        val uiskin = Skin(Gdx.files.internal("core/assets/uiskin.json"))
+        val accountNameStr = Label("Account Name", uiskin)
+        accountNameStr.color = Color.WHITE
+        accountNameStr.height = 64f
+        accountNameStr.width = 256f
+        accountNameStr.setPosition(400f, 575f)
+        stage.addActor(accountNameStr)
+        val accountName = TextField("DefaultTextHere", uiskin)
+        accountName.color = Color.DARK_GRAY
+        accountName.height = 64f
+        accountName.width = 256f
+        accountName.setPosition(400f, 500f)
+        stage.addActor(accountName)
+
+        val accountPasswordStr = Label("Account Password", uiskin)
+        accountPasswordStr.color = Color.WHITE
+        accountPasswordStr.height = 64f
+        accountPasswordStr.width = 256f
+        accountPasswordStr.setPosition(400f, 425f)
+        stage.addActor(accountPasswordStr)
+        val accountPassw = TextField("DefaultPassword", uiskin)
+        accountPassw.isPasswordMode = true
+        accountPassw.setPasswordCharacter('*')
+        accountPassw.color = Color.DARK_GRAY
+        accountPassw.height = 64f
+        accountPassw.width = 256f
+        accountPassw.setPosition(400f, 350f)
+        stage.addActor(accountPassw)
+
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 val skin = Skin(Gdx.files.internal("core/assets/uiskin.json"))
@@ -95,43 +128,14 @@ class LoginScreen(private val parentScreen: KtxGame<Screen>,
                 //connFailed.setSize(VIRTUAL_WINDOW_WIDTH.to, 256f)
                 connFailed.isMovable = false
                 connFailed.isModal = true
-                if (!server.connect()) {
+                if (!server.connect(accountName.text)) {
                     connFailed.show(stage)
                 }
+
                 return true
             }
         }
         connectBtn.addListener(listener)
-        stage.addActor(connectBtn)
-
-        val skin = Skin(Gdx.files.internal("core/assets/uiskin.json"))
-        val accountNameStr = Label("Account Name", skin)
-        accountNameStr.color = Color.WHITE
-        accountNameStr.height = 64f
-        accountNameStr.width = 256f
-        accountNameStr.setPosition(400f, 575f)
-        stage.addActor(accountNameStr)
-        val accountName = TextField("DefaultTextHere", skin)
-        accountName.color = Color.DARK_GRAY
-        accountName.height = 64f
-        accountName.width = 256f
-        accountName.setPosition(400f, 500f)
-        stage.addActor(accountName)
-
-        val accountPasswordStr = Label("Account Password", skin)
-        accountPasswordStr.color = Color.WHITE
-        accountPasswordStr.height = 64f
-        accountPasswordStr.width = 256f
-        accountPasswordStr.setPosition(400f, 425f)
-        stage.addActor(accountPasswordStr)
-        val accountPassw = TextField("DefaultPassword", skin)
-        accountPassw.isPasswordMode = true
-        accountPassw.setPasswordCharacter('*')
-        accountPassw.color = Color.DARK_GRAY
-        accountPassw.height = 64f
-        accountPassw.width = 256f
-        accountPassw.setPosition(400f, 350f)
-        stage.addActor(accountPassw)
     }
 
     private fun toPreMatchScreen() {

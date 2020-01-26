@@ -10,11 +10,15 @@ import com.game.asura.messagein.*
 import com.game.asura.messageout.*
 import com.game.asura.messaging.MessageField
 import com.game.asura.parsing.DecodedMessage
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 class InMessageProcessor(private val messageQueue: InsertableQueue,
                          private val accountCache: CachedAccount,
                          private val matchFinder: MatchFinder,
-                         private val cardInfoStore: CardInfoStore) {
+                         private val cardInfoStore: CardInfoStore,
+                         private val processorContext: CoroutineContext) {
 
     fun onMessage(message: DecodedMessage) {
         when (message) {
@@ -27,9 +31,6 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 println("Added accountKey:${account.getAccountKey()} with name:${account.getAccountName()} to activePlayer list.")
                 val reply = LoginRequestReplyOut(account.getChannelWriter(), LoginStatus.CONNECTED)
                 messageQueue.addMessage(reply)
-
-                //add dummy enemy player for testing
-
             }
             is GameRequestIn -> {
                 val account = accountCache.getAccount(message.accountKey)
@@ -39,33 +40,30 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     return
                 }
                 val player = ServerPlayer(accountName, message.accountKey, cardInfoStore)
-                val enemyPlayer = ServerPlayer("Enemy", "enemyAccountKey", cardInfoStore)
-                player.initializeDeck()
-                enemyPlayer.initializeDeck()
-                val match = Match()
-                account.setMatch(match)
-                match.addPlayer(accountName, player)
-                match.addPlayer("Enemy", enemyPlayer)
-                matchFinder.addMatch(match)
-                //1st player
-                val matchInfo = MatchStartOut(account.getChannelWriter(), accountName, "Enemy")
-                //2nd player
-                //val matchInfo2 = MatchStartOut(account.getChannelWriter(), "Enemy", accountName, enemyPlayer.heroPlayer, player.heroPlayer)
-                messageQueue.addMessage(matchInfo)
-                //messageQueue.addMessage(matchInfo2)
-                //send start turn to a player
-                val startTurn = StartTurnOut(account.getChannelWriter())
-                messageQueue.addMessage(startTurn)
-                //schedule end turn X seconds from now or until we receive such info player client.
-                val endTurn = EndTurnIn(account.getAccountKey(), matchTurn = match.getMatchTurn())
-                messageQueue.addMessage(endTurn, SECOND_PER_TURN * ONE_SECOND_MILLIS)
-                //send initial draws
-                for (x in 0..3) {
-                    val cardDrawn = player.draw() ?: return
-                    val cardDrawnOut = CardDrawnOut(account.getChannelWriter(), cardDrawn, player.cardRemaining())
-                    match.addCardToCache(cardDrawn)
-                    messageQueue.addMessage(cardDrawnOut)
+                GlobalScope.launch(processorContext) {
+                    val match = matchFinder.addPlayer(player)
+                    println("${Thread.currentThread().name} Match found for player:${player.playerName}")
+                    account.setMatch(match)
+                    player.initializeDeck()
+                    val opponentName = match.getOpponentName(accountName)
+                    val matchInfo = MatchStartOut(account.getChannelWriter(), accountName, opponentName)
+                    messageQueue.addMessage(matchInfo)
 
+                    //send start turn to a player
+                    val startTurn = StartTurnOut(account.getChannelWriter())
+                    messageQueue.addMessage(startTurn)
+                    //schedule end turn X seconds from now or until we receive such info player client.
+                    val endTurn = EndTurnIn(account.getAccountKey(), matchTurn = match.getMatchTurn())
+                    messageQueue.addMessage(endTurn, SECOND_PER_TURN * ONE_SECOND_MILLIS)
+                    //send initial draws
+                    for (x in 0..3) {
+                        val cardDrawn = player.draw()
+                        cardDrawn?.let {
+                            val cardDrawnOut = CardDrawnOut(account.getChannelWriter(), cardDrawn, player.cardRemaining())
+                            match.addCardToCache(cardDrawn)
+                            messageQueue.addMessage(cardDrawnOut)
+                        }
+                    }
                 }
             }
 

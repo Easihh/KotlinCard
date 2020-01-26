@@ -42,10 +42,10 @@ class UIManager(private val stage: Stage,
 
     private enum class PHASE {
         ATTACK,
-        END_TURN
+        ENDTURN
     }
 
-    private var nextPhase: PHASE = PHASE.END_TURN
+    private var nextPhase: PHASE = PHASE.ENDTURN
 
     init {
         stage.addActor(backgroundG)
@@ -98,7 +98,7 @@ class UIManager(private val stage: Stage,
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 println("Requesting ${nextPhase.name}")
                 val msg: Message = when (nextPhase) {
-                    PHASE.END_TURN -> {
+                    PHASE.ENDTURN -> {
                         EndTurnOut()
                     }
                     PHASE.ATTACK -> {

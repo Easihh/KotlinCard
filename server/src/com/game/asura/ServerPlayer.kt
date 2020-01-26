@@ -7,7 +7,7 @@ import kotlin.random.Random
 
 class ServerPlayer(val playerName: String,
                    val accountKey: String,
-                   val cardInfoStore: CardInfoStore) {
+                   private val cardInfoStore: CardInfoStore) {
 
     private val deck: Stack<BaseCard> = Stack()
     val handManager = HandManager<BaseCard>()

@@ -62,4 +62,8 @@ class Match(val matchId: Int = Random.nextInt()) {
         return bResult
     }
 
+    fun getOpponentName(playerName: String): String {
+        return playerMap.keys.stream().filter { s -> s != playerName }.findFirst().get()
+    }
+
 }

@@ -18,9 +18,11 @@ class ServerMain {
 
     inner class MainLogicProcessor : Runnable {
 
+        private val executor = CurrentThreadExecutor()
+        private val processorContext = MainLogicDispatcher(executor)
         private val matchFinder = MatchFinder()
         private val cardInfoStore = CardInfoStore()
-        private val inProcessor = InMessageProcessor(messageQueue, accountCache, matchFinder,cardInfoStore)
+        private val inProcessor = InMessageProcessor(messageQueue, accountCache, matchFinder, cardInfoStore, processorContext)
         private val outProcessor = OutMessageProcessor()
         private val messageProcessor = MessageProcessor(inProcessor, outProcessor)
 
