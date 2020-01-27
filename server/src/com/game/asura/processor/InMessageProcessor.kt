@@ -100,6 +100,13 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 messageQueue.addMessage(cardPlayed)
 
                 player.playCard(cardInHand, message.boardPosition)
+                if (cardInHand.getCardType() == CardType.MONSTER) {
+                    if (player.currentPhase == Phase.MAIN) {
+                        player.currentPhase = Phase.ATTACK
+                    }
+                    val phaseChange = PhaseChangeOut(account.getChannelWriter(), Phase.ATTACK)
+                    messageQueue.addMessage(phaseChange)
+                }
                 //check for double to merge
                 if (cardInHand is ServerMinionCard && cardInHand.canEvolve()) {
                     val dupeList = player.boardManager.findDuplicate(cardInHand.getPrimaryId())
@@ -203,6 +210,10 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     val playerInfoOut = PlayerInfoOut(account.getChannelWriter(), dPlayer.playerName,
                             dPlayer.currentMana, dPlayer.maxMana, dPlayer.playerLifePoint)
                     messageQueue.addMessage(playerInfoOut)
+
+                    match.setPlayerNextPhase(accountName, Phase.POST_ATTACK)
+                    val phaseOut = PhaseChangeOut(account.getChannelWriter(), Phase.POST_ATTACK)
+                    messageQueue.addMessage(phaseOut)
                 }
                 /*val changedFieldsAttacker: MutableList<ChangedField> = ArrayList()
                 val changedFieldsDefender: MutableList<ChangedField> = ArrayList()

@@ -117,4 +117,8 @@ abstract class CoreMessageParser {
         return MonsterEvolveData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getCardCost(), coreMsg.getCardType(),
                 coreMsg.getFirstMonsterId(), coreMsg.getSecondMonsterId(), coreMsg.getBoardPosition(), coreMsg.getCardAttack(), coreMsg.getCardHealth(), coreMsg.getMaxCardLife())
     }
+
+    fun getPhaseEndData(): PhaseChangeData {
+        return PhaseChangeData(coreMsg.getNextPhase())
+    }
 }

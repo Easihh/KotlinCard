@@ -32,6 +32,7 @@ enum class MessageField(val fieldNumber: Int,
     FIRST_MONSTER_ID(27, 'I'.toByte()),
     SECOND_MONSTER_ID(28, 'I'.toByte()),
     PLAYER_HEALTH(29, 'I'.toByte()),
+    NEXT_PHASE(30, 'B'.toByte())
     ;
 
     companion object {

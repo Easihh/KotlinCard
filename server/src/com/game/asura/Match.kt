@@ -4,21 +4,27 @@ import com.game.asura.card.BaseCard
 import com.game.asura.card.CardType
 import kotlin.random.Random
 
-class Match(val matchId: Int = Random.nextInt()) {
+class Match(private val player1: ServerPlayer,
+            private val player2: ServerPlayer,
+            val matchId: Int = Random.nextInt()) {
 
+    private var currentPlayerTurn = ""
+    private val playerMap: MutableMap<String, ServerPlayer> = HashMap()
+
+    init {
+        currentPlayerTurn = player1.playerName
+        playerMap[player1.playerName] = player1
+        playerMap[player2.playerName] = player2
+    }
 
     private var matchTurn = 1
-    private var currentPlayerTurn = ""
-    //keep track of card drawn/hero for whole match to be able to search by card secondary id instantly
+
+    //keep track of card drawn/added for whole match to be able to search by card secondary id instantly
     private val matchCardCache: MutableMap<Int, BaseCard> = HashMap()
-    private val playerMap: MutableMap<String, ServerPlayer> = HashMap()
+
 
     fun getPlayer(key: String): ServerPlayer? {
         return playerMap[key]
-    }
-
-    fun addPlayer(key: String, value: ServerPlayer) {
-        playerMap.putIfAbsent(key, value)
     }
 
     fun getMatchTurn(): Int {
@@ -43,7 +49,7 @@ class Match(val matchId: Int = Random.nextInt()) {
 
     fun processAttack(attackingPlayer: String): BattleResult? {
         val attackPlayer = getPlayer(attackingPlayer) ?: return null
-        val defenderName = playerMap.keys.stream().filter { s -> s != attackingPlayer }.findFirst().get()
+        val defenderName = getOpponentName(attackingPlayer)
         val defenderPlayer = getPlayer(defenderName) ?: return null
         val bResult = BattleResult(defenderPlayer)
         if (defenderPlayer.boardManager.boardIsEmpty()) {
@@ -63,7 +69,18 @@ class Match(val matchId: Int = Random.nextInt()) {
     }
 
     fun getOpponentName(playerName: String): String {
-        return playerMap.keys.stream().filter { s -> s != playerName }.findFirst().get()
+        if (player1.playerName == playerName) {
+            return player2.playerName
+        }
+        return player1.playerName
+    }
+
+    fun setPlayerNextPhase(playerName: String, nextPhase: Phase) {
+        if (player1.playerName == playerName) {
+            player1.currentPhase = nextPhase
+            return
+        }
+        player2.currentPhase = nextPhase
     }
 
 }

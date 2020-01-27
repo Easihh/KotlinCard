@@ -99,6 +99,11 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 decodedMessage = MonsterEvolveIn(primaryId, secondaryId, firstMonsterId, secondMonsterId,
                         boardIndx, cardCost, cardType, attack, health, maxHealth)
             }
+            MessageType.PHASE_CHANGE -> {
+                val data = getPhaseEndData()
+                val nextPhase = data.nextPhase ?: return
+                decodedMessage = PhaseChangeIn(nextPhase)
+            }
             else -> {
                 println("Message of type $msgType has no decode logic.")
             }

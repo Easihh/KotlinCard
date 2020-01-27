@@ -40,13 +40,6 @@ class UIManager(private val stage: Stage,
     private val backgroundG = Group()
     private val foregroundG = Group()
 
-    private enum class PHASE {
-        ATTACK,
-        ENDTURN
-    }
-
-    private var nextPhase: PHASE = PHASE.ENDTURN
-
     init {
         stage.addActor(backgroundG)
         stage.addActor(foregroundG)
@@ -96,13 +89,16 @@ class UIManager(private val stage: Stage,
         endTurn.setPosition(VIRTUAL_WINDOW_WIDTH - 200f, 150f)
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                println("Requesting ${nextPhase.name}")
-                val msg: Message = when (nextPhase) {
-                    PHASE.ENDTURN -> {
+                println("Requesting ${player.currentPhase.name}")
+                val msg: Message = when (player.currentPhase) {
+                    Phase.POST_ATTACK -> {
                         EndTurnOut()
                     }
-                    PHASE.ATTACK -> {
+                    Phase.ATTACK -> {
                         AttackOut()
+                    }
+                    Phase.MAIN -> {
+                        EndTurnOut()
                     }
                 }
                 queue.addMessage(msg)
@@ -196,7 +192,6 @@ class UIManager(private val stage: Stage,
 
         }
         card.getActor().addListener(targetListener)
-        nextPhase = PHASE.ATTACK
         updateCardPositionInHand()
     }
 
@@ -325,9 +320,16 @@ class UIManager(private val stage: Stage,
         }
     }
 
+    fun getPhaseStartBtnText(): String {
+        if (player.currentPhase == Phase.ATTACK) {
+            return "ATTACK"
+        }
+        return "END TURN"
+    }
+
     fun render(batch: SpriteBatch, font: BitmapFont, shaper: ShapeRenderer) {
         batch.begin()
-        font.draw(batch, nextPhase.name, 835f, 195f)
+        font.draw(batch, getPhaseStartBtnText(), 835f, 195f)
 
         font.draw(batch, "FPS: ${Gdx.graphics.framesPerSecond}", 50f, 950f)
         font.draw(batch, "Player: ${player.playerName}", 50f, 200f)

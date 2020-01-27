@@ -3,6 +3,7 @@ package com.game.asura.messaging
 import com.game.asura.GameType
 import com.game.asura.LoginStatus
 import com.game.asura.MatchResult
+import com.game.asura.Phase
 import com.game.asura.card.CardType
 
 class CoreMessage {
@@ -25,6 +26,11 @@ class CoreMessage {
     fun getGameType(): GameType {
         val typeVal = fieldMap[MessageField.GAME_TYPE] ?: return GameType.UNKNOWN
         return GameType.getGameType(typeVal.value as Byte)
+    }
+
+    fun getNextPhase(): Phase {
+        val typeVal = fieldMap[MessageField.NEXT_PHASE] ?: return Phase.MAIN
+        return Phase.getPhase(typeVal.value as Byte)
     }
 
     fun getAccountName(): String? {

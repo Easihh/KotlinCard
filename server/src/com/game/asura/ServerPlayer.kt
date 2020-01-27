@@ -3,11 +3,11 @@ package com.game.asura
 import com.game.asura.card.BaseCard
 import com.game.asura.card.CardType
 import java.util.*
-import kotlin.random.Random
 
 class ServerPlayer(val playerName: String,
                    val accountKey: String,
                    private val cardInfoStore: CardInfoStore) {
+
 
     private val deck: Stack<BaseCard> = Stack()
     val handManager = HandManager<BaseCard>()
@@ -15,6 +15,7 @@ class ServerPlayer(val playerName: String,
     var playerLifePoint: Int = 30
     var currentMana: Int = 0
     var maxMana: Int = 10
+    var currentPhase: Phase = Phase.MAIN
 
     fun draw(): BaseCard? {
         if (deck.isNotEmpty()) {

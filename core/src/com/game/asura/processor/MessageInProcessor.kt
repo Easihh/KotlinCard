@@ -81,6 +81,9 @@ class MessageInProcessor(private val player: ClientPlayer,
                 println("End Turn Received from server.")
                 //cancel all pending action etc here
             }
+            is PhaseChangeIn -> {
+                player.currentPhase = msg.nextPhase
+            }
             is MatchEndIn -> {
                 println("Match result:${msg.matchResult}")
                 parentScreen.removeScreen<MatchScreen>()

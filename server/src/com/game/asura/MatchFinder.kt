@@ -25,12 +25,10 @@ class MatchFinder {
                 pendingPlayer.add(PendingPlayer(it, player))
 
                 if (pendingPlayer.size >= MAX_PLAYER_PER_MATCH) {
-                    val match = Match()
+
                     val player1 = pendingPlayer.poll()
                     val player2 = pendingPlayer.poll()
-
-                    match.addPlayer(player1.player.playerName, player1.player)
-                    match.addPlayer(player2.player.playerName, player2.player)
+                    val match = Match(player1.player, player2.player)
                     allMatch[match.matchId] = match
                     player1.coRoutine.resume(match)
                     player2.coRoutine.resume(match)

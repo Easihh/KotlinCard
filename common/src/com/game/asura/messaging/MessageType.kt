@@ -14,7 +14,8 @@ enum class MessageType(val value: Byte) {
     START_TURN('s'.toByte()),
     END_TURN('e'.toByte()),
     ATTACK('a'.toByte()),
-    MONSTER_EVOLVE('v'.toByte());
+    MONSTER_EVOLVE('v'.toByte()),
+    PHASE_CHANGE('h'.toByte());
 
 
     companion object {

@@ -25,11 +25,15 @@ class EnumMapper {
         val cardTypeFnc: (Byte) -> String = {
             CardType.getCardType(it).name
         }
+        val phaseTypeFnc: (Byte) -> String = {
+            Phase.getPhase(it).name
+        }
 
         enumMap.putIfAbsent(MessageField.MESSAGE_TYPE, messageTypeFnc)
         enumMap.putIfAbsent(MessageField.LOGIN_STATUS, loginStatusFnc)
         enumMap.putIfAbsent(MessageField.GAME_TYPE, gameTypeFnc)
         enumMap.putIfAbsent(MessageField.CARD_TYPE, cardTypeFnc)
+        enumMap.putIfAbsent(MessageField.NEXT_PHASE, phaseTypeFnc)
         enumMap.putIfAbsent(MessageField.MATCH_RESULT, matchResultTypeFnc)
     }
 

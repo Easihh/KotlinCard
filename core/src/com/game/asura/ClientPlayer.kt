@@ -9,4 +9,5 @@ class ClientPlayer(val playerName: String) {
     var playerLifePoint: Int = 30
     var currentMana: Int = 0
     var maxMana: Int = 10
+    var currentPhase: Phase = Phase.MAIN
 }
