@@ -164,7 +164,22 @@ class UIManager(private val stage: Stage,
         return Position(INITIAL_BOARD_X + (BOARD_CARD_WIDTH * boardIndex), INITIAL_BOARD_Y)
     }
 
-    fun moveCardToBoard(card: DrawableCard, boardIndex: Int) {
+    private fun getEnemyBoardPosition(boardIndex: Int): Position {
+        return Position(OPPONENT_INITIAL_BOARD_X + (BOARD_CARD_WIDTH * boardIndex), OPPONENT_INITIAL_BOARD_Y)
+    }
+
+    fun addEnemyMonsterToBoard(card: DrawableCard, boardIndex: Int) {
+        println("adding $card to enemy board.")
+        //need change texture of actor as its now on board
+        val cardTexture = assetStore.getCardTexture(card.getPrimaryId()) ?: return
+        card.transformActor(cardTexture.onBoardTexture)
+        //add new actor to stage as it was destroyed
+        foregroundG.addActor(card.actor)
+        val pos = getEnemyBoardPosition(boardIndex)
+        card.actor.setPosition(pos.xPosition, pos.yPosition)
+    }
+
+    fun addMonsterToBoard(card: DrawableCard, boardIndex: Int) {
 
         //need change texture of actor as its now on board
         val cardTexture = assetStore.getCardTexture(card.getPrimaryId()) ?: return
@@ -346,7 +361,7 @@ class UIManager(private val stage: Stage,
         font.draw(batch, otherPlayer.playerLifePoint.toString(), 587.5f, 825f)
         batch.end()
 
-        renderDebugBoard(batch, shaper)
+        renderDebugBoard(batch)
         selectedCard?.let {
             if (it.getCardType() == CardType.TARGET_SPELL) {
                 val angle = 180.0 / Math.PI * Math.atan2(initialClickX.toDouble() - mouseX, mouseY.toDouble() - initialClickY)
@@ -384,13 +399,13 @@ class UIManager(private val stage: Stage,
         renderBoardCardStats(batch, font)
     }
 
-    private fun renderDebugBoard(batch: SpriteBatch, shaper: ShapeRenderer) {
+    private fun renderDebugBoard(batch: SpriteBatch) {
         batch.begin()
         //draw enemy board
-        var initialboardX = INITIAL_BOARD_X
+        var initialboardX = OPPONENT_INITIAL_BOARD_X
         for (x in 0 until MAX_BOARD_SIZE) {
             if (otherPlayer.boardManager.getCardByBoardIndex(x).getCardType() == CardType.INVALID) {
-                batch.draw(emptyCardBoard, initialboardX, 500f)
+                batch.draw(emptyCardBoard, initialboardX, OPPONENT_INITIAL_BOARD_Y)
             }
             initialboardX += BOARD_CARD_WIDTH
         }
@@ -404,7 +419,7 @@ class UIManager(private val stage: Stage,
             val card = player.boardManager.getCardByBoardIndex(x)
             if (card.getCardType() == CardType.INVALID) {
                 card.initCardTexture(emptyCardBoard.texture)
-                card.actor.setPosition(initialboardX, 300f)
+                card.actor.setPosition(initialboardX, INITIAL_BOARD_Y)
                 backgroundG.addActor(card.actor)
             }
             initialboardX += BOARD_CARD_WIDTH

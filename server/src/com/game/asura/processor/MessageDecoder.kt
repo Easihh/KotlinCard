@@ -1,7 +1,9 @@
 package com.game.asura.processor
 
-import com.game.asura.*
+import com.game.asura.InsertableQueue
 import com.game.asura.account.Account
+import com.game.asura.card.CardType
+import com.game.asura.message.data.MonsterCardPlayedData
 import com.game.asura.messagein.*
 import com.game.asura.messaging.MessageType
 import com.game.asura.parsing.CoreMessageParser
@@ -26,8 +28,14 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 //should validate important field here
                 val cardId = cardPlayedData.cardPrimaryId ?: return
                 val secCardId = cardPlayedData.cardSecondaryId ?: return
-                decodedMessage = CardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId,
-                        cardPlayedData.cardTarget, cardPlayedData.boardIndex)
+                val cardType = cardPlayedData.cardType ?: return
+                if (cardType == CardType.MONSTER) {
+                    val boardIndx = cardPlayedData.boardIdx ?: return
+                    decodedMessage = MonsterCardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId, boardIndx)
+                } else {
+                    decodedMessage = CardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId,
+                            cardPlayedData.cardTarget, cardPlayedData.boardIdx, cardType)
+                }
             }
             MessageType.END_TURN -> {
                 val endTurnData = getEndTurnData()

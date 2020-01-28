@@ -70,11 +70,24 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val secondary = data.secondaryCardId ?: return
                 decodedMessage = CardInfoIn(playerName, primaryId, secondary, data.playerHealth, data.playerMaxHealth)
             }
+            MessageType.MONSTER_CARD_PLAYED -> {
+                val data = getMonsterCardPlayedData()
+                val primaryId = data.cardPrimaryId ?: return
+                val secondary = data.cardSecondaryId ?: return
+                val accountName = data.accountName ?: return
+                val attack = data.attack ?: return
+                val health = data.health ?: return
+                val maxHealth = data.maxHealth ?: return
+                val boardIndx = data.boardIndx ?: return
+                val cardCost = data.cardCost ?: return
+                decodedMessage = MonsterCardPlayedIn(primaryId, secondary, accountName, attack, health, maxHealth, boardIndx, cardCost)
+            }
             MessageType.CARD_PLAYED -> {
                 val data = getCardPlayedData()
                 val primaryId = data.cardPrimaryId ?: return
                 val secondary = data.cardSecondaryId ?: return
-                decodedMessage = CardPlayedIn(primaryId, secondary, data.boardIndex)
+                val accountName = data.accountName ?: return
+                decodedMessage = CardPlayedIn(primaryId, secondary, accountName)
             }
             MessageType.START_TURN -> {
                 val data = getStartTurnData()

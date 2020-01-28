@@ -88,7 +88,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     }
 
     private fun setupMessageProcessors() {
-        val messageInProcessor = MessageInProcessor(player, uiManager, cardStore, parentScreen,otherPlayer)
+        val messageInProcessor = MessageInProcessor(player, uiManager, cardStore, parentScreen, otherPlayer)
         val messageOutProcessor = MessageOutProcessor(server::sendMessage)
         messageDispatcher = MessageDispatcher(messageInProcessor, messageOutProcessor)
     }
@@ -142,13 +142,14 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
         shaper.color = (Color.BLUE)
         shaper.use(ShapeRenderer.ShapeType.Line) {
             //Visible GameView
-            shaper.rect(1f, 1f, stage.width-1f, stage.height-2f)
+            shaper.rect(1f, 1f, stage.width - 1f, stage.height - 2f)
         }
-        stage.act()
-        stage.draw()
 
         //foreground
         uiManager.render(batch, font, shaper)
+
+        stage.act()
+        stage.draw()
     }
 
     override fun resize(width: Int, height: Int) {

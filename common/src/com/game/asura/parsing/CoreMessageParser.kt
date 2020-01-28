@@ -68,7 +68,13 @@ abstract class CoreMessageParser {
 
     fun getCardPlayedData(): CardPlayedData {
         return CardPlayedData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId()
-                , coreMsg.getCardTarget(), coreMsg.getBoardPosition())
+                , coreMsg.getCardTarget(), coreMsg.getAccountName(),coreMsg.getCardType(),coreMsg.getBoardPosition())
+    }
+
+    fun getMonsterCardPlayedData(): MonsterCardPlayedData {
+        return MonsterCardPlayedData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getAccountName()
+                , coreMsg.getCardAttack(), coreMsg.getCardHealth(), coreMsg.getMaxCardLife(),
+                coreMsg.getBoardPosition(),coreMsg.getCardCost())
     }
 
     fun getGameRequestData(): GameRequestData {

@@ -70,8 +70,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 }
             }
 
-            is CardPlayedIn -> {
-
+            is MonsterCardPlayedIn -> {
                 val account = accountCache.getAccount(message.accountKey)
                 val accountName = account?.getAccountName()
                 if (accountName == null) {
@@ -83,6 +82,10 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     println("Unable to find match with id:${account.getCurrentMatchId()}.")
                     return
                 }
+                val opponentName = match.getOpponentName(accountName)
+                val opponentPlayer = match.getPlayer(opponentName) ?: return
+                val opponentAccount = accountCache.getAccount(opponentPlayer.accountKey) ?: return
+
                 val player = match.getPlayer(accountName)
                 if (player == null) {
                     println("Unable to find player in match:${match.matchId} with key:$accountName.")
@@ -93,14 +96,17 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     println("Unable to find card with secondaryId:${message.cardSecondaryId} in player:$accountName hand.")
                     return
                 }
-                if (cardInHand.getCardType() == CardType.TARGET_SPELL && message.cardTarget == null) {
-                    val cardName = cardInfoStore.getCardInfo(message.cardPrimaryId)?.name
-                    println("Error, card:$cardName from player:$accountName was played no target.")
+                if (cardInHand !is ServerMinionCard) {
+                    println("Error, card $cardInHand is not a Monster.")
                     return
                 }
-                //validation is finish, can now play card so send back message to all player
-                val cardPlayed = CardPlayedOut(account.getChannelWriter(), accountName, cardInHand, message.cardTarget, message.boardPosition)
+                //validation is finish, can now play card so send back message to both player
+                val cardPlayed = MonsterCardPlayedOut(account.getChannelWriter(), accountName, cardInHand, message.boardPosition)
                 messageQueue.addMessage(cardPlayed)
+
+                val cardPlayedOpp = MonsterCardPlayedOut(opponentAccount.getChannelWriter(), accountName, cardInHand, message.boardPosition)
+                messageQueue.addMessage(cardPlayedOpp)
+
 
                 player.playCard(cardInHand, message.boardPosition)
                 if (cardInHand.getCardType() == CardType.MONSTER) {
@@ -111,7 +117,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     messageQueue.addMessage(phaseChange)
                 }
                 //check for double to merge
-                if (cardInHand is ServerMinionCard && cardInHand.canEvolve()) {
+                if (cardInHand.canEvolve()) {
                     val dupeList = player.boardManager.findDuplicate(cardInHand.getPrimaryId())
                     if (dupeList.size >= MERGE_IF_DUPLICATE_REACH) {
                         val evInfo = cardInfoStore.getCardInfo(cardInHand.evolveId!!) ?: return
@@ -131,40 +137,60 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     }
                 }
 
-                val changedFields: MutableList<ChangedField> = ArrayList()
                 if (cardInHand.getCost() > 0) {
                     println("cardCost:${cardInHand.getCost()},currentMana:${player.currentMana}")
                     val playerInfoOut = PlayerInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, currentMana = player.currentMana, maxMana = player.maxMana, playerHealth = player.playerLifePoint)
                     messageQueue.addMessage(playerInfoOut)
                 }
+            }
 
+            is CardPlayedIn -> {
 
-                val effects = cardInHand.getEffect()
-                //only handle target spell effect for now
-                if (message.cardTarget == null) {
+                val account = accountCache.getAccount(message.accountKey)
+                val accountName = account?.getAccountName()
+                if (accountName == null) {
+                    println("Unable to find accountName in cache with key:${message.accountKey}.")
                     return
                 }
-                val target = match.getCard(message.cardTarget) ?: return
-                if (target !is Minion) {
+                val match = matchFinder.findMatch(account.getCurrentMatchId())
+                if (match == null) {
+                    println("Unable to find match with id:${account.getCurrentMatchId()}.")
                     return
                 }
-                for (effect in effects) {
-                    if (effect == CardEffect.DEAL_DMG) {
-                        target.takeDamage(3)
-                        val healthField = ChangedField(MessageField.CARD_HEALTH, target.getHealth())
-                        changedFields.add(healthField)
-                        val playerInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accountName = accountName, card = target, changedFields = changedFields)
-                        messageQueue.addMessage(playerInfoOut)
-                        continue
-                    }
+                val opponentName = match.getOpponentName(accountName)
+                val opponentPlayer = match.getPlayer(opponentName) ?: return
+                val opponentAccount = accountCache.getAccount(opponentPlayer.accountKey) ?: return
+
+                val player = match.getPlayer(accountName)
+                if (player == null) {
+                    println("Unable to find player in match:${match.matchId} with key:$accountName.")
+                    return
                 }
-                //check target died and process it
-                if (!target.isAlive()) {
-                    match.removeCardFromCache(target)
-                    println("Board size before remove:${player.boardManager.cardsOnBoard()}")
-                    player.boardManager.removeCard(target)
-                    println("Board size after remove:${player.boardManager.cardsOnBoard()}")
-                    //send monster destroy message?
+                val cardInHand = player.handManager.getCardFromHand(message.cardSecondaryId)
+                if (cardInHand == null) {
+                    println("Unable to find card with secondaryId:${message.cardSecondaryId} in player:$accountName hand.")
+                    return
+                }
+                if (cardInHand.getCardType() == CardType.TARGET_SPELL && message.cardTarget == null) {
+                    val cardName = cardInfoStore.getCardInfo(message.cardPrimaryId)?.name
+                    println("Error, card:$cardName from player:$accountName was played no target.")
+                    return
+                }
+                //validation is finish, can now play card so send back message to both player
+                val cardPlayed = CardPlayedOut(account.getChannelWriter(), accountName, cardInHand, message.cardTarget, message.boardPosition)
+                messageQueue.addMessage(cardPlayed)
+
+                val cardPlayedOpp = CardPlayedOut(opponentAccount.getChannelWriter(), accountName, cardInHand, message.cardTarget, message.boardPosition)
+                messageQueue.addMessage(cardPlayedOpp)
+
+
+                player.playCard(cardInHand, message.boardPosition)
+
+                val changedFields: MutableList<ChangedField> = ArrayList()
+                if (cardInHand.getCost() > 0) {
+                    println("cardCost:${cardInHand.getCost()},currentMana:${player.currentMana}")
+                    val playerInfoOut = PlayerInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, currentMana = player.currentMana, maxMana = player.maxMana, playerHealth = player.playerLifePoint)
+                    messageQueue.addMessage(playerInfoOut)
                 }
             }
             is EndTurnIn -> {
@@ -213,11 +239,9 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 val enemyAccount = accountCache.getAccount(enemyPlayer.accountKey) ?: return
                 val bResult = match.processAttack(accountName) ?: return
                 if (bResult.defenderWasDamaged()) {
-                    //temp disable as we don't have 2nd player connected in dev
-                    // val defenderAccount = accountCache.getAccount(bResult.defender.accountKey) ?: return
                     val dPlayer = bResult.defender
-
                     //inform both player of healthPoint change of defender
+
                     val playerInfoOut = PlayerInfoOut(account.getChannelWriter(), dPlayer.playerName,
                             dPlayer.currentMana, dPlayer.maxMana, dPlayer.playerLifePoint)
                     messageQueue.addMessage(playerInfoOut)

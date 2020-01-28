@@ -23,15 +23,14 @@ class MessageInProcessor(private val player: ClientPlayer,
                     val monster = card as MonsterDrawableCard
                     monster.update(msg.getChangedFields())
                 }
-
             }
             is PlayerInfoIn -> {
-                if (msg.playerName.toLowerCase() == player.playerName.toLowerCase()) {
+                if (isOurMessage(msg.playerName)) {
                     player.maxMana = msg.playerMaxMana
                     player.currentMana = msg.playerCurrentMana
                     player.playerLifePoint = msg.playerHealth
                 }
-                if (msg.playerName.toLowerCase() == opponent.playerName.toLowerCase()) {
+                if (!isOurMessage(msg.playerName)) {
                     opponent.maxMana = msg.playerMaxMana
                     opponent.currentMana = msg.playerCurrentMana
                     opponent.playerLifePoint = msg.playerHealth
@@ -53,25 +52,26 @@ class MessageInProcessor(private val player: ClientPlayer,
                 uiManager.addCardToHand(card)
                 cardStore.add(card)
             }
-            is CardPlayedIn -> {
-                //only assume 1 player for now
+            is MonsterCardPlayedIn -> {
+                if (!isOurMessage(msg.accountName)) {
+                    //opponent played card
+                    val card = MinionCard(primaryId = msg.primaryId, secondaryId = msg.secondaryId,
+                            cardCost = msg.cardCost, cardType = CardType.MONSTER, attack = msg.attack,
+                            health = msg.health, maxHealth = msg.maxHealth)
+                    opponent.boardManager.updatePlayerBoard(card, msg.boardIndx)
+                    uiManager.initCardTexture(card)
+                    uiManager.addEnemyMonsterToBoard(card, msg.boardIndx)
+                    cardStore.add(card)
+                    return
+                }
                 val card = player.handManager.getCardFromHand(msg.secondaryId) ?: return
                 println("Removing card:$card from player hand.")
                 player.handManager.removeFromHand(card)
-                //if it was a monster put it in play
-                when (card.getCardType()) {
-                    CardType.MONSTER -> {
-                        if (msg.boardIndex == null) {
-                            println("Error, card is of type:${card.getCardType()} but no board index present.")
-                            return
-                        }
-                        player.boardManager.updatePlayerBoard(card, msg.boardIndex)
-                        uiManager.moveCardToBoard(card, msg.boardIndex)
-                    }
-                    else -> {
-                        uiManager.removeCardfromHand(card)
-                    }
-                }
+                // put it in play
+                player.boardManager.updatePlayerBoard(card, msg.boardIndx)
+                uiManager.addMonsterToBoard(card, msg.boardIndx)
+                cardStore.add(card)
+
             }
             is StartTurnIn -> {
                 uiManager.startTurnTimer()
@@ -99,12 +99,16 @@ class MessageInProcessor(private val player: ClientPlayer,
                 player.boardManager.removeCard(firstMonster)
                 player.boardManager.removeCard(secondMonster)
                 uiManager.initCardTexture(evolved)
-                uiManager.moveCardToBoard(evolved, msg.boardPosition)
+                uiManager.addMonsterToBoard(evolved, msg.boardPosition)
                 player.boardManager.updatePlayerBoard(evolved, msg.boardPosition)
             }
             else -> {
                 println("Unable to process message:$msg missing logic.")
             }
         }
+    }
+
+    private fun isOurMessage(accountName: String): Boolean {
+        return accountName.toLowerCase() == player.playerName.toLowerCase()
     }
 }
