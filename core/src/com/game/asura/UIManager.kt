@@ -57,7 +57,7 @@ class UIManager(private val stage: Stage,
                 selectedCard?.let {
                     if (player.handManager.cardIsInHand(it.getSecondayId())) {
                         if (it.getCardType() != CardType.TARGET_SPELL) {
-                            it.getActor().setPosition(mouseX - (BOARD_CARD_WIDTH / 2), mouseY - (BOARD_CARD_HEIGHT / 2))
+                            it.actor.setPosition(mouseX - (BOARD_CARD_WIDTH / 2), mouseY - (BOARD_CARD_HEIGHT / 2))
                         }
                         if (it.getCardType() == CardType.MONSTER && !player.boardManager.boardIsEmpty()) {
                             updateBoardPosition()
@@ -77,7 +77,7 @@ class UIManager(private val stage: Stage,
         for (i in 0 until MAX_BOARD_SIZE) {
             val card = player.boardManager.getCardByBoardIndex(i)
             if (card.getCardType() != CardType.INVALID) {
-                card.getActor().setPosition(initialX, INITIAL_BOARD_Y)
+                card.actor.setPosition(initialX, INITIAL_BOARD_Y)
             }
             initialX += BOARD_CARD_WIDTH
         }
@@ -130,7 +130,7 @@ class UIManager(private val stage: Stage,
     private fun clearTargetingAction() {
         //allow hero power/card to trigger listener again via stage.hit
         selectedCard?.let {
-            it.getActor().touchable = Touchable.enabled
+            it.actor.touchable = Touchable.enabled
         }
         selectedCard = null
         //reset to normal cursor here
@@ -171,9 +171,9 @@ class UIManager(private val stage: Stage,
         val cardTexture = assetStore.getCardTexture(card.getPrimaryId()) ?: return
         card.transformActor(cardTexture.onBoardTexture)
         //add new actor to stage as it was destroyed
-        stage.addActor(card.getActor())
+        stage.addActor(card.actor)
         val pos = getBoardPosition(boardIndex)
-        card.getActor().setPosition(pos.xPosition, pos.yPosition)
+        card.actor.setPosition(pos.xPosition, pos.yPosition)
 
         val targetListener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
@@ -191,7 +191,7 @@ class UIManager(private val stage: Stage,
             }
 
         }
-        card.getActor().addListener(targetListener)
+        card.actor.addListener(targetListener)
         updateCardPositionInHand()
     }
 
@@ -202,7 +202,7 @@ class UIManager(private val stage: Stage,
 
     fun addCardToHand(card: DrawableCard) {
         initCardTexture(card)
-        val cardImg = card.getActor()
+        val cardImg = card.actor
         cardImg.setScale(1.0f)
         val lsnr = if (card.getCardType() == CardType.TARGET_SPELL) {
             TargetableCardListener(card, initTargetSpellFnc = ::initTargetSpell)
@@ -220,7 +220,7 @@ class UIManager(private val stage: Stage,
         if (indx != null) {
             player.boardManager.updatePlayerBoard(card, indx)
             val pos = getBoardPosition(indx)
-            card.getActor().setPosition(pos.xPosition, pos.yPosition)
+            card.actor.setPosition(pos.xPosition, pos.yPosition)
             cardPlayedOut = CardPlayedOut(card, indx)
         }
         return cardPlayedOut
@@ -301,13 +301,13 @@ class UIManager(private val stage: Stage,
         println("Playing Card of type:$cardType")
 
         //remove card input listener as it was played
-        card.getActor().clearListeners()
+        card.actor.clearListeners()
         selectedCard = null
         queue.addMessage(cardPlayedOut)
     }
 
     fun removeCardfromHand(card: DrawableCard) {
-        card.getActor().remove()
+        card.actor.remove()
         updateCardPositionInHand()
     }
 
@@ -315,7 +315,7 @@ class UIManager(private val stage: Stage,
         var initialX = INITIAL_HAND_X
         for (card in player.handManager.getCardsInHand()) {
             val myCard = card as DrawableCard
-            myCard.getActor().setPosition(initialX, INITIAL_HAND_Y)
+            myCard.actor.setPosition(initialX, INITIAL_HAND_Y)
             initialX += BOARD_CARD_WIDTH
         }
     }
@@ -402,8 +402,8 @@ class UIManager(private val stage: Stage,
             val card = player.boardManager.getCardByBoardIndex(x)
             if (card.getCardType() == CardType.INVALID) {
                 card.initCardTexture(emptyCardBoard.texture)
-                card.getActor().setPosition(initialboardX, 300f)
-                backgroundG.addActor(card.getActor())
+                card.actor.setPosition(initialboardX, 300f)
+                backgroundG.addActor(card.actor)
             }
             initialboardX += BOARD_CARD_WIDTH
         }
@@ -415,12 +415,12 @@ class UIManager(private val stage: Stage,
             val card = player.boardManager.getCardByBoardIndex(x)
             if (card.getCardType() != CardType.INVALID && card is MinionCard) {
                 //draw attack
-                batch.draw(assetStore.getTexture(Asset.ATTACK_ICON_SMALL), card.getActor().x + 6f, card.getActor().y + 6f)
-                font.draw(batch, card.getAttack().toString(), card.getActor().x + 12f, card.getActor().y + 24f)
+                batch.draw(assetStore.getTexture(Asset.ATTACK_ICON_SMALL), card.actor.x + 6f, card.actor.y + 6f)
+                font.draw(batch, card.getAttack().toString(), card.actor.x + 12f, card.actor.y + 24f)
 
                 //draw health
-                batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_SMALL), card.getActor().x + BOARD_CARD_WIDTH - 32, card.getActor().y + 6f)
-                font.draw(batch, card.getHealth().toString(), card.getActor().x + BOARD_CARD_WIDTH - 24f, card.getActor().y + 24f)
+                batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_SMALL), card.actor.x + BOARD_CARD_WIDTH - 32, card.actor.y + 6f)
+                font.draw(batch, card.getHealth().toString(), card.actor.x + BOARD_CARD_WIDTH - 24f, card.actor.y + 24f)
             }
         }
         batch.end()

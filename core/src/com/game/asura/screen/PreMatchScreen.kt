@@ -13,7 +13,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.game.asura.*
 import com.game.asura.messagein.MatchStartIn
@@ -39,6 +42,8 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
     private lateinit var font: BitmapFont
     private val shaper: ShapeRenderer = ShapeRenderer()
     private var canProcessMessage: Boolean = true
+    private val skin = Skin(Gdx.files.internal("core/assets/uiskin.json"))
+    private val findingMatchDlg = Dialog("New Game..", skin)
 
     init {
         setupStage()
@@ -86,12 +91,25 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
                 println("Requesting PlayGame.")
                 val playRequest = PlayGameRequestOut()
                 messageQueue.addMessage(playRequest)
+                createWaitingForGameScreen()
                 return false
             }
         }
         playBtn.addListener(listener)
         stage.addActor(playBtn)
     }
+
+    private fun createWaitingForGameScreen() {
+        findingMatchDlg.setPosition(Gdx.graphics.width / 4f, Gdx.graphics.height / 2f)
+        findingMatchDlg.setSize(VIRTUAL_WINDOW_WIDTH/2f, 256f)
+        val lbl = Label.LabelStyle(font, Color.WHITE)
+        findingMatchDlg.text("WAITING FOR PLAYER...\n", lbl)
+
+        findingMatchDlg.isMovable = false
+        findingMatchDlg.isModal = true
+        stage.addActor(findingMatchDlg)
+    }
+
 
     private fun setupCollection() {
         val collectButton = Texture(Asset.MENU_BUTTON.path)
@@ -107,6 +125,7 @@ class PreMatchScreen(private val parentScreen: KtxGame<Screen>,
 
     private fun toMatchScreen(matchStartIn: MatchStartIn) {
         canProcessMessage = false
+        findingMatchDlg.remove()
         parentScreen.addScreen(MatchScreen(parentScreen, messageQueue, server, matchStartIn))
         parentScreen.setScreen<MatchScreen>()
     }

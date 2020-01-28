@@ -16,20 +16,16 @@ class MinionCard(primaryId: Int,
                  health: Int,
                  maxHealth: Int) : MonsterDrawableCard(primaryId, secondaryId, cardCost, cardType, attack, health, maxHealth) {
 
-    private lateinit var currentActor: Actor
+
 
     override fun initCardTexture(texture: Texture) {
-        currentActor = HandCard(texture, secondaryId)
-    }
-
-    override fun getActor(): Actor {
-        return currentActor
+        actor = HandCard(texture, secondaryId)
     }
 
     override fun transformActor(texture: Texture) {
         ///destroy current actor
-        currentActor.remove()
-        currentActor = BoardCard(texture, getSecondayId())
+        actor.remove()
+        actor = BoardCard(texture, getSecondayId())
     }
 
     override fun getEffect(): List<CardEffect> {

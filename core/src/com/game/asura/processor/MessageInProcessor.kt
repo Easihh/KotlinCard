@@ -93,8 +93,8 @@ class MessageInProcessor(private val player: ClientPlayer,
                 val evolved = MinionCard(msg.primaryCardId, msg.secondaryCardId, msg.cardCost, msg.cardType, msg.attack, msg.health, msg.maxHealth)
                 val firstMonster = cardStore.getCard(msg.firstMonsterId) ?: return
                 val secondMonster = cardStore.getCard(msg.secondMonsterId) ?: return
-                firstMonster.getActor().remove()
-                secondMonster.getActor().remove()
+                firstMonster.actor.remove()
+                secondMonster.actor.remove()
                 player.boardManager.removeCard(firstMonster)
                 player.boardManager.removeCard(secondMonster)
                 uiManager.initCardTexture(evolved)

@@ -1,7 +1,6 @@
 package com.game.asura
 
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.game.asura.card.CardEffect
 import com.game.asura.card.CardType
 import kotlin.random.Random
@@ -14,21 +13,15 @@ class SpellCard(primaryId: Int,
                 cardType: CardType) : DrawableCard(primaryId, secondaryId, cardCost, cardType) {
 
 
-    private lateinit var currentActor: Actor
-
-
     override fun initCardTexture(texture: Texture) {
-        currentActor = HandCard(texture, secondaryId)
+        actor = HandCard(texture, secondaryId)
     }
 
-    override fun getActor(): Actor {
-        return currentActor
-    }
 
     override fun transformActor(texture: Texture) {
         ///destroy current actor
-        currentActor.remove()
-        currentActor = BoardCard(texture, getSecondayId())
+        actor.remove()
+        actor = BoardCard(texture, getSecondayId())
     }
 
     override fun getEffect(): List<CardEffect> {

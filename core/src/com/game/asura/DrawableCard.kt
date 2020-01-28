@@ -11,7 +11,7 @@ abstract class DrawableCard(primaryId: Int,
                             cardCost: Int,
                             cardType: CardType) : BaseCard(primaryId, secondaryId, cardCost, cardType) {
 
-    abstract fun getActor(): Actor
+    lateinit var actor: Actor
 
     abstract fun transformActor(texture: Texture)
 

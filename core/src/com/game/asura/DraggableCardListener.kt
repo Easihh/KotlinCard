@@ -20,7 +20,7 @@ class DraggableCardListener(private val card: DrawableCard,
         //since it's possible to cancel card moving but still hold drag, we don't want to keep
         //moving the actor since the selection is gone
         if (hasCardSelectFnc()) {
-            card.getActor().moveBy(x - card.getActor().width / 2, y - card.getActor().height / 2)
+            card.actor.moveBy(x - card.actor.width / 2, y - card.actor.height / 2)
         }
     }
 }

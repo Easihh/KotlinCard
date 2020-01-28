@@ -12,7 +12,7 @@ class TargetableCardListener(private val card: DrawableCard,
         println("Selected Card:$card")
         if (button == Input.Buttons.LEFT) {
             //so we don't try and target our own card
-            card.getActor().touchable = Touchable.disabled
+            card.actor.touchable = Touchable.disabled
             initTargetSpellFnc(card, Position(event.stageX, event.stageY))
         }
         return true
