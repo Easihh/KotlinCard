@@ -42,7 +42,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 val player = ServerPlayer(accountName, message.accountKey, cardInfoStore)
                 GlobalScope.launch(processorContext) {
                     val match = matchFinder.addPlayer(player)
-                    println("${Thread.currentThread().name} Match found for player:${player.playerName}")
+                    println("Match found for player:${player.playerName}")
                     account.setMatch(match)
                     player.initializeDeck()
                     val opponentName = match.getOpponentName(accountName)
@@ -206,20 +206,25 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     println("Unable to find accountName in cache with key:${message.accountKey}.")
                     return
                 }
-                val match = matchFinder.findMatch(account.getCurrentMatchId()) ?: return
 
+                val match = matchFinder.findMatch(account.getCurrentMatchId()) ?: return
+                val enemyName = match.getOpponentName(account.getAccountName())
+                val enemyPlayer = match.getPlayer(enemyName) ?: return
+                val enemyAccount = accountCache.getAccount(enemyPlayer.accountKey) ?: return
                 val bResult = match.processAttack(accountName) ?: return
                 if (bResult.defenderWasDamaged()) {
                     //temp disable as we don't have 2nd player connected in dev
                     // val defenderAccount = accountCache.getAccount(bResult.defender.accountKey) ?: return
                     val dPlayer = bResult.defender
-                    /*val playerInfoOut = PlayerInfoOut(defenderAccount.getChannelWriter(), dPlayer.playerName,
-                            dPlayer.currentMana, dPlayer.maxMana, dPlayer.playerLifePoint)
-                    messageQueue.addMessage(playerInfoOut)*/
 
+                    //inform both player of healthPoint change of defender
                     val playerInfoOut = PlayerInfoOut(account.getChannelWriter(), dPlayer.playerName,
                             dPlayer.currentMana, dPlayer.maxMana, dPlayer.playerLifePoint)
                     messageQueue.addMessage(playerInfoOut)
+
+                    val enemyInfoOut = PlayerInfoOut(enemyAccount.getChannelWriter(), dPlayer.playerName,
+                            dPlayer.currentMana, dPlayer.maxMana, dPlayer.playerLifePoint)
+                    messageQueue.addMessage(enemyInfoOut)
 
                     match.setPlayerNextPhase(accountName, Phase.POST_ATTACK)
                     val phaseOut = PhaseChangeOut(account.getChannelWriter(), Phase.POST_ATTACK)
