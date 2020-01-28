@@ -8,11 +8,10 @@ class Match(private val player1: ServerPlayer,
             private val player2: ServerPlayer,
             val matchId: Int = Random.nextInt()) {
 
-    private var currentPlayerTurn = ""
+    private var currentPlayerTurn = player1
     private val playerMap: MutableMap<String, ServerPlayer> = HashMap()
 
     init {
-        currentPlayerTurn = player1.playerName
         playerMap[player1.playerName] = player1
         playerMap[player2.playerName] = player2
     }
@@ -22,6 +21,9 @@ class Match(private val player1: ServerPlayer,
     //keep track of card drawn/added for whole match to be able to search by card secondary id instantly
     private val matchCardCache: MutableMap<Int, BaseCard> = HashMap()
 
+    fun getCurrentPlayerTurn(): ServerPlayer {
+        return currentPlayerTurn
+    }
 
     fun getPlayer(key: String): ServerPlayer? {
         return playerMap[key]
@@ -31,9 +33,6 @@ class Match(private val player1: ServerPlayer,
         return matchTurn
     }
 
-    fun increaseMatchTurn() {
-        matchTurn++
-    }
 
     fun addCardToCache(card: BaseCard) {
         matchCardCache[card.getSecondayId()] = card
@@ -81,6 +80,16 @@ class Match(private val player1: ServerPlayer,
             return
         }
         player2.currentPhase = nextPhase
+    }
+
+    fun endTurn() {
+        matchTurn++
+        if (currentPlayerTurn.playerName == player1.playerName) {
+            currentPlayerTurn = player2
+            player2.currentPhase = Phase.MAIN
+            return
+        }
+        currentPlayerTurn = player1
     }
 
 }

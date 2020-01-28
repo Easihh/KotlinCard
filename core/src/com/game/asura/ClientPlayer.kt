@@ -10,4 +10,5 @@ class ClientPlayer(val playerName: String) {
     var currentMana: Int = 0
     var maxMana: Int = 10
     var currentPhase: Phase = Phase.MAIN
+    var myTurn = false
 }

@@ -65,20 +65,21 @@ class MessageInProcessor(private val player: ClientPlayer,
                             println("Error, card is of type:${card.getCardType()} but no board index present.")
                             return
                         }
-                        val myCard = card as DrawableCard
-                        player.boardManager.updatePlayerBoard(myCard, msg.boardIndex)
-                        uiManager.moveCardToBoard(myCard, msg.boardIndex)
+                        player.boardManager.updatePlayerBoard(card, msg.boardIndex)
+                        uiManager.moveCardToBoard(card, msg.boardIndex)
                     }
                     else -> {
-                        uiManager.removeCardfromHand(card as DrawableCard)
+                        uiManager.removeCardfromHand(card)
                     }
                 }
             }
             is StartTurnIn -> {
                 uiManager.startTurnTimer()
+                player.myTurn = true
             }
             is EndTurnIn -> {
                 println("End Turn Received from server.")
+                player.myTurn = false
                 //cancel all pending action etc here
             }
             is PhaseChangeIn -> {

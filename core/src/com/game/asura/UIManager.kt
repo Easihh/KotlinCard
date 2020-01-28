@@ -89,7 +89,6 @@ class UIManager(private val stage: Stage,
         endTurn.setPosition(VIRTUAL_WINDOW_WIDTH - 200f, 150f)
         val listener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                println("Requesting ${player.currentPhase.name}")
                 val msg: Message = when (player.currentPhase) {
                     Phase.POST_ATTACK -> {
                         EndTurnOut()
@@ -320,7 +319,7 @@ class UIManager(private val stage: Stage,
         }
     }
 
-    fun getPhaseStartBtnText(): String {
+    private fun getPhaseStartBtnText(): String {
         if (player.currentPhase == Phase.ATTACK) {
             return "ATTACK"
         }
@@ -329,8 +328,11 @@ class UIManager(private val stage: Stage,
 
     fun render(batch: SpriteBatch, font: BitmapFont, shaper: ShapeRenderer) {
         batch.begin()
-        font.draw(batch, getPhaseStartBtnText(), 835f, 195f)
-
+        if (player.myTurn) {
+            font.draw(batch, getPhaseStartBtnText(), 835f, 195f)
+        } else {
+            font.draw(batch, "Enemy Turn", 835f, 195f)
+        }
         font.draw(batch, "FPS: ${Gdx.graphics.framesPerSecond}", 50f, 950f)
         font.draw(batch, "Player: ${player.playerName}", 50f, 200f)
         font.draw(batch, "Player: ${otherPlayer.playerName}", 50f, 925f)
