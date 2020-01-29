@@ -96,9 +96,16 @@ class MessageInProcessor(private val player: ClientPlayer,
                 val secondMonster = cardStore.getCard(msg.secondMonsterId) ?: return
                 firstMonster.actor.remove()
                 secondMonster.actor.remove()
+                uiManager.initCardTexture(evolved)
+                if (!isOurMessage(msg.accountName)) {
+                    uiManager.addEnemyMonsterToBoard(evolved, msg.boardPosition)
+                    opponent.boardManager.removeCard(firstMonster)
+                    opponent.boardManager.removeCard(secondMonster)
+                    opponent.boardManager.updatePlayerBoard(evolved, msg.boardPosition)
+                    return
+                }
                 player.boardManager.removeCard(firstMonster)
                 player.boardManager.removeCard(secondMonster)
-                uiManager.initCardTexture(evolved)
                 uiManager.addMonsterToBoard(evolved, msg.boardPosition)
                 player.boardManager.updatePlayerBoard(evolved, msg.boardPosition)
             }

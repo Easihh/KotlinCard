@@ -13,6 +13,7 @@ class MonsterEvolveIn(
         val cardType: CardType,
         val attack:Int,
         val health:Int,
-        val maxHealth:Int) : DecodedMessage {
+        val maxHealth:Int,
+        val accountName:String) : DecodedMessage {
 
 }

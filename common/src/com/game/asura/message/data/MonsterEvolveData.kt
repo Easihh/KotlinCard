@@ -11,4 +11,5 @@ class MonsterEvolveData(val primaryCardId: Int?,
                         val boardPosition: Int?,
                         val attack:Int?,
                         val health:Int?,
-                        val maxHealth:Int?)
+                        val maxHealth:Int?,
+                        val accountName:String?)

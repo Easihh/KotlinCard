@@ -132,8 +132,12 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                         val evolvePos = dupeList.stream().filter { c -> c.dupeCard.getSecondayId() != cardInHand.getSecondayId() }.findFirst().get().boardIdx
                         val minionEvolved = MonsterEvolveOut(channelWriter = account.getChannelWriter(),
                                 card = evolved, boardPosition = evolvePos, firstMonsterId = dupeList[0].dupeCard.getSecondayId(),
-                                secondMonsterId = dupeList[1].dupeCard.getSecondayId())
+                                secondMonsterId = dupeList[1].dupeCard.getSecondayId(), accountName = accountName)
                         messageQueue.addMessage(minionEvolved)
+                        val minionEvolvedOpp = MonsterEvolveOut(channelWriter = opponentAccount.getChannelWriter(),
+                                card = evolved, boardPosition = evolvePos, firstMonsterId = dupeList[0].dupeCard.getSecondayId(),
+                                secondMonsterId = dupeList[1].dupeCard.getSecondayId(), accountName = accountName)
+                        messageQueue.addMessage(minionEvolvedOpp)
                     }
                 }
 

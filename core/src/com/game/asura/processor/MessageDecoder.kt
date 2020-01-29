@@ -109,8 +109,9 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val attack = data.attack ?: return
                 val health = data.health ?: return
                 val maxHealth = data.maxHealth ?: return
+                val accountName = data.accountName ?: return
                 decodedMessage = MonsterEvolveIn(primaryId, secondaryId, firstMonsterId, secondMonsterId,
-                        boardIndx, cardCost, cardType, attack, health, maxHealth)
+                        boardIndx, cardCost, cardType, attack, health, maxHealth, accountName)
             }
             MessageType.PHASE_CHANGE -> {
                 val data = getPhaseEndData()
