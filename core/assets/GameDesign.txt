@@ -1,4 +1,5 @@
 -Based on evolve
+-Force attack when possible or?
 -no action possible on enemy turn
 - allow place card at any position?
 - 4 color pixel art; white,black,dark gray,light gray
@@ -14,6 +15,6 @@
 -max of same card of 2/3/4 per 15 card deck; excluding previous rule
 -restrict to 10? soulstone max; increase by 1 each turn starting at 0?
 -Minion HP does not reset at end of turn
-Win condition: Opponent HP reaches 0,match turn reach 100
+Win condition: Opponent HP reaches 0,match turn reach 75
 on player turn:draw card, play 1 or more card, use card ability & attack.
 -status alignment? confuse/sleep etc removed by card/evolve or coin flip at start of turn?

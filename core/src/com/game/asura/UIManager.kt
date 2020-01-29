@@ -228,7 +228,7 @@ class UIManager(private val stage: Stage,
         foregroundG.addActor(cardImg)
     }
 
-    private fun playMonsterCard(card: DrawableCard, position: Position): CardPlayedOut? {
+    private fun playMonsterCard(card: MonsterDrawableCard, position: Position): CardPlayedOut? {
         var cardPlayedOut: CardPlayedOut? = null
         val indx = getClosestBoardIndex(position.xPosition, position.yPosition)
         if (indx != null) {
@@ -296,7 +296,7 @@ class UIManager(private val stage: Stage,
         }
         when (cardType) {
             CardType.MONSTER -> {
-                cardPlayedOut = playMonsterCard(card, position)
+                cardPlayedOut = playMonsterCard(card as MonsterDrawableCard , position)
             }
             CardType.SPELL -> {
                 cardPlayedOut = playNonTargetSpell(card)

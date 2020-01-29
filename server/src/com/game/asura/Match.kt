@@ -1,6 +1,6 @@
 package com.game.asura
 
-import com.game.asura.card.BaseCard
+import com.game.asura.card.Card
 import com.game.asura.card.CardType
 import kotlin.random.Random
 
@@ -19,7 +19,7 @@ class Match(private val player1: ServerPlayer,
     private var matchTurn = 1
 
     //keep track of card drawn/added for whole match to be able to search by card secondary id instantly
-    private val matchCardCache: MutableMap<Int, BaseCard> = HashMap()
+    private val matchCardCache: MutableMap<Int, Card> = HashMap()
 
     fun getCurrentPlayerTurn(): ServerPlayer {
         return currentPlayerTurn
@@ -34,15 +34,15 @@ class Match(private val player1: ServerPlayer,
     }
 
 
-    fun addCardToCache(card: BaseCard) {
+    fun addCardToCache(card: Card) {
         matchCardCache[card.getSecondayId()] = card
     }
 
-    fun removeCardFromCache(card: BaseCard) {
+    fun removeCardFromCache(card: Card) {
         matchCardCache.remove(card.getSecondayId())
     }
 
-    fun getCard(secondaryId: Int): BaseCard? {
+    fun getCard(secondaryId: Int): Card? {
         return matchCardCache[secondaryId]
     }
 
@@ -86,10 +86,19 @@ class Match(private val player1: ServerPlayer,
         matchTurn++
         if (currentPlayerTurn.playerName == player1.playerName) {
             currentPlayerTurn = player2
-            player2.currentPhase = Phase.MAIN
+            calculatePlayerPhase(player2)
             return
         }
         currentPlayerTurn = player1
+        calculatePlayerPhase(player1)
+    }
+
+    private fun calculatePlayerPhase(serverPlayer: ServerPlayer) {
+        if (serverPlayer.boardManager.boardIsEmpty()) {
+            serverPlayer.currentPhase = Phase.MAIN
+            return
+        }
+        serverPlayer.currentPhase = Phase.ATTACK
     }
 
 }

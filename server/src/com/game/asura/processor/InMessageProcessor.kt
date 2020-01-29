@@ -3,9 +3,7 @@ package com.game.asura.processor
 import com.game.asura.*
 import com.game.asura.account.CachedAccount
 import com.game.asura.account.PlayerAccount
-import com.game.asura.card.CardEffect
 import com.game.asura.card.CardType
-import com.game.asura.card.Minion
 import com.game.asura.messagein.*
 import com.game.asura.messageout.*
 import com.game.asura.messaging.MessageField
@@ -44,6 +42,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     val match = matchFinder.addPlayer(player)
                     println("Match found for player:${player.playerName}")
                     account.setMatch(match)
+                    account.getPlayer()
                     player.initializeDeck()
                     val opponentName = match.getOpponentName(accountName)
                     val matchInfo = MatchStartOut(account.getChannelWriter(), accountName, opponentName)
@@ -110,11 +109,11 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
 
                 player.playCard(cardInHand, message.boardPosition)
                 if (cardInHand.getCardType() == CardType.MONSTER) {
-                    if (player.currentPhase == Phase.MAIN) {
+                    if (player.currentPhase == Phase.MAIN && !cardInHand.isSummonSick()) {
                         player.currentPhase = Phase.ATTACK
+                        val phaseChange = PhaseChangeOut(account.getChannelWriter(), Phase.ATTACK)
+                        messageQueue.addMessage(phaseChange)
                     }
-                    val phaseChange = PhaseChangeOut(account.getChannelWriter(), Phase.ATTACK)
-                    messageQueue.addMessage(phaseChange)
                 }
                 //check for double to merge
                 if (cardInHand.canEvolve()) {
@@ -200,10 +199,6 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
             is EndTurnIn -> {
                 val account = accountCache.getAccount(message.accountKey) ?: return
                 val match = matchFinder.findMatch(account.getCurrentMatchId()) ?: return
-                val accountName = account.getAccountName()
-                val opponentName = match.getOpponentName(accountName)
-                val opponent = match.getPlayer(opponentName) ?: return
-                val opponentAccount = accountCache.getAccount(opponent.accountKey) ?: return
                 if (message.matchTurn != null) {
                     //server is ending the turn due to time being over limit
 
@@ -214,19 +209,51 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                         return
                     }
                     //force time out as we did not receive an end turn message in time
+                    val currentPlayer = match.getCurrentPlayerTurn()
+                    val currentPlayerAccount = accountCache.getAccount(currentPlayer.accountKey) ?: return
                     match.endTurn()
-                    val endTurnOut = EndTurnOut(account.getChannelWriter())
+                    //next player
+                    val nextPlayer = match.getCurrentPlayerTurn()
+                    val nextPlayerAccount = accountCache.getAccount(nextPlayer.accountKey) ?: return
+                    val endTurnOut = EndTurnOut(currentPlayerAccount.getChannelWriter())
                     messageQueue.addMessage(endTurnOut)
-                    val turnStart = StartTurnOut(opponentAccount.getChannelWriter(), opponent.currentPhase)
+                    val turnStart = StartTurnOut(nextPlayerAccount.getChannelWriter(), nextPlayer.currentPhase)
                     messageQueue.addMessage(turnStart)
+
+                    val updates = nextPlayerAccount.getPlayer()?.boardManager?.updateSummonIllness() ?: return
+
+                    if (updates.isNotEmpty()) {
+                        val changedField: List<ChangedField> = listOf(ChangedField(MessageField.SUMMON_ILLNESS, 'F'))
+                        for (minion in updates) {
+                            val cardInfo = CardInfoOut(nextPlayerAccount.getChannelWriter(), nextPlayerAccount.getAccountName(), minion, changedField)
+                            messageQueue.addMessage(cardInfo)
+                        }
+                    }
                     return
                 }
                 //player sent end of turn
+
+                val currentPlayer = match.getCurrentPlayerTurn()
+                val currentPlayerAccount = accountCache.getAccount(currentPlayer.accountKey) ?: return
                 match.endTurn()
-                val endTurnOut = EndTurnOut(account.getChannelWriter())
+                val endTurnOut = EndTurnOut(currentPlayerAccount.getChannelWriter())
                 messageQueue.addMessage(endTurnOut)
-                val turnStart = StartTurnOut(opponentAccount.getChannelWriter(), opponent.currentPhase)
+
+                //next player
+                val nextPlayer = match.getCurrentPlayerTurn()
+                val nextPlayerAccount = accountCache.getAccount(nextPlayer.accountKey) ?: return
+
+                val turnStart = StartTurnOut(nextPlayerAccount.getChannelWriter(), nextPlayer.currentPhase)
                 messageQueue.addMessage(turnStart)
+                val updates = nextPlayerAccount.getPlayer()?.boardManager?.updateSummonIllness() ?: return
+
+                if (updates.isNotEmpty()) {
+                    val changedField: List<ChangedField> = listOf(ChangedField(MessageField.SUMMON_ILLNESS, 'F'))
+                    for (minion in updates) {
+                        val cardInfo = CardInfoOut(nextPlayerAccount.getChannelWriter(), nextPlayerAccount.getAccountName(), minion, changedField)
+                        messageQueue.addMessage(cardInfo)
+                    }
+                }
             }
 
             is AttackIn -> {

@@ -8,13 +8,15 @@ class CardInfoIn(val playerName: String,
                  val primaryCardId: Int,
                  val secondaryCardId: Int,
                  playerHealth: Int?,
-                 playerMaxHealth: Int?) : DecodedMessage {
+                 playerMaxHealth: Int?,
+                 summonIllness: Boolean?) : DecodedMessage {
     //List of fields we received
     private val infoFieldsLst: MutableList<ChangedField> = ArrayList()
 
     init {
         addField(MessageField.CARD_HEALTH, playerHealth)
         addField(MessageField.CARD_MAX_HEALTH, playerMaxHealth)
+        addField(MessageField.SUMMON_ILLNESS, summonIllness)
     }
 
     private fun addField(field: MessageField, value: Any?) {

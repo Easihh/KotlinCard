@@ -3,7 +3,7 @@ package com.game.asura
 class ClientPlayer(val playerName: String) {
 
 
-    val boardManager = BoardManager<DrawableCard>(create = { INVALID_SPELL_CARD })
+    val boardManager = BoardManager<MonsterDrawableCard>(create = { INVALID_MINION_CARD })
     val handManager = HandManager<DrawableCard>()
 
     var playerLifePoint: Int = 30

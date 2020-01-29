@@ -14,10 +14,12 @@ abstract class MonsterDrawableCard(primaryId: Int,
                                    private var maxHealth: Int) : DrawableCard(primaryId, secondaryId, cardCost, cardType), Minion {
 
     private val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
+    protected var summonSickness = true
 
     init {
 
         updateFncMap[MessageField.CARD_HEALTH] = { health = it.value as Int }
+        updateFncMap[MessageField.SUMMON_ILLNESS] = { summonSickness = it.value as Boolean }
         updateFncMap[MessageField.CARD_MAX_HEALTH] = { maxHealth = it.value as Int }
     }
 

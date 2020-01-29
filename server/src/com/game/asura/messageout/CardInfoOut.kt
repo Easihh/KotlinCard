@@ -10,7 +10,7 @@ import com.game.asura.messaging.MessageType
 
 class CardInfoOut(channelWriter: ChannelMessageWriter,
                   private val accountName: String,
-                  private val card: BaseCard,
+                  private val card: Minion,
                   private val changedFields: List<ChangedField>) : ServerOutMessage(channelWriter) {
 
     override fun build(messageBuilder: MessageBuilder) {

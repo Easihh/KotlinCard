@@ -82,7 +82,8 @@ abstract class CoreMessageParser {
     }
 
     fun getCardInfoData(): CardInfoData {
-        return CardInfoData(coreMsg.getAccountName(), coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getCardHealth(), coreMsg.getMaxCardLife())
+        return CardInfoData(coreMsg.getAccountName(), coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(),
+                coreMsg.getCardHealth(), coreMsg.getMaxCardLife(),coreMsg.getSummonIllness())
     }
 
     fun getMatchStartData(): MatchStartData {
@@ -99,7 +100,7 @@ abstract class CoreMessageParser {
     }
 
     fun getStartTurnData(): StartTurnData {
-        return StartTurnData()
+        return StartTurnData(coreMsg.getNextPhase())
     }
 
     fun getEndTurnData(): EndTurnData {

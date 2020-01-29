@@ -1,6 +1,7 @@
 package com.game.asura.account
 
 import com.game.asura.Match
+import com.game.asura.ServerPlayer
 import com.game.asura.parsing.Tokenizer
 
 class PlayerAccount(val clientConn: ClientChannelInfo,
@@ -8,6 +9,11 @@ class PlayerAccount(val clientConn: ClientChannelInfo,
                     private val accountKey: String,
                     private val accountName: String,
                     private var currentMatch: Match? = null) : Account {
+
+    override fun getPlayer(): ServerPlayer? {
+        return currentMatch?.getPlayer(accountName)
+    }
+
     override fun setMatch(match: Match) {
         this.currentMatch = match
     }

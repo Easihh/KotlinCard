@@ -65,6 +65,10 @@ class MessageInProcessor(private val player: ClientPlayer,
                     return
                 }
                 val card = player.handManager.getCardFromHand(msg.secondaryId) ?: return
+                if (card !is MinionCard) {
+                    println("Error, card $card should be a minion.")
+                    return
+                }
                 println("Removing card:$card from player hand.")
                 player.handManager.removeFromHand(card)
                 // put it in play
@@ -76,6 +80,7 @@ class MessageInProcessor(private val player: ClientPlayer,
             is StartTurnIn -> {
                 uiManager.startTurnTimer()
                 player.myTurn = true
+                player.currentPhase = msg.phase
             }
             is EndTurnIn -> {
                 println("End Turn Received from server.")
@@ -94,6 +99,10 @@ class MessageInProcessor(private val player: ClientPlayer,
                 val evolved = MinionCard(msg.primaryCardId, msg.secondaryCardId, msg.cardCost, msg.cardType, msg.attack, msg.health, msg.maxHealth)
                 val firstMonster = cardStore.getCard(msg.firstMonsterId) ?: return
                 val secondMonster = cardStore.getCard(msg.secondMonsterId) ?: return
+                if (firstMonster !is MinionCard || secondMonster !is MinionCard) {
+                    println("Error, card $firstMonster and card $secondMonster should be minions.")
+                    return
+                }
                 firstMonster.actor.remove()
                 secondMonster.actor.remove()
                 uiManager.initCardTexture(evolved)

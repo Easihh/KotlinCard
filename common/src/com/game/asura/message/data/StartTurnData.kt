@@ -1,3 +1,5 @@
 package com.game.asura.message.data
 
- class StartTurnData
+import com.game.asura.Phase
+
+class StartTurnData(val nextPhase: Phase?)

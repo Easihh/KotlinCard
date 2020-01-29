@@ -1,7 +1,8 @@
 package com.game.asura
 
-import com.game.asura.card.BaseCard
+import com.game.asura.card.Card
 import com.game.asura.card.CardType
+import com.game.asura.card.Minion
 import java.util.*
 
 class ServerPlayer(val playerName: String,
@@ -9,15 +10,16 @@ class ServerPlayer(val playerName: String,
                    private val cardInfoStore: CardInfoStore) {
 
 
-    private val deck: Stack<BaseCard> = Stack()
-    val handManager = HandManager<BaseCard>()
-    val boardManager = BoardManager<BaseCard>(create = { INVALID_MINION_CARD })
+    private val deck: Stack<Card> = Stack()
+    val handManager = HandManager<Card>()
+    val boardManager = BoardManager<Minion>(create = { INVALID_MINION_CARD })
     var playerLifePoint: Int = 30
     var currentMana: Int = 0
     var maxMana: Int = 10
     var currentPhase: Phase = Phase.MAIN
 
-    fun draw(): BaseCard? {
+
+    fun draw(): Card? {
         if (deck.isNotEmpty()) {
             val card = deck.pop()
             handManager.addToPlayerHand(card)
@@ -44,10 +46,10 @@ class ServerPlayer(val playerName: String,
                 cardType = CardType.TARGET_SPELL))
     }
 
-    fun playCard(card: BaseCard, boardPosition: Int?) {
+    fun playCard(card: Card, boardPosition: Int?) {
         handManager.removeFromHand(card)
         currentMana -= card.getCost()
-        if (card.getCardType() == CardType.MONSTER) {
+        if (card is Minion) {
             if (boardPosition == null) {
                 return
             }

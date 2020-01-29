@@ -68,7 +68,7 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val playerName = data.playerName ?: return
                 val primaryId = data.primaryCardId ?: return
                 val secondary = data.secondaryCardId ?: return
-                decodedMessage = CardInfoIn(playerName, primaryId, secondary, data.playerHealth, data.playerMaxHealth)
+                decodedMessage = CardInfoIn(playerName, primaryId, secondary, data.playerHealth, data.playerMaxHealth, data.summonIllness)
             }
             MessageType.MONSTER_CARD_PLAYED -> {
                 val data = getMonsterCardPlayedData()
@@ -91,7 +91,8 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
             }
             MessageType.START_TURN -> {
                 val data = getStartTurnData()
-                decodedMessage = StartTurnIn()
+                val phase = data.nextPhase ?: return
+                decodedMessage = StartTurnIn(phase)
             }
             MessageType.END_TURN -> {
                 val data = getEndTurnData()

@@ -1,6 +1,6 @@
 package com.game.asura.card
 
-interface Minion {
+interface Minion : Card {
 
     fun getAttack(): Int
 
@@ -11,4 +11,8 @@ interface Minion {
     fun takeDamage(dmg: Int)
 
     fun isAlive(): Boolean
+
+    fun isSummonSick(): Boolean
+
+    fun removeSummonSickness()
 }

@@ -58,6 +58,12 @@ class CoreMessage {
         return typeVal.value as Int
     }
 
+    fun getSummonIllness(): Boolean? {
+        val typeVal = fieldMap[MessageField.SUMMON_ILLNESS] ?: return null
+        val charValue = typeVal.value as Char
+        return charValue == 'T'
+    }
+
     fun getMaxPlayerMana(): Int? {
         val typeVal = fieldMap[MessageField.PLAYER_MAX_MANA] ?: return null
         return typeVal.value as Int

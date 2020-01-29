@@ -1,9 +1,8 @@
 package com.game.asura
 
-import com.game.asura.card.BaseCard
 import com.game.asura.card.Card
 
-class HandManager<T:BaseCard> {
+class HandManager<T:Card> {
 
     private val cardsInHand: MutableList<T> = ArrayList()
 

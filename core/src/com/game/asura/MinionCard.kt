@@ -1,7 +1,6 @@
 package com.game.asura
 
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.game.asura.card.CardEffect
 import com.game.asura.card.CardType
 import kotlin.random.Random
@@ -17,6 +16,14 @@ class MinionCard(primaryId: Int,
                  maxHealth: Int) : MonsterDrawableCard(primaryId, secondaryId, cardCost, cardType, attack, health, maxHealth) {
 
 
+
+    override fun isSummonSick(): Boolean {
+        return summonSickness
+    }
+
+    override fun removeSummonSickness() {
+        summonSickness = false
+    }
 
     override fun initCardTexture(texture: Texture) {
         actor = HandCard(texture, secondaryId)
