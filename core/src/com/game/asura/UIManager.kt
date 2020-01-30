@@ -20,10 +20,9 @@ import com.game.asura.messaging.Message
 class UIManager(private val stage: Stage,
                 private val queue: InsertableQueue,
                 private val player: ClientPlayer,
-                private val otherPlayer: ClientPlayer) {
+                private val otherPlayer: ClientPlayer,
+                private val assetStore: AssetStore) {
 
-
-    private val assetStore = AssetStore()
     private var mouseX: Float = 0f
     private var mouseY: Float = 0f
     private var initialClickX: Float = 0f
@@ -209,13 +208,7 @@ class UIManager(private val stage: Stage,
         updateCardPositionInHand()
     }
 
-    fun initCardTexture(card: DrawableCard) {
-        val cardTexture = assetStore.getCardTexture(card.getPrimaryId()) ?: return
-        card.initCardTexture(cardTexture.inHandTexture)
-    }
-
     fun addCardToHand(card: DrawableCard) {
-        initCardTexture(card)
         val cardImg = card.actor
         cardImg.setScale(1.0f)
         val lsnr = if (card.getCardType() == CardType.TARGET_SPELL) {
@@ -422,7 +415,6 @@ class UIManager(private val stage: Stage,
         for (x in 0 until MAX_BOARD_SIZE) {
             val card = player.boardManager.getCardByBoardIndex(x)
             if (card.getCardType() == CardType.INVALID) {
-                card.initCardTexture(emptyCardBoard.texture)
                 card.actor.setPosition(initialboardX, INITIAL_BOARD_Y)
                 backgroundG.addActor(card.actor)
             }

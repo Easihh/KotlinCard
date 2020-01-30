@@ -30,7 +30,7 @@ import java.util.stream.Collectors
 class MatchScreen(private val parentScreen: KtxGame<Screen>,
                   private val messageQueue: MessageQueue,
                   private val server: ServerBosom,
-                  private val matchStart: MatchStartIn) : KtxScreen {
+                  matchStart: MatchStartIn) : KtxScreen {
 
     private val batch: SpriteBatch = SpriteBatch()
     private val shaper: ShapeRenderer = ShapeRenderer()
@@ -38,12 +38,13 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     private val viewport: FitViewport = FitViewport(VIRTUAL_WINDOW_WIDTH.toFloat(), VIRTUAL_WINDOW_HEIGHT.toFloat(), camera)
     private val stage: Stage = Stage(viewport)
     private val cardStore = CardStore()
+    private val assetStore = AssetStore()
     private lateinit var font: BitmapFont
 
-    private lateinit var player: ClientPlayer
-    private lateinit var otherPlayer: ClientPlayer
+    private val player: ClientPlayer = ClientPlayer(matchStart.accountName)
+    private val otherPlayer: ClientPlayer = ClientPlayer(matchStart.enemyName)
     private lateinit var messageDispatcher: MessageDispatcher
-    private lateinit var uiManager: UIManager
+    private val uiManager: UIManager = UIManager(stage, messageQueue, player, otherPlayer, assetStore)
 
     init {
         setupStage()
@@ -52,15 +53,8 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
         setupFont()
     }
 
-    private fun setupPlayer() {
-        player = ClientPlayer(matchStart.accountName)
-        otherPlayer = ClientPlayer(matchStart.enemyName)
-    }
-
     override fun show() {
         Gdx.input.inputProcessor = stage
-        setupPlayer()
-        uiManager = UIManager(stage, messageQueue, player, otherPlayer)
         setupMessageProcessors()
     }
 
@@ -88,7 +82,7 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
     }
 
     private fun setupMessageProcessors() {
-        val messageInProcessor = MessageInProcessor(player, uiManager, cardStore, parentScreen, otherPlayer)
+        val messageInProcessor = MessageInProcessor(player, uiManager, cardStore, parentScreen, otherPlayer, assetStore)
         val messageOutProcessor = MessageOutProcessor(server::sendMessage)
         messageDispatcher = MessageDispatcher(messageInProcessor, messageOutProcessor)
     }

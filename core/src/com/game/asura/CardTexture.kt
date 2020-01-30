@@ -4,15 +4,14 @@ import com.badlogic.gdx.graphics.Texture
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
+val NULL_CARDTEXTURE = Texture("core/assets/null_texture.png")
+val NULL_BOARD_CARDTEXTURE = Texture("core/assets/empty_board_card.png")
 
 @Serializable
 data class CardTexture(val id: Int,
-                       val inHand: String? = null,
-                       val onBoard: String? = null,
-                       val other: String? = null) {
+                       private val inHand: String? = null,
+                       private val onBoard: String? = null) {
 
-    @Transient
-    private val NULL_CARDTEXTURE = Texture("core/assets/null_texture.png")
     @Transient
     val inHandTexture: Texture = if (inHand != null) {
         Texture(inHand)

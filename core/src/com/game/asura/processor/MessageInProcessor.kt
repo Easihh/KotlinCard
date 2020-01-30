@@ -13,7 +13,8 @@ class MessageInProcessor(private val player: ClientPlayer,
                          private val uiManager: UIManager,
                          private val cardStore: CardStore,
                          private val parentScreen: KtxGame<Screen>,
-                         private val opponent: ClientPlayer) : MessageProcessor<DecodedMessage> {
+                         private val opponent: ClientPlayer,
+                         private val assetStore: AssetStore) : MessageProcessor<DecodedMessage> {
 
     override fun onMessage(msg: DecodedMessage) {
         when (msg) {
@@ -37,7 +38,8 @@ class MessageInProcessor(private val player: ClientPlayer,
                 }
             }
             is CardDrawnIn -> {
-                val card = SpellCard(primaryId = msg.primaryId, secondaryId = msg.secondaryId,
+                val texture = assetStore.getCardTexture(msg.primaryId) ?: return
+                val card = SpellCard(texture = texture.inHandTexture, primaryId = msg.primaryId, secondaryId = msg.secondaryId,
                         cardCost = msg.cardCost, cardType = msg.cardType)
 
                 player.handManager.addToPlayerHand(card)
@@ -45,7 +47,8 @@ class MessageInProcessor(private val player: ClientPlayer,
                 cardStore.add(card)
             }
             is MonsterCardDrawnIn -> {
-                val card = MinionCard(primaryId = msg.primaryId, secondaryId = msg.secondaryId,
+                val texture = assetStore.getCardTexture(msg.primaryId) ?: return
+                val card = MinionCard(texture = texture.inHandTexture, primaryId = msg.primaryId, secondaryId = msg.secondaryId,
                         cardCost = msg.cardCost, cardType = msg.cardType, attack = msg.attack,
                         health = msg.health, maxHealth = msg.maxHealth)
                 player.handManager.addToPlayerHand(card)
@@ -54,12 +57,12 @@ class MessageInProcessor(private val player: ClientPlayer,
             }
             is MonsterCardPlayedIn -> {
                 if (!isOurMessage(msg.accountName)) {
+                    val texture = assetStore.getCardTexture(msg.primaryId) ?: return
                     //opponent played card
-                    val card = MinionCard(primaryId = msg.primaryId, secondaryId = msg.secondaryId,
+                    val card = MinionCard(texture = texture.onBoardTexture, primaryId = msg.primaryId, secondaryId = msg.secondaryId,
                             cardCost = msg.cardCost, cardType = CardType.MONSTER, attack = msg.attack,
                             health = msg.health, maxHealth = msg.maxHealth)
                     opponent.boardManager.updatePlayerBoard(card, msg.boardIndx)
-                    uiManager.initCardTexture(card)
                     uiManager.addEnemyMonsterToBoard(card, msg.boardIndx)
                     cardStore.add(card)
                     return
@@ -96,7 +99,8 @@ class MessageInProcessor(private val player: ClientPlayer,
                 parentScreen.setScreen<PreMatchScreen>()
             }
             is MonsterEvolveIn -> {
-                val evolved = MinionCard(msg.primaryCardId, msg.secondaryCardId, msg.cardCost, msg.cardType, msg.attack, msg.health, msg.maxHealth)
+                val texture = assetStore.getCardTexture(msg.primaryCardId) ?: return
+                val evolved = MinionCard(texture.inHandTexture, msg.primaryCardId, msg.secondaryCardId, msg.cardCost, msg.cardType, msg.attack, msg.health, msg.maxHealth)
                 val firstMonster = cardStore.getCard(msg.firstMonsterId) ?: return
                 val secondMonster = cardStore.getCard(msg.secondMonsterId) ?: return
                 if (firstMonster !is MinionCard || secondMonster !is MinionCard) {
@@ -105,7 +109,6 @@ class MessageInProcessor(private val player: ClientPlayer,
                 }
                 firstMonster.actor.remove()
                 secondMonster.actor.remove()
-                uiManager.initCardTexture(evolved)
                 if (!isOurMessage(msg.accountName)) {
                     uiManager.addEnemyMonsterToBoard(evolved, msg.boardPosition)
                     opponent.boardManager.removeCard(firstMonster)

@@ -1,17 +1,19 @@
 package com.game.asura
 
+import com.badlogic.gdx.graphics.Texture
 import com.game.asura.card.CardType
 import com.game.asura.card.Minion
 import com.game.asura.messaging.MessageField
 import kotlin.random.Random
 
-abstract class MonsterDrawableCard(primaryId: Int,
+abstract class MonsterDrawableCard(texture: Texture,
+                                   primaryId: Int,
                                    secondaryId: Int = Random.nextInt(),
                                    cardCost: Int,
                                    cardType: CardType,
                                    private var attack: Int,
                                    private var health: Int,
-                                   private var maxHealth: Int) : DrawableCard(primaryId, secondaryId, cardCost, cardType), Minion {
+                                   private var maxHealth: Int) : DrawableCard(texture,primaryId, secondaryId, cardCost, cardType), Minion {
 
     private val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
     protected var summonSickness = true

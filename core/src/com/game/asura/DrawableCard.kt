@@ -6,16 +6,14 @@ import com.game.asura.card.BaseCard
 import com.game.asura.card.CardType
 import kotlin.random.Random
 
-abstract class DrawableCard(primaryId: Int,
+abstract class DrawableCard(texture: Texture,
+                            primaryId: Int,
                             secondaryId: Int = Random.nextInt(),
                             cardCost: Int,
                             cardType: CardType,
                             ability: List<Int> = ArrayList()) : BaseCard(primaryId, secondaryId, cardCost, cardType, ability) {
 
-    lateinit var actor: Actor
+    var actor: Actor = HandCard(texture, secondaryId)
 
-    abstract fun transformActor(texture: Texture)
-
-    abstract fun initCardTexture(texture: Texture)
-
+    open fun transformActor(texture: Texture) {}
 }
