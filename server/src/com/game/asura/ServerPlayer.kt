@@ -42,18 +42,22 @@ class ServerPlayer(val playerName: String,
                 health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId))
         deck.push(ServerMinionCard(1, cardCost = 1, attack = slimeAttack,
                 health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId))
-        deck.push(ServerSpellCard(2, cardCost = 2,
-                cardType = CardType.TARGET_SPELL))
+        deck.push(ServerMinionCard(1, cardCost = 1, attack = slimeAttack,
+                health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId))
+        val spellOne = cardInfoStore.getCardInfo(2) ?: return
+        deck.push(ServerSpellCard(2, cardCost = spellOne.cost,
+                cardType = CardType.SPELL, ability = spellOne.ability))
+        deck.push(ServerMinionCard(1, cardCost = 1, attack = slimeAttack,
+                health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId))
     }
 
-    fun playCard(card: Card, boardPosition: Int?) {
+    fun playCard(card: Card) {
         handManager.removeFromHand(card)
         currentMana -= card.getCost()
-        if (card is Minion) {
-            if (boardPosition == null) {
-                return
-            }
-            boardManager.updatePlayerBoard(card, boardPosition)
-        }
+    }
+
+    fun playMinionCard(card: Minion, boardPosition: Int) {
+        playCard(card)
+        boardManager.updatePlayerBoard(card, boardPosition)
     }
 }

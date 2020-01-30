@@ -24,10 +24,6 @@ class SpellCard(primaryId: Int,
         actor = BoardCard(texture, getSecondayId())
     }
 
-    override fun getEffect(): List<CardEffect> {
-        return ArrayList()
-    }
-
     override fun toString(): String {
         return "cardType=${getCardType()},cardPrimaryId=${getPrimaryId()}"
     }

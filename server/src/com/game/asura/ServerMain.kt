@@ -16,12 +16,14 @@ import kotlin.concurrent.thread
 
 class ServerMain {
 
+    private val cardInfoStore = CardInfoStore()
+
     inner class MainLogicProcessor : Runnable {
 
         private val executor = CurrentThreadExecutor()
         private val processorContext = MainLogicDispatcher(executor)
         private val matchFinder = MatchFinder()
-        private val cardInfoStore = CardInfoStore()
+
         private val inProcessor = InMessageProcessor(messageQueue, accountCache, matchFinder, cardInfoStore, processorContext)
         private val outProcessor = OutMessageProcessor()
         private val messageProcessor = MessageProcessor(inProcessor, outProcessor)
@@ -41,7 +43,7 @@ class ServerMain {
     private val selector = Selector.open()
     private val socketChannel = ServerSocketChannel.open()
     private val messageQueue = BlockingMessageQueue()
-    private val messageDecoder = MessageDecoder(messageQueue)
+    private val messageDecoder = MessageDecoder(messageQueue, cardInfoStore)
     private val accountCache = AccountCache()
 
     fun start() {

@@ -1,15 +1,16 @@
 package com.game.asura.processor
 
+import com.game.asura.CardInfoStore
 import com.game.asura.InsertableQueue
 import com.game.asura.account.Account
 import com.game.asura.card.CardType
-import com.game.asura.message.data.MonsterCardPlayedData
 import com.game.asura.messagein.*
 import com.game.asura.messaging.MessageType
 import com.game.asura.parsing.CoreMessageParser
 import com.game.asura.parsing.DecodedMessage
 
-class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
+class MessageDecoder(private val queue: InsertableQueue,
+                     private val cardInfoStore: CardInfoStore) : CoreMessageParser() {
 
     fun decode(playerAccount: Account) {
         val tokenizer = playerAccount.getTokenizer()
@@ -28,13 +29,19 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 //should validate important field here
                 val cardId = cardPlayedData.cardPrimaryId ?: return
                 val secCardId = cardPlayedData.cardSecondaryId ?: return
-                val cardType = cardPlayedData.cardType ?: return
-                if (cardType == CardType.MONSTER) {
-                    val boardIndx = cardPlayedData.boardIdx ?: return
-                    decodedMessage = MonsterCardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId, boardIndx)
-                } else {
-                    decodedMessage = CardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId,
-                            cardPlayedData.cardTarget, cardPlayedData.boardIdx, cardType)
+                when (val cardType = cardInfoStore.getCardInfo(cardId)?.cardType ?: return) {
+                    CardType.MONSTER -> {
+                        val boardIndx = cardPlayedData.boardIdx ?: return
+                        decodedMessage = MonsterCardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId, boardIndx)
+                    }
+                    CardType.SPELL -> {
+                        decodedMessage = SpellCardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId,
+                                cardPlayedData.cardTarget)
+                    }
+                    else -> {
+                        decodedMessage = CardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId,
+                                cardPlayedData.cardTarget, cardPlayedData.boardIdx, cardType)
+                    }
                 }
             }
             MessageType.END_TURN -> {

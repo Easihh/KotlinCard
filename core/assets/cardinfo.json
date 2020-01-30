@@ -17,6 +17,13 @@
 		"evolveId":4
 	},
 	{
+		"id":2,
+		"name":"Spell#1",
+		"cardType":"SPELL",
+		"cost":1,
+		"ability":[1,999]
+	},
+	{
 		"id":4,
 		"name":"King Slime",
 		"cardType":"MONSTER",

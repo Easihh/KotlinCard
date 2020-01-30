@@ -9,6 +9,4 @@ interface Card {
     fun getCost(): Int
 
     fun getCardType(): CardType
-
-    fun getEffect(): List<CardEffect>
 }

@@ -28,8 +28,4 @@ abstract class BaseMinion(private val primaryId: Int,
     override fun getCost(): Int {
         return cardCost
     }
-
-    override fun getEffect(): List<CardEffect> {
-        return effects
-    }
 }

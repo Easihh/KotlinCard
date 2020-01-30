@@ -69,6 +69,46 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 }
             }
 
+            is SpellCardPlayedIn -> {
+                val account = accountCache.getAccount(message.accountKey)
+                val accountName = account?.getAccountName()
+                if (accountName == null) {
+                    println("Unable to find accountName in cache with key:${message.accountKey}.")
+                    return
+                }
+                val match = matchFinder.findMatch(account.getCurrentMatchId())
+                if (match == null) {
+                    println("Unable to find match with id:${account.getCurrentMatchId()}.")
+                    return
+                }
+                val cardBeingPlayed = match.getCard(message.cardSecondaryId) ?: return
+                if (cardBeingPlayed !is ServerSpellCard) {
+                    println("Error, card $cardBeingPlayed is not a Spell.")
+                    return
+                }
+                if (match.getCurrentPlayerTurn().playerName != accountName) {
+                    println("Player $accountName is trying to play card $cardBeingPlayed but it is not his turn yet.Disregarding request.")
+                    return
+                }
+                val player = match.getCurrentPlayerTurn()
+
+                player.playCard(cardBeingPlayed)
+                println("Player ${player.playerName} is playing card $cardBeingPlayed.")
+
+                val cardPlayed = SpellCardPlayedOut(account.getChannelWriter(), accountName, cardBeingPlayed,null)
+                messageQueue.addMessage(cardPlayed)
+
+                //for now hard core draw 2 card as spell
+                for (x in 0..2) {
+                    val cardDrawn = player.draw()
+                    cardDrawn?.let {
+                        val cardDrawnOut = CardDrawnOut(account.getChannelWriter(), cardDrawn, player.cardRemaining())
+                        match.addCardToCache(cardDrawn)
+                        messageQueue.addMessage(cardDrawnOut)
+                    }
+                }
+            }
+
             is MonsterCardPlayedIn -> {
                 val account = accountCache.getAccount(message.accountKey)
                 val accountName = account?.getAccountName()
@@ -111,7 +151,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 messageQueue.addMessage(cardPlayedOpp)
 
 
-                player.playCard(cardInHand, message.boardPosition)
+                player.playMinionCard(cardInHand, message.boardPosition)
                 if (cardInHand.getCardType() == CardType.MONSTER) {
                     if (player.currentPhase == Phase.MAIN && !cardInHand.isSummonSick()) {
                         player.currentPhase = Phase.ATTACK
@@ -191,7 +231,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 messageQueue.addMessage(cardPlayedOpp)
 
 
-                player.playCard(cardInHand, message.boardPosition)
+                player.playCard(cardInHand)
 
                 val changedFields: MutableList<ChangedField> = ArrayList()
                 if (cardInHand.getCost() > 0) {
@@ -289,18 +329,6 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     val phaseOut = PhaseChangeOut(account.getChannelWriter(), Phase.POST_ATTACK)
                     messageQueue.addMessage(phaseOut)
                 }
-                /*val changedFieldsAttacker: MutableList<ChangedField> = ArrayList()
-                val changedFieldsDefender: MutableList<ChangedField> = ArrayList()
-                val healthFieldA = ChangedField(MessageField.CARD_HEALTH, attacker.getHealth())
-                val healthFieldD = ChangedField(MessageField.CARD_HEALTH, defender.getHealth())
-                changedFieldsAttacker.add(healthFieldA)
-                changedFieldsDefender.add(healthFieldD)
-                var cardInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accountName = accountName,
-                        card = attacker, changedFields = changedFieldsAttacker)
-                messageQueue.addMessage(cardInfoOut)
-                cardInfoOut = CardInfoOut(channelWriter = account.getChannelWriter(), accountName = accountName,
-                        card = defender, changedFields = changedFieldsDefender)
-                messageQueue.addMessage(cardInfoOut)*/
             }
             else -> {
                 println("Error unable to processIn message:$message")

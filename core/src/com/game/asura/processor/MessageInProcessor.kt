@@ -118,6 +118,14 @@ class MessageInProcessor(private val player: ClientPlayer,
                 uiManager.addMonsterToBoard(evolved, msg.boardPosition)
                 player.boardManager.updatePlayerBoard(evolved, msg.boardPosition)
             }
+            is CardPlayedIn -> {
+                if (isOurMessage(msg.accountName)) {
+                    val card = player.handManager.getCardFromHand(msg.secondaryId) ?: return
+                    println("Removing card:$card from player hand.")
+                    player.handManager.removeFromHand(card)
+                    uiManager.removeCardfromHand(card)
+                }
+            }
             else -> {
                 println("Unable to process message:$msg missing logic.")
             }

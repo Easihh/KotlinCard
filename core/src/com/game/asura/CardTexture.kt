@@ -25,10 +25,4 @@ data class CardTexture(val id: Int,
     } else {
         NULL_CARDTEXTURE
     }
-    @Transient
-    val otherTexture: Texture = if (other != null) {
-        Texture(other)
-    } else {
-        NULL_CARDTEXTURE
-    }
 }

@@ -17,9 +17,5 @@
 		"id":4,
 		"inHand":"core/assets/king_slime.png",
 		"onBoard":"core/assets/king_slime_board.png"
-	},
-	{
-		"id":5,
-		"other":"core/assets/hero.png"
 	}
 ]

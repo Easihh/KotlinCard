@@ -16,7 +16,6 @@ class MinionCard(primaryId: Int,
                  maxHealth: Int) : MonsterDrawableCard(primaryId, secondaryId, cardCost, cardType, attack, health, maxHealth) {
 
 
-
     override fun isSummonSick(): Boolean {
         return summonSickness
     }
@@ -33,10 +32,6 @@ class MinionCard(primaryId: Int,
         ///destroy current actor
         actor.remove()
         actor = BoardCard(texture, getSecondayId())
-    }
-
-    override fun getEffect(): List<CardEffect> {
-        return ArrayList()
     }
 
     override fun toString(): String {

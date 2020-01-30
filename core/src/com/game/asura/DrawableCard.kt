@@ -9,7 +9,8 @@ import kotlin.random.Random
 abstract class DrawableCard(primaryId: Int,
                             secondaryId: Int = Random.nextInt(),
                             cardCost: Int,
-                            cardType: CardType) : BaseCard(primaryId, secondaryId, cardCost, cardType) {
+                            cardType: CardType,
+                            ability: List<Int> = ArrayList()) : BaseCard(primaryId, secondaryId, cardCost, cardType, ability) {
 
     lateinit var actor: Actor
 

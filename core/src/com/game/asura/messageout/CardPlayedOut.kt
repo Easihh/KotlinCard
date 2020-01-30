@@ -13,7 +13,6 @@ class CardPlayedOut(private val card: DrawableCard,
         messageBuilder.add(MessageField.MESSAGE_TYPE, MessageType.CARD_PLAYED.value)
         messageBuilder.add(MessageField.PRIMARY_CARD_ID, card.getPrimaryId())
         messageBuilder.add(MessageField.SECONDARY_CARD_ID, card.getSecondayId())
-        messageBuilder.add(MessageField.CARD_TYPE, card.getCardType().value)
         if (cardTarget != null) {
             messageBuilder.add(MessageField.CARD_TARGET, cardTarget)
         }
