@@ -81,6 +81,10 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     println("Unable to find match with id:${account.getCurrentMatchId()}.")
                     return
                 }
+                if (match.getCurrentPlayerTurn().playerName != accountName) {
+                    println("Player $accountName is trying to play a card but it is not his turn yet.Disregarding request.")
+                    return
+                }
                 val opponentName = match.getOpponentName(accountName)
                 val opponentPlayer = match.getPlayer(opponentName) ?: return
                 val opponentAccount = accountCache.getAccount(opponentPlayer.accountKey) ?: return

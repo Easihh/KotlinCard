@@ -285,6 +285,10 @@ class UIManager(private val stage: Stage,
     }
 
     private fun playedCard(card: DrawableCard, position: Position) {
+        if(!player.myTurn){
+            //cannot play card on opponent's turn
+            return
+        }
         var cardPlayedOut: Message? = null
         val cardType = card.getCardType()
         if (position.yPosition < 200) {
