@@ -1,22 +1,15 @@
 package com.game.asura
 
-import com.game.asura.card.CardType
 import com.game.asura.card.Minion
 
-class BoardManager<T : Minion>(private val create: () -> T) {
+class BoardManager<T : Minion> {
 
-    private val playerBoard: MutableList<T> = ArrayList()
-
-    init {
-        for (x in 0 until MAX_BOARD_SIZE) {
-            playerBoard.add(create())
-        }
-    }
+    private val playerBoard: MutableList<T?> = mutableListOf(null, null, null, null, null)
 
     fun boardIsEmpty(): Boolean {
         var count = 0
         for (index in 0 until MAX_BOARD_SIZE) {
-            if (playerBoard[index].getCardType() != CardType.INVALID) {
+            if (playerBoard[index] != null) {
                 count++
             }
         }
@@ -27,7 +20,7 @@ class BoardManager<T : Minion>(private val create: () -> T) {
         playerBoard[boardIndex] = card
     }
 
-    fun getCardByBoardIndex(boardIndex: Int): T {
+    fun getCardByBoardIndex(boardIndex: Int): T? {
         return playerBoard[boardIndex]
     }
 
@@ -35,8 +28,9 @@ class BoardManager<T : Minion>(private val create: () -> T) {
         //board should always  contains 5 space(invalid obj for no card in that indx)
         // otherwise player sending monster placement will have issue.
         for (i in 0 until MAX_BOARD_SIZE) {
-            if (playerBoard[i].getSecondayId() == target.getSecondayId()) {
-                playerBoard[i] = create()
+            val card = playerBoard[i] ?: continue
+            if (card.getSecondayId() == target.getSecondayId()) {
+                playerBoard[i] = null
             }
         }
     }
@@ -44,18 +38,19 @@ class BoardManager<T : Minion>(private val create: () -> T) {
     fun findDuplicate(primaryId: Int): List<DuplicatedCard> {
         val dupeList: MutableList<DuplicatedCard> = ArrayList()
         for (i in 0 until MAX_BOARD_SIZE) {
-            if (playerBoard[i].getPrimaryId() == primaryId) {
-                dupeList.add(DuplicatedCard(playerBoard[i], i))
+            val dupeCard = playerBoard[i] ?: continue
+            if (dupeCard.getPrimaryId() == primaryId) {
+                dupeList.add(DuplicatedCard(dupeCard, i))
             }
         }
         return dupeList
     }
 
     //merge both card and move the resulting card at the position of the first played duplicated card
-    fun mergeCard(toMerge: List<DuplicatedCard>, evolve: T, toReplace: T, lastPlayedId: Int) {
+    fun mergeCard(toMerge: List<DuplicatedCard>, evolve: T, lastPlayedId: Int) {
         for (card in toMerge) {
             if (card.dupeCard.getSecondayId() == lastPlayedId) {
-                playerBoard[card.boardIdx] = toReplace
+                playerBoard[card.boardIdx] = null
             } else {
                 playerBoard[card.boardIdx] = evolve
             }
@@ -66,9 +61,10 @@ class BoardManager<T : Minion>(private val create: () -> T) {
     fun updateSummonIllness(): List<T> {
         val updated: MutableList<T> = ArrayList()
         for (i in 0 until MAX_BOARD_SIZE) {
-            if (playerBoard[i].isSummonSick()) {
-                playerBoard[i].removeSummonSickness()
-                updated.add(playerBoard[i])
+            val card = playerBoard[i] ?: continue
+            if (card.isSummonSick()) {
+                card.removeSummonSickness()
+                updated.add(card)
             }
         }
         return updated

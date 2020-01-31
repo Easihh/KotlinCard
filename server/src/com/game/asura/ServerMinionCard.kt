@@ -4,8 +4,6 @@ import com.game.asura.card.BaseMinion
 import com.game.asura.card.CardType
 import kotlin.random.Random
 
-val INVALID_MINION_CARD = ServerMinionCard(-1, -1, 99, CardType.INVALID, -1, -1, -1)
-
 class ServerMinionCard(primaryId: Int,
                        secondaryId: Int = Random.nextInt(),
                        cardCost: Int = 0,

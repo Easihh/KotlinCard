@@ -1,7 +1,6 @@
 package com.game.asura
 
 import com.game.asura.card.Card
-import com.game.asura.card.CardType
 import kotlin.random.Random
 
 class Match(private val player1: ServerPlayer,
@@ -55,10 +54,8 @@ class Match(private val player1: ServerPlayer,
         if (defenderPlayer.boardManager.boardIsEmpty()) {
             //defender has no minion on board, deal all dmg to player
             for (i in 0 until MAX_BOARD_SIZE) {
-                val card = attackPlayer.boardManager.getCardByBoardIndex(i)
-                if (card.getCardType() != CardType.INVALID) {
-                    dmgToDefender += card.getAttack()
-                }
+                val card = attackPlayer.boardManager.getCardByBoardIndex(i) ?: continue
+                dmgToDefender += card.getAttack()
             }
             println("Dealing $dmgToDefender damage to player $defenderName")
             defenderPlayer.playerLifePoint -= dmgToDefender
@@ -67,12 +64,9 @@ class Match(private val player1: ServerPlayer,
         }
 
         for (i in 0 until MAX_BOARD_SIZE) {
-            val attackerMinion = attackPlayer.boardManager.getCardByBoardIndex(i)
-            if(attackerMinion.getCardType()==CardType.INVALID){
-                continue
-            }
+            val attackerMinion = attackPlayer.boardManager.getCardByBoardIndex(i) ?: continue
             val defenderMinion = defenderPlayer.boardManager.getCardByBoardIndex(i)
-            if (defenderMinion.getCardType() != CardType.INVALID) {
+            if (defenderMinion != null) {
                 attackerMinion.takeDamage(defenderMinion.getAttack())
                 defenderMinion.takeDamage(attackerMinion.getAttack())
                 bResult.addParticipant(attackerMinion)

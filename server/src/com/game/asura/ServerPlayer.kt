@@ -12,7 +12,7 @@ class ServerPlayer(val playerName: String,
 
     private val deck: Stack<Card> = Stack()
     val handManager = HandManager<Card>()
-    val boardManager = BoardManager<Minion>(create = { INVALID_MINION_CARD })
+    val boardManager = BoardManager<Minion>()
     var playerLifePoint: Int = 30
     var currentMana: Int = 0
     var maxMana: Int = 10

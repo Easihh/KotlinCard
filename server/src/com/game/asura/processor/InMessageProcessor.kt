@@ -167,7 +167,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                                 attack = evInfo.attack ?: 0, health = evInfo.health, maxHealth = evInfo.maxHealth,
                                 evolveId = evInfo.evolveId)
                         match.addCardToCache(evolved)
-                        player.boardManager.mergeCard(dupeList, evolved, INVALID_MINION_CARD, cardInHand.getSecondayId())
+                        player.boardManager.mergeCard(dupeList, evolved, cardInHand.getSecondayId())
                         //evolved monster should take position of the 1st minion of that type that was on board
                         val evolvePos = dupeList.stream().filter { c -> c.dupeCard.getSecondayId() != cardInHand.getSecondayId() }.findFirst().get().boardIdx
                         val minionEvolved = MonsterEvolveOut(channelWriter = account.getChannelWriter(),

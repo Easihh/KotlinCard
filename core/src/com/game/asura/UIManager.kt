@@ -70,9 +70,7 @@ class UIManager(private val stage: Stage,
         var initialX = INITIAL_BOARD_X
         for (i in 0 until MAX_BOARD_SIZE) {
             val card = player.boardManager.getCardByBoardIndex(i)
-            if (card.getCardType() != CardType.INVALID) {
-                card.actor.setPosition(initialX, INITIAL_BOARD_Y)
-            }
+            card?.let { card.actor.setPosition(initialX, INITIAL_BOARD_Y) }
             initialX += BOARD_CARD_WIDTH
         }
     }
@@ -147,7 +145,7 @@ class UIManager(private val stage: Stage,
             println("unable to find closest board indx at $mouseX,$mouseY")
             return null
         }
-        if (boardManager.getCardByBoardIndex(closestIndx).getCardType() != CardType.INVALID) {
+        if (boardManager.getCardByBoardIndex(closestIndx) != null) {
             //card already exist at the wanted location!
             return null
         }
@@ -362,7 +360,7 @@ class UIManager(private val stage: Stage,
         //draw enemy board
         var initialboardX = OPPONENT_INITIAL_BOARD_X
         for (x in 0 until MAX_BOARD_SIZE) {
-            if (otherPlayer.boardManager.getCardByBoardIndex(x).getCardType() == CardType.INVALID) {
+            if (otherPlayer.boardManager.getCardByBoardIndex(x) == null) {
                 batch.draw(emptyCardBoard, initialboardX, OPPONENT_INITIAL_BOARD_Y)
             }
             initialboardX += BOARD_CARD_WIDTH
@@ -371,7 +369,7 @@ class UIManager(private val stage: Stage,
         //draw our own board
         initialboardX = INITIAL_BOARD_X
         for (x in 0 until MAX_BOARD_SIZE) {
-            if (player.boardManager.getCardByBoardIndex(x).getCardType() == CardType.INVALID) {
+            if (player.boardManager.getCardByBoardIndex(x) == null) {
                 batch.draw(emptyCardBoard, initialboardX, INITIAL_BOARD_Y)
             }
             initialboardX += BOARD_CARD_WIDTH
@@ -382,16 +380,14 @@ class UIManager(private val stage: Stage,
     fun renderBoardCardStats(batch: SpriteBatch, font: BitmapFont) {
         batch.begin()
         for (x in 0 until MAX_BOARD_SIZE) {
-            val card = player.boardManager.getCardByBoardIndex(x)
-            if (card.getCardType() != CardType.INVALID) {
-                //draw attack
-                batch.draw(assetStore.getTexture(Asset.ATTACK_ICON_SMALL), card.actor.x + 6f, card.actor.y + 6f)
-                font.draw(batch, card.getAttack().toString(), card.actor.x + 12f, card.actor.y + 24f)
+            val card = player.boardManager.getCardByBoardIndex(x) ?: continue
+            //draw attack
+            batch.draw(assetStore.getTexture(Asset.ATTACK_ICON_SMALL), card.actor.x + 6f, card.actor.y + 6f)
+            font.draw(batch, card.getAttack().toString(), card.actor.x + 12f, card.actor.y + 24f)
 
-                //draw health
-                batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_SMALL), card.actor.x + BOARD_CARD_WIDTH - 32, card.actor.y + 6f)
-                font.draw(batch, card.getHealth().toString(), card.actor.x + BOARD_CARD_WIDTH - 24f, card.actor.y + 24f)
-            }
+            //draw health
+            batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_SMALL), card.actor.x + BOARD_CARD_WIDTH - 32, card.actor.y + 6f)
+            font.draw(batch, card.getHealth().toString(), card.actor.x + BOARD_CARD_WIDTH - 24f, card.actor.y + 24f)
         }
         batch.end()
     }
