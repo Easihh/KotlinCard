@@ -28,13 +28,10 @@ class UIManager(private val stage: Stage,
     private var initialClickX: Float = 0f
     private var initialClickY: Float = 0f
     private val emptyCardBoard = Sprite(assetStore.getTexture(Asset.EMPTY_BOARD_CARD))
-    private val arrowImg = Sprite(assetStore.getTexture(Asset.ARROW_POINTER))
     private val systemCursor = Cursor.SystemCursor.Hand
     private val invisibleCursor = Pixmap(Gdx.files.internal("core/assets/invisibleCursor.png"))
     private val cursor = Gdx.graphics.newCursor(invisibleCursor, 0, 0)
-    private var selectedCard: DrawableCard? = null
-    //to keep track of whether board card should tilt 1 index left or right due to pending card placement.
-    //private var boardTilt = BoardManager.BoardPositionTilt.NONE
+
     private var endTurnTime: Long = System.currentTimeMillis()
     private val backgroundG = Group()
     private val foregroundG = Group()
@@ -44,7 +41,6 @@ class UIManager(private val stage: Stage,
         stage.addActor(foregroundG)
         cursor.dispose()
         addNextPhaseBtn()
-        setupEmptyBoardActor()
         val mouseMovedLstr = object : InputListener() {
             override fun mouseMoved(event: InputEvent?, x: Float, y: Float): Boolean {
                 if (event == null) {
@@ -53,7 +49,7 @@ class UIManager(private val stage: Stage,
                 mouseX = event.stageX
                 mouseY = event.stageY
 
-                selectedCard?.let {
+                player.selectedCard?.let {
                     if (player.handManager.cardIsInHand(it.getSecondayId())) {
                         if (it.getCardType() != CardType.TARGET_SPELL) {
                             it.actor.setPosition(mouseX - (BOARD_CARD_WIDTH / 2), mouseY - (BOARD_CARD_HEIGHT / 2))
@@ -63,7 +59,6 @@ class UIManager(private val stage: Stage,
                         }
                     }
                 }
-                arrowImg.setPosition(mouseX + 16f, mouseY - 16f)
                 return true
             }
         }
@@ -112,8 +107,8 @@ class UIManager(private val stage: Stage,
         stage.addListener(object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 if (button == Input.Buttons.RIGHT) {
-                    selectedCard?.let {
-                        println("clearing target action for card:$selectedCard")
+                    player.selectedCard?.let {
+                        println("clearing target action for card:$player.selectedCard")
                         clearTargetingAction()
                     }
                     //move card back to hand
@@ -127,10 +122,10 @@ class UIManager(private val stage: Stage,
 
     private fun clearTargetingAction() {
         //allow hero power/card to trigger listener again via stage.hit
-        selectedCard?.let {
+        player.selectedCard?.let {
             it.actor.touchable = Touchable.enabled
         }
-        selectedCard = null
+        player.selectedCard = null
         //reset to normal cursor here
         Gdx.graphics.setSystemCursor(systemCursor)
         updateBoardPosition()
@@ -149,6 +144,7 @@ class UIManager(private val stage: Stage,
             initialX += BOARD_CARD_WIDTH
         }
         if (closestIndx == null) {
+            println("unable to find closest board indx at $mouseX,$mouseY")
             return null
         }
         if (boardManager.getCardByBoardIndex(closestIndx).getCardType() != CardType.INVALID) {
@@ -173,7 +169,7 @@ class UIManager(private val stage: Stage,
         val cardTexture = assetStore.getCardTexture(card.getPrimaryId()) ?: return
         card.transformActor(cardTexture.onBoardTexture)
         //add new actor to stage as it was destroyed
-        foregroundG.addActor(card.actor)
+        backgroundG.addActor(card.actor)
         val pos = getEnemyBoardPosition(boardIndex)
         card.actor.setPosition(pos.xPosition, pos.yPosition)
     }
@@ -184,16 +180,16 @@ class UIManager(private val stage: Stage,
         val cardTexture = assetStore.getCardTexture(card.getPrimaryId()) ?: return
         card.transformActor(cardTexture.onBoardTexture)
         //add new actor to stage as it was destroyed
-        stage.addActor(card.actor)
+        backgroundG.addActor(card.actor)
         val pos = getBoardPosition(boardIndex)
         card.actor.setPosition(pos.xPosition, pos.yPosition)
 
         val targetListener = object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 if (button == Input.Buttons.LEFT) {
-                    println("board card is touched.SourceTarget:$selectedCard")
+                    println("board card is touched.SourceTarget:$player.selectedCard")
                     //card is being target by something ie target spell
-                    selectedCard?.let {
+                    player.selectedCard?.let {
                         if (player.handManager.cardIsInHand(it.getSecondayId())) {
                             playedCard(it, Position(event.stageX, event.stageY))
                         }
@@ -225,7 +221,7 @@ class UIManager(private val stage: Stage,
         var cardPlayedOut: CardPlayedOut? = null
         val indx = getClosestBoardIndex(position.xPosition, position.yPosition)
         if (indx != null) {
-            player.boardManager.updatePlayerBoard(card, indx)
+            //player.boardManager.updatePlayerBoard(card, indx)
             val pos = getBoardPosition(indx)
             card.actor.setPosition(pos.xPosition, pos.yPosition)
             cardPlayedOut = CardPlayedOut(card, indx)
@@ -253,14 +249,14 @@ class UIManager(private val stage: Stage,
     }
 
     private fun hasCardSelected(): Boolean {
-        return selectedCard != null
+        return player.selectedCard != null
     }
 
     private fun initTargetSpell(card: DrawableCard, position: Position) {
         if (!hasCardSelected()) {
             initialClickX = position.xPosition
             initialClickY = position.yPosition
-            selectedCard = card
+            player.selectedCard = card
             Gdx.graphics.setCursor(cursor)
             return
         }
@@ -270,7 +266,7 @@ class UIManager(private val stage: Stage,
 
     private fun initCardSelect(card: DrawableCard, position: Position) {
         if (!hasCardSelected()) {
-            selectedCard = card
+            player.selectedCard = card
             return
         }
         //we already have selectedCard try play card
@@ -278,7 +274,7 @@ class UIManager(private val stage: Stage,
     }
 
     private fun playedCard(card: DrawableCard, position: Position) {
-        if(!player.myTurn){
+        if (!player.myTurn) {
             //cannot play card on opponent's turn
             return
         }
@@ -293,7 +289,7 @@ class UIManager(private val stage: Stage,
         }
         when (cardType) {
             CardType.MONSTER -> {
-                cardPlayedOut = playMonsterCard(card as MonsterDrawableCard , position)
+                cardPlayedOut = playMonsterCard(card as MonsterDrawableCard, position)
             }
             CardType.SPELL -> {
                 cardPlayedOut = playNonTargetSpell(card)
@@ -313,7 +309,7 @@ class UIManager(private val stage: Stage,
 
         //remove card input listener as it was played
         card.actor.clearListeners()
-        selectedCard = null
+        player.selectedCard = null
         queue.addMessage(cardPlayedOut)
     }
 
@@ -341,6 +337,7 @@ class UIManager(private val stage: Stage,
     fun render(batch: SpriteBatch, font: BitmapFont, shaper: ShapeRenderer) {
         batch.begin()
         if (player.myTurn) {
+            font.draw(batch, "Time:${(endTurnTime - System.nanoTime()) / ONE_NANO_SECOND}", 50f, 800f)
             font.draw(batch, getPhaseStartBtnText(), 835f, 195f)
         } else {
             font.draw(batch, "Enemy Turn", 835f, 195f)
@@ -351,7 +348,6 @@ class UIManager(private val stage: Stage,
         font.draw(batch, "Mana: ${player.currentMana}/${player.maxMana}", 50f, 175f)
         font.draw(batch, "EnemyMana: ${otherPlayer.currentMana}/${otherPlayer.maxMana}", 50f, 850f)
         font.draw(batch, "Mouse:$mouseX,$mouseY", 50f, 825f)
-        font.draw(batch, "Time:${(endTurnTime - System.nanoTime()) / ONE_NANO_SECOND}", 50f, 800f)
         batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 100f)
         batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_BIG), 575f, 800f)
         font.draw(batch, player.playerLifePoint.toString(), 587.5f, 80f)
@@ -359,41 +355,6 @@ class UIManager(private val stage: Stage,
         batch.end()
 
         renderDebugBoard(batch)
-        selectedCard?.let {
-            if (it.getCardType() == CardType.TARGET_SPELL) {
-                val angle = 180.0 / Math.PI * Math.atan2(initialClickX.toDouble() - mouseX, mouseY.toDouble() - initialClickY)
-                arrowImg.rotation = angle.toFloat()
-                batch.begin()
-                arrowImg.draw(batch)
-                val actor = stage.hit(mouseX, mouseY, true)
-                if (actor != null) {
-                    if (actor is BoardCard) {
-                        batch.draw(assetStore.getTexture(Asset.TARGET_CIRCLE), mouseX, mouseY)
-                        //only highlight targeted card
-                        batch.draw(assetStore.getTexture(Asset.CARD_TARGETED), actor.x, actor.y)
-                    }
-                }
-                batch.end()
-            }
-            if (it.getCardType() == CardType.MONSTER && player.boardManager.cardIsPresentOnBoard(it.getSecondayId())) {
-                val angle = 180.0 / Math.PI * Math.atan2(initialClickX.toDouble() - mouseX, mouseY.toDouble() - initialClickY)
-                arrowImg.rotation = angle.toFloat()
-                batch.begin()
-                arrowImg.draw(batch)
-                val actor = stage.hit(mouseX, mouseY, true)
-                if (actor != null) {
-                    if (actor is BoardCard) {
-                        batch.draw(assetStore.getTexture(Asset.TARGET_CIRCLE), mouseX, mouseY)
-                        //only highlight targeted card
-                        batch.draw(assetStore.getTexture(Asset.CARD_TARGETED), actor.x, actor.y)
-                    }
-                }
-                batch.end()
-            }
-            batch.begin()
-            batch.end()
-        }
-        renderBoardCardStats(batch, font)
     }
 
     private fun renderDebugBoard(batch: SpriteBatch) {
@@ -406,27 +367,23 @@ class UIManager(private val stage: Stage,
             }
             initialboardX += BOARD_CARD_WIDTH
         }
-        batch.end()
-    }
 
-    private fun setupEmptyBoardActor() {
         //draw our own board
-        var initialboardX = INITIAL_BOARD_X
+        initialboardX = INITIAL_BOARD_X
         for (x in 0 until MAX_BOARD_SIZE) {
-            val card = player.boardManager.getCardByBoardIndex(x)
-            if (card.getCardType() == CardType.INVALID) {
-                card.actor.setPosition(initialboardX, INITIAL_BOARD_Y)
-                backgroundG.addActor(card.actor)
+            if (player.boardManager.getCardByBoardIndex(x).getCardType() == CardType.INVALID) {
+                batch.draw(emptyCardBoard, initialboardX, INITIAL_BOARD_Y)
             }
             initialboardX += BOARD_CARD_WIDTH
         }
+        batch.end()
     }
 
-    private fun renderBoardCardStats(batch: SpriteBatch, font: BitmapFont) {
+    fun renderBoardCardStats(batch: SpriteBatch, font: BitmapFont) {
         batch.begin()
         for (x in 0 until MAX_BOARD_SIZE) {
             val card = player.boardManager.getCardByBoardIndex(x)
-            if (card.getCardType() != CardType.INVALID && card is MinionCard) {
+            if (card.getCardType() != CardType.INVALID) {
                 //draw attack
                 batch.draw(assetStore.getTexture(Asset.ATTACK_ICON_SMALL), card.actor.x + 6f, card.actor.y + 6f)
                 font.draw(batch, card.getAttack().toString(), card.actor.x + 12f, card.actor.y + 24f)

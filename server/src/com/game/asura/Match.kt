@@ -51,17 +51,39 @@ class Match(private val player1: ServerPlayer,
         val defenderName = getOpponentName(attackingPlayer)
         val defenderPlayer = getPlayer(defenderName) ?: return null
         val bResult = BattleResult(defenderPlayer)
+        var dmgToDefender = 0
         if (defenderPlayer.boardManager.boardIsEmpty()) {
             //defender has no minion on board, deal all dmg to player
-            var dmg = 0
             for (i in 0 until MAX_BOARD_SIZE) {
-                val card = attackPlayer.boardManager.getCardByBoardIndex(i) as ServerMinionCard
+                val card = attackPlayer.boardManager.getCardByBoardIndex(i)
                 if (card.getCardType() != CardType.INVALID) {
-                    dmg += card.getAttack()
+                    dmgToDefender += card.getAttack()
                 }
             }
-            println("Dealing $dmg damage to player $defenderName")
-            defenderPlayer.playerLifePoint -= dmg
+            println("Dealing $dmgToDefender damage to player $defenderName")
+            defenderPlayer.playerLifePoint -= dmgToDefender
+            bResult.defenderTakeDamage()
+            return bResult
+        }
+
+        for (i in 0 until MAX_BOARD_SIZE) {
+            val attackerMinion = attackPlayer.boardManager.getCardByBoardIndex(i)
+            if(attackerMinion.getCardType()==CardType.INVALID){
+                continue
+            }
+            val defenderMinion = defenderPlayer.boardManager.getCardByBoardIndex(i)
+            if (defenderMinion.getCardType() != CardType.INVALID) {
+                attackerMinion.takeDamage(defenderMinion.getAttack())
+                defenderMinion.takeDamage(attackerMinion.getAttack())
+                bResult.addParticipant(attackerMinion)
+                bResult.addParticipant(defenderMinion)
+            } else {
+                dmgToDefender += attackerMinion.getAttack()
+            }
+        }
+        if (dmgToDefender > 0) {
+            println("Dealing $dmgToDefender damage to player $defenderName")
+            defenderPlayer.playerLifePoint -= dmgToDefender
             bResult.defenderTakeDamage()
         }
         return bResult

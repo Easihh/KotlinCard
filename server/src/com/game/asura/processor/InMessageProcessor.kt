@@ -3,7 +3,6 @@ package com.game.asura.processor
 import com.game.asura.*
 import com.game.asura.account.CachedAccount
 import com.game.asura.account.PlayerAccount
-import com.game.asura.card.CardType
 import com.game.asura.messagein.*
 import com.game.asura.messageout.*
 import com.game.asura.messaging.MessageField
@@ -95,7 +94,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 player.playCard(cardBeingPlayed)
                 println("Player ${player.playerName} is playing card $cardBeingPlayed.")
 
-                val cardPlayed = SpellCardPlayedOut(account.getChannelWriter(), accountName, cardBeingPlayed,null)
+                val cardPlayed = SpellCardPlayedOut(account.getChannelWriter(), accountName, cardBeingPlayed, null)
                 messageQueue.addMessage(cardPlayed)
 
                 //for now hard core draw 2 card as spell
@@ -152,12 +151,10 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
 
 
                 player.playMinionCard(cardInHand, message.boardPosition)
-                if (cardInHand.getCardType() == CardType.MONSTER) {
-                    if (player.currentPhase == Phase.MAIN && !cardInHand.isSummonSick()) {
-                        player.currentPhase = Phase.ATTACK
-                        val phaseChange = PhaseChangeOut(account.getChannelWriter(), Phase.ATTACK)
-                        messageQueue.addMessage(phaseChange)
-                    }
+                if (player.currentPhase == Phase.MAIN && !cardInHand.isSummonSick()) {
+                    player.currentPhase = Phase.ATTACK
+                    val phaseChange = PhaseChangeOut(account.getChannelWriter(), Phase.ATTACK)
+                    messageQueue.addMessage(phaseChange)
                 }
                 //check for double to merge
                 if (cardInHand.canEvolve()) {
@@ -170,7 +167,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                                 attack = evInfo.attack ?: 0, health = evInfo.health, maxHealth = evInfo.maxHealth,
                                 evolveId = evInfo.evolveId)
                         match.addCardToCache(evolved)
-                        player.boardManager.mergeCard(dupeList, evolved, INVALID_MINION_CARD)
+                        player.boardManager.mergeCard(dupeList, evolved, INVALID_MINION_CARD, cardInHand.getSecondayId())
                         //evolved monster should take position of the 1st minion of that type that was on board
                         val evolvePos = dupeList.stream().filter { c -> c.dupeCard.getSecondayId() != cardInHand.getSecondayId() }.findFirst().get().boardIdx
                         val minionEvolved = MonsterEvolveOut(channelWriter = account.getChannelWriter(),
@@ -184,56 +181,6 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     }
                 }
 
-                if (cardInHand.getCost() > 0) {
-                    println("cardCost:${cardInHand.getCost()},currentMana:${player.currentMana}")
-                    val playerInfoOut = PlayerInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, currentMana = player.currentMana, maxMana = player.maxMana, playerHealth = player.playerLifePoint)
-                    messageQueue.addMessage(playerInfoOut)
-                }
-            }
-
-            is CardPlayedIn -> {
-
-                val account = accountCache.getAccount(message.accountKey)
-                val accountName = account?.getAccountName()
-                if (accountName == null) {
-                    println("Unable to find accountName in cache with key:${message.accountKey}.")
-                    return
-                }
-                val match = matchFinder.findMatch(account.getCurrentMatchId())
-                if (match == null) {
-                    println("Unable to find match with id:${account.getCurrentMatchId()}.")
-                    return
-                }
-                val opponentName = match.getOpponentName(accountName)
-                val opponentPlayer = match.getPlayer(opponentName) ?: return
-                val opponentAccount = accountCache.getAccount(opponentPlayer.accountKey) ?: return
-
-                val player = match.getPlayer(accountName)
-                if (player == null) {
-                    println("Unable to find player in match:${match.matchId} with key:$accountName.")
-                    return
-                }
-                val cardInHand = player.handManager.getCardFromHand(message.cardSecondaryId)
-                if (cardInHand == null) {
-                    println("Unable to find card with secondaryId:${message.cardSecondaryId} in player:$accountName hand.")
-                    return
-                }
-                if (cardInHand.getCardType() == CardType.TARGET_SPELL && message.cardTarget == null) {
-                    val cardName = cardInfoStore.getCardInfo(message.cardPrimaryId)?.name
-                    println("Error, card:$cardName from player:$accountName was played no target.")
-                    return
-                }
-                //validation is finish, can now play card so send back message to both player
-                val cardPlayed = CardPlayedOut(account.getChannelWriter(), accountName, cardInHand, message.cardTarget, message.boardPosition)
-                messageQueue.addMessage(cardPlayed)
-
-                val cardPlayedOpp = CardPlayedOut(opponentAccount.getChannelWriter(), accountName, cardInHand, message.cardTarget, message.boardPosition)
-                messageQueue.addMessage(cardPlayedOpp)
-
-
-                player.playCard(cardInHand)
-
-                val changedFields: MutableList<ChangedField> = ArrayList()
                 if (cardInHand.getCost() > 0) {
                     println("cardCost:${cardInHand.getCost()},currentMana:${player.currentMana}")
                     val playerInfoOut = PlayerInfoOut(channelWriter = account.getChannelWriter(), accoutName = accountName, currentMana = player.currentMana, maxMana = player.maxMana, playerHealth = player.playerLifePoint)
@@ -313,6 +260,15 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                 val enemyPlayer = match.getPlayer(enemyName) ?: return
                 val enemyAccount = accountCache.getAccount(enemyPlayer.accountKey) ?: return
                 val bResult = match.processAttack(accountName) ?: return
+                //send monster info resulting from battle ie health update
+                for (monster in bResult.participant) {
+                    val changedFields: MutableList<ChangedField> = ArrayList()
+                    changedFields.add(ChangedField(MessageField.CARD_HEALTH, monster.getHealth()))
+                    val monsterUpdate = CardInfoOut(account.getChannelWriter(), accountName, monster, changedFields)
+                    messageQueue.addMessage(monsterUpdate)
+                    val monsterOppUpdate = CardInfoOut(enemyAccount.getChannelWriter(), enemyName, monster, changedFields)
+                    messageQueue.addMessage(monsterOppUpdate)
+                }
                 if (bResult.defenderWasDamaged()) {
                     val dPlayer = bResult.defender
                     //inform both player of healthPoint change of defender
@@ -324,11 +280,10 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     val enemyInfoOut = PlayerInfoOut(enemyAccount.getChannelWriter(), dPlayer.playerName,
                             dPlayer.currentMana, dPlayer.maxMana, dPlayer.playerLifePoint)
                     messageQueue.addMessage(enemyInfoOut)
-
-                    match.setPlayerNextPhase(accountName, Phase.POST_ATTACK)
-                    val phaseOut = PhaseChangeOut(account.getChannelWriter(), Phase.POST_ATTACK)
-                    messageQueue.addMessage(phaseOut)
                 }
+                match.setPlayerNextPhase(accountName, Phase.POST_ATTACK)
+                val phaseOut = PhaseChangeOut(account.getChannelWriter(), Phase.POST_ATTACK)
+                messageQueue.addMessage(phaseOut)
             }
             else -> {
                 println("Error unable to processIn message:$message")

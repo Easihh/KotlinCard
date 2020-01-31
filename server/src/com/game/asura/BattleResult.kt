@@ -1,7 +1,10 @@
 package com.game.asura
 
+import com.game.asura.card.Minion
+
 class BattleResult(val defender: ServerPlayer) {
     private var defenderPlayerTookDmg = false
+    val participant: MutableList<Minion> = ArrayList()
     fun defenderTakeDamage() {
         defenderPlayerTookDmg = true
     }
@@ -10,4 +13,7 @@ class BattleResult(val defender: ServerPlayer) {
         return defenderPlayerTookDmg
     }
 
+    fun addParticipant(card: Minion) {
+        participant.add(card)
+    }
 }

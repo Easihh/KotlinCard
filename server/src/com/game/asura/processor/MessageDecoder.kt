@@ -39,8 +39,6 @@ class MessageDecoder(private val queue: InsertableQueue,
                                 cardPlayedData.cardTarget)
                     }
                     else -> {
-                        decodedMessage = CardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId,
-                                cardPlayedData.cardTarget, cardPlayedData.boardIdx, cardType)
                     }
                 }
             }

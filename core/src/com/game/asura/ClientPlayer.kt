@@ -16,4 +16,5 @@ class ClientPlayer(val playerName: String) {
     var maxMana: Int = 10
     var currentPhase: Phase = Phase.MAIN
     var myTurn = false
+    var selectedCard: DrawableCard? = null
 }

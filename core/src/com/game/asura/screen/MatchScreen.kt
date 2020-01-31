@@ -144,6 +144,8 @@ class MatchScreen(private val parentScreen: KtxGame<Screen>,
 
         stage.act()
         stage.draw()
+
+        uiManager.renderBoardCardStats(batch, font)
     }
 
     override fun resize(width: Int, height: Int) {

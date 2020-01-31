@@ -31,10 +31,6 @@ class BoardManager<T : Minion>(private val create: () -> T) {
         return playerBoard[boardIndex]
     }
 
-    fun cardIsPresentOnBoard(secondaryId: Int): Boolean {
-        return playerBoard.stream().filter { c -> c.getSecondayId() == secondaryId }.count() > 0
-    }
-
     fun removeCard(target: T) {
         //board should always  contains 5 space(invalid obj for no card in that indx)
         // otherwise player sending monster placement will have issue.
@@ -55,12 +51,16 @@ class BoardManager<T : Minion>(private val create: () -> T) {
         return dupeList
     }
 
-    //temporary set to passed invalid card until fix this class use by client
-    fun mergeCard(toMerge: List<DuplicatedCard>, evolve: T, toReplace: T) {
+    //merge both card and move the resulting card at the position of the first played duplicated card
+    fun mergeCard(toMerge: List<DuplicatedCard>, evolve: T, toReplace: T, lastPlayedId: Int) {
         for (card in toMerge) {
-            playerBoard[card.boardIdx] = toReplace
+            if (card.dupeCard.getSecondayId() == lastPlayedId) {
+                playerBoard[card.boardIdx] = toReplace
+            } else {
+                playerBoard[card.boardIdx] = evolve
+            }
         }
-        playerBoard[toMerge[0].boardIdx] = evolve
+
     }
 
     fun updateSummonIllness(): List<T> {
