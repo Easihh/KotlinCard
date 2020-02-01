@@ -132,14 +132,17 @@ class UIManager(private val stage: Stage,
 
     private fun getClosestBoardIndex(mouseX: Float, mouseY: Float): Int? {
         val boardManager = player.boardManager
-        var initialX = INITIAL_BOARD_X
         var closestIndx: Int? = null
-        for (i in 0 until MAX_BOARD_SIZE) {
-            if (mouseX >= initialX && mouseX <= initialX + BOARD_CARD_WIDTH) {
-                closestIndx = i
-                break
+        if (mouseX > INITIAL_BOARD_X + (BOARD_CARD_WIDTH * MAX_BOARD_SIZE - 1)) {
+            closestIndx = MAX_BOARD_SIZE - 1
+        } else {
+            for (i in 0 until MAX_BOARD_SIZE) {
+                if (mouseX <= INITIAL_BOARD_X + (BOARD_CARD_WIDTH * (i + 1))) {
+                    println("Found closest Board Index i=$i at $mouseX,$mouseY")
+                    closestIndx = i
+                    break
+                }
             }
-            initialX += BOARD_CARD_WIDTH
         }
         if (closestIndx == null) {
             println("unable to find closest board indx at $mouseX,$mouseY")
