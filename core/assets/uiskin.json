@@ -43,7 +43,7 @@ SliderStyle: {
 	default-horizontal: { parent: default-horizontal },
 	default-vertical: { parent: default-vertical }
 },
-LabelStyle: {
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: { font: default-font, fontColor: white }
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {

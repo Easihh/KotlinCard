@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -23,6 +24,7 @@ import com.game.asura.processor.MessageOutProcessor
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.graphics.use
+
 
 class LoginScreen(private val parentScreen: KtxGame<Screen>,
                   private val messageQueue: MessageQueue,
@@ -80,29 +82,39 @@ class LoginScreen(private val parentScreen: KtxGame<Screen>,
         stage.addActor(connectBtn)
 
         val uiskin = Skin(Gdx.files.internal("core/assets/uiskin.json"))
-        val accountNameStr = Label("Account Name", uiskin)
-        accountNameStr.color = Color.WHITE
+
+        val lblStyle = Label.LabelStyle(font, Color.WHITE)
+        val accountNameStr = Label("Account Name", lblStyle)
         accountNameStr.height = 64f
         accountNameStr.width = 256f
         accountNameStr.setPosition(400f, 575f)
         stage.addActor(accountNameStr)
+        
         val accountName = TextField("DefaultTextHere", uiskin)
-        accountName.color = Color.DARK_GRAY
+        val backgroundColor = Pixmap(accountName.width.toInt(), accountName.height.toInt(), Pixmap.Format.RGB888)
+        backgroundColor.setColor(Color.WHITE)
+        backgroundColor.fill()
+        accountName.style.background = Image(Texture(backgroundColor)).drawable
+        accountName.color = Color.WHITE
         accountName.height = 64f
         accountName.width = 256f
         accountName.setPosition(400f, 500f)
+        backgroundColor.dispose()
         stage.addActor(accountName)
 
-        val accountPasswordStr = Label("Account Password", uiskin)
-        accountPasswordStr.color = Color.WHITE
+        val lblStylee = Label.LabelStyle(font, Color.WHITE)
+        val accountPasswordStr = Label("Account Password", lblStylee)
         accountPasswordStr.height = 64f
         accountPasswordStr.width = 256f
         accountPasswordStr.setPosition(400f, 425f)
         stage.addActor(accountPasswordStr)
+
+
         val accountPassw = TextField("DefaultPassword", uiskin)
+        accountPassw.style.fontColor = Color.BLACK
         accountPassw.isPasswordMode = true
         accountPassw.setPasswordCharacter('*')
-        accountPassw.color = Color.DARK_GRAY
+        accountPassw.color = Color.WHITE
         accountPassw.height = 64f
         accountPassw.width = 256f
         accountPassw.setPosition(400f, 350f)
@@ -168,7 +180,7 @@ class LoginScreen(private val parentScreen: KtxGame<Screen>,
     }
 
     override fun resize(width: Int, height: Int) {
-       // println("Resizing:Height=$height width=$width graphicW:${Gdx.graphics.width} graphicH:${Gdx.graphics.height}")
+        // println("Resizing:Height=$height width=$width graphicW:${Gdx.graphics.width} graphicH:${Gdx.graphics.height}")
         val scaled = viewport.scaling.apply(VIRTUAL_WINDOW_WIDTH.toFloat(), VIRTUAL_WINDOW_HEIGHT.toFloat(), width.toFloat(), height.toFloat())
         val viewportWidth = Math.round(scaled.x)
         val viewportHeight = Math.round(scaled.y)
@@ -177,7 +189,7 @@ class LoginScreen(private val parentScreen: KtxGame<Screen>,
         val cropY = (height - viewportHeight) / 2f
         val screenWidth = Gdx.graphics.width - cropX.toInt()
         val screenHeight = Gdx.graphics.height - cropY.toInt()
-       // println("CropX:$cropX cropY:$cropY scaleX:${scaled.x} scaledY:${scaled.y}, viewportWidth:$viewportWidth viewportHeight:$viewportHeight")
+        // println("CropX:$cropX cropY:$cropY scaleX:${scaled.x} scaledY:${scaled.y}, viewportWidth:$viewportWidth viewportHeight:$viewportHeight")
         viewport.setScreenBounds((cropX / 2).toInt(), cropY.toInt(),
                 screenWidth, screenHeight)
         viewport.apply(true)
