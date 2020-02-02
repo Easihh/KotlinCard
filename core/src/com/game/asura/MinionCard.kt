@@ -11,7 +11,8 @@ class MinionCard(texture: Texture,
                  cardType: CardType,
                  attack: Int,
                  health: Int,
-                 maxHealth: Int) : MonsterDrawableCard(texture, primaryId, secondaryId, cardCost, cardType, attack, health, maxHealth) {
+                 maxHealth: Int,
+                 owner:String) : MonsterDrawableCard(texture, primaryId, secondaryId, cardCost, cardType, attack, health, maxHealth,owner) {
 
 
     override fun isSummonSick(): Boolean {

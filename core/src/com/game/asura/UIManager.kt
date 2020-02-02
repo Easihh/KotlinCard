@@ -382,6 +382,17 @@ class UIManager(private val stage: Stage,
 
     fun renderBoardCardStats(batch: SpriteBatch, font: BitmapFont) {
         batch.begin()
+        //enemy board
+        for (x in 0 until MAX_BOARD_SIZE) {
+            val card = otherPlayer.boardManager.getCardByBoardIndex(x) ?: continue
+            //draw attack
+            batch.draw(assetStore.getTexture(Asset.ATTACK_ICON_SMALL), card.actor.x + 6f, card.actor.y + 6f)
+            font.draw(batch, card.getAttack().toString(), card.actor.x + 12f, card.actor.y + 24f)
+
+            //draw health
+            batch.draw(assetStore.getTexture(Asset.HEALTH_ICON_SMALL), card.actor.x + BOARD_CARD_WIDTH - 32, card.actor.y + 6f)
+            font.draw(batch, card.getHealth().toString(), card.actor.x + BOARD_CARD_WIDTH - 24f, card.actor.y + 24f)
+        }
         for (x in 0 until MAX_BOARD_SIZE) {
             val card = player.boardManager.getCardByBoardIndex(x) ?: continue
             //draw attack

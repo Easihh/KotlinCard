@@ -68,7 +68,13 @@ class Match(private val player1: ServerPlayer,
             val defenderMinion = defenderPlayer.boardManager.getCardByBoardIndex(i)
             if (defenderMinion != null) {
                 attackerMinion.takeDamage(defenderMinion.getAttack())
+                if (!attackerMinion.isAlive()) {
+                    attackPlayer.boardManager.removeCard(attackerMinion)
+                }
                 defenderMinion.takeDamage(attackerMinion.getAttack())
+                if (!defenderMinion.isAlive()) {
+                    defenderPlayer.boardManager.removeCard(defenderMinion)
+                }
                 bResult.addParticipant(attackerMinion)
                 bResult.addParticipant(defenderMinion)
             } else {

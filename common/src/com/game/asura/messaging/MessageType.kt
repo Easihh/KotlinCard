@@ -17,6 +17,7 @@ enum class MessageType(val value: Byte) {
     MONSTER_EVOLVE('v'.toByte()),
     PHASE_CHANGE('h'.toByte()),
     MONSTER_CARD_PLAYED('o'.toByte()),
+    MONSTER_DEATH('n'.toByte()),
     ;
 
 

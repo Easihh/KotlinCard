@@ -119,6 +119,12 @@ class MessageDecoder(private val queue: InsertableQueue) : CoreMessageParser() {
                 val nextPhase = data.nextPhase ?: return
                 decodedMessage = PhaseChangeIn(nextPhase)
             }
+            MessageType.MONSTER_DEATH -> {
+                val data = getMonsterDeathData()
+                val primaryId = data.primaryId ?: return
+                val secondaryId = data.secondaryId ?: return
+                decodedMessage = MonsterDeathIn(primaryId, secondaryId)
+            }
             else -> {
                 println("Message of type $msgType has no decode logic.")
             }

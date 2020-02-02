@@ -2,6 +2,8 @@ package com.game.asura.card
 
 interface Minion : Card {
 
+    fun getOwner(): String
+
     fun getAttack(): Int
 
     fun getHealth(): Int

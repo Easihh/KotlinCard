@@ -29,7 +29,7 @@ class MessageDecoder(private val queue: InsertableQueue,
                 //should validate important field here
                 val cardId = cardPlayedData.cardPrimaryId ?: return
                 val secCardId = cardPlayedData.cardSecondaryId ?: return
-                when (val cardType = cardInfoStore.getCardInfo(cardId)?.cardType ?: return) {
+                when (cardInfoStore.getCardInfo(cardId)?.cardType ?: return) {
                     CardType.MONSTER -> {
                         val boardIndx = cardPlayedData.boardIdx ?: return
                         decodedMessage = MonsterCardPlayedIn(playerAccount.getAccountKey(), cardId, secCardId, boardIndx)
@@ -49,6 +49,7 @@ class MessageDecoder(private val queue: InsertableQueue,
             MessageType.ATTACK -> {
                 decodedMessage = AttackIn(playerAccount.getAccountKey())
             }
+
             else -> {
                 println("Message of type $msgType has no decode logic.")
             }

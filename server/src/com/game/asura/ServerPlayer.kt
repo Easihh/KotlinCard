@@ -39,16 +39,16 @@ class ServerPlayer(val playerName: String,
         val slimeMaxHealth = slime.maxHealth ?: return
         val slimeAttack = slime.attack ?: return
         deck.push(ServerMinionCard(1, cardCost = 1, attack = slimeAttack,
-                health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId))
+                health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId, owner = playerName))
         deck.push(ServerMinionCard(1, cardCost = 1, attack = slimeAttack,
-                health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId))
+                health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId, owner = playerName))
         deck.push(ServerMinionCard(1, cardCost = 1, attack = slimeAttack,
-                health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId))
+                health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId, owner = playerName))
         val spellOne = cardInfoStore.getCardInfo(2) ?: return
         deck.push(ServerSpellCard(2, cardCost = spellOne.cost,
                 cardType = CardType.SPELL, ability = spellOne.ability))
         deck.push(ServerMinionCard(1, cardCost = 1, attack = slimeAttack,
-                health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId))
+                health = slimeHealth, maxHealth = slimeMaxHealth, evolveId = slime.evolveId, owner = playerName))
     }
 
     fun playCard(card: Card) {

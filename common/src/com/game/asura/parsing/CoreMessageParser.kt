@@ -83,7 +83,7 @@ abstract class CoreMessageParser {
 
     fun getCardInfoData(): CardInfoData {
         return CardInfoData(coreMsg.getAccountName(), coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(),
-                coreMsg.getCardHealth(), coreMsg.getMaxCardLife(),coreMsg.getSummonIllness())
+                coreMsg.getCardHealth(), coreMsg.getMaxCardLife(), coreMsg.getSummonIllness())
     }
 
     fun getMatchStartData(): MatchStartData {
@@ -109,6 +109,10 @@ abstract class CoreMessageParser {
 
     fun getMonsterAttackData(): MonsterAttackData {
         return MonsterAttackData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId(), coreMsg.getCardTarget())
+    }
+
+    fun getMonsterDeathData(): MonsterDeathData {
+        return MonsterDeathData(coreMsg.getPrimaryCardId(), coreMsg.getSecondaryCardId())
     }
 
     fun getPlayerInfoData(): PlayerInfoData {

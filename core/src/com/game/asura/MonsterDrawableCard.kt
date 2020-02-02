@@ -13,7 +13,8 @@ abstract class MonsterDrawableCard(texture: Texture,
                                    cardType: CardType,
                                    private var attack: Int,
                                    private var health: Int,
-                                   private var maxHealth: Int) : DrawableCard(texture,primaryId, secondaryId, cardCost, cardType), Minion {
+                                   private var maxHealth: Int,
+                                   private val owner: String) : DrawableCard(texture, primaryId, secondaryId, cardCost, cardType), Minion {
 
     private val updateFncMap: MutableMap<MessageField, (ChangedField) -> Unit> = HashMap()
     protected var summonSickness = true
@@ -29,6 +30,10 @@ abstract class MonsterDrawableCard(texture: Texture,
         for (changedField in changedFieldLst) {
             updateFncMap[changedField.field]?.invoke(changedField)
         }
+    }
+
+    override fun getOwner(): String {
+        return owner
     }
 
     override fun getHealth(): Int {

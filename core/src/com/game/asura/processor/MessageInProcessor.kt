@@ -50,7 +50,7 @@ class MessageInProcessor(private val player: ClientPlayer,
                 val texture = assetStore.getCardTexture(msg.primaryId) ?: return
                 val card = MinionCard(texture = texture.inHandTexture, primaryId = msg.primaryId, secondaryId = msg.secondaryId,
                         cardCost = msg.cardCost, cardType = msg.cardType, attack = msg.attack,
-                        health = msg.health, maxHealth = msg.maxHealth)
+                        health = msg.health, maxHealth = msg.maxHealth, owner = player.playerName)
                 player.handManager.addToPlayerHand(card)
                 uiManager.addCardToHand(card)
                 cardStore.add(card)
@@ -61,7 +61,7 @@ class MessageInProcessor(private val player: ClientPlayer,
                     //opponent played card
                     val card = MinionCard(texture = texture.onBoardTexture, primaryId = msg.primaryId, secondaryId = msg.secondaryId,
                             cardCost = msg.cardCost, cardType = CardType.MONSTER, attack = msg.attack,
-                            health = msg.health, maxHealth = msg.maxHealth)
+                            health = msg.health, maxHealth = msg.maxHealth, owner = opponent.playerName)
                     opponent.boardManager.updatePlayerBoard(card, msg.boardIndx)
                     uiManager.addEnemyMonsterToBoard(card, msg.boardIndx)
                     cardStore.add(card)
@@ -100,7 +100,7 @@ class MessageInProcessor(private val player: ClientPlayer,
             }
             is MonsterEvolveIn -> {
                 val texture = assetStore.getCardTexture(msg.primaryCardId) ?: return
-                val evolved = MinionCard(texture.inHandTexture, msg.primaryCardId, msg.secondaryCardId, msg.cardCost, msg.cardType, msg.attack, msg.health, msg.maxHealth)
+                val evolved = MinionCard(texture.inHandTexture, msg.primaryCardId, msg.secondaryCardId, msg.cardCost, msg.cardType, msg.attack, msg.health, msg.maxHealth, player.playerName)
                 val firstMonster = cardStore.getCard(msg.firstMonsterId) ?: return
                 val secondMonster = cardStore.getCard(msg.secondMonsterId) ?: return
                 if (firstMonster !is MinionCard || secondMonster !is MinionCard) {
@@ -127,6 +127,20 @@ class MessageInProcessor(private val player: ClientPlayer,
                     println("Removing card:$card from player hand.")
                     player.handManager.removeFromHand(card)
                     uiManager.removeCardfromHand(card)
+                }
+            }
+            is MonsterDeathIn -> {
+                val card = cardStore.getCard(msg.secondaryId) ?: return
+                if (card !is MinionCard) {
+                    println("Error card:$card is not a monster but MonsterDeath was received.")
+                    return
+                }
+                println("Monster $card died, removing from battlefield.")
+                card.actor.remove()
+                if (card.getOwner() == player.playerName) {
+                    player.boardManager.removeCard(card)
+                } else {
+                    opponent.boardManager.removeCard(card)
                 }
             }
             else -> {

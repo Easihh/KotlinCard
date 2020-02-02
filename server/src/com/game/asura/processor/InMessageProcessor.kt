@@ -165,7 +165,7 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                         evInfo.maxHealth ?: return
                         val evolved = ServerMinionCard(primaryId = evInfo.id, cardCost = evInfo.cost, cardType = evInfo.cardType,
                                 attack = evInfo.attack ?: 0, health = evInfo.health, maxHealth = evInfo.maxHealth,
-                                evolveId = evInfo.evolveId)
+                                evolveId = evInfo.evolveId, owner = player.playerName)
                         match.addCardToCache(evolved)
                         player.boardManager.mergeCard(dupeList, evolved, cardInHand.getSecondayId())
                         //evolved monster should take position of the 1st minion of that type that was on board
@@ -268,6 +268,12 @@ class InMessageProcessor(private val messageQueue: InsertableQueue,
                     messageQueue.addMessage(monsterUpdate)
                     val monsterOppUpdate = CardInfoOut(enemyAccount.getChannelWriter(), enemyName, monster, changedFields)
                     messageQueue.addMessage(monsterOppUpdate)
+                    if (!monster.isAlive()) {
+                        val monsterDeath = MonsterDeathOut(account.getChannelWriter(), monster)
+                        val monsterDeathOpp = MonsterDeathOut(enemyAccount.getChannelWriter(), monster)
+                        messageQueue.addMessage(monsterDeath)
+                        messageQueue.addMessage(monsterDeathOpp)
+                    }
                 }
                 if (bResult.defenderWasDamaged()) {
                     val dPlayer = bResult.defender

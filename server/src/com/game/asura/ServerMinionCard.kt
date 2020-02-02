@@ -11,7 +11,9 @@ class ServerMinionCard(primaryId: Int,
                        private val attack: Int = 0,
                        private var health: Int = 0,
                        private var maxHealth: Int = 0,
-                       val evolveId: Int? = null) : BaseMinion(primaryId, secondaryId, cardCost, cardType) {
+                       val evolveId: Int? = null,
+                       owner: String) : BaseMinion(primaryId, secondaryId, cardCost, cardType,owner) {
+
 
     private var summonSickness = true
 
